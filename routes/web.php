@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,7 +11,18 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+/*Route::fallback(function () {
+    return response()->json([
+        'message' => 'Unknown error',
+        'code'    =>  405,
+        'data'    =>  []
+    ], 405);
+});*/
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/',function(){return response()->json([
+    'message' => 'Servey API...',
+    'code'    =>  200,
+    'data'    =>  []
+], 200);});
+
+
