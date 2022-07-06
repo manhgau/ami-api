@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\v1\client\AuthController;
+use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
+use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +19,18 @@ use App\Http\Controllers\v1\client\AuthController;
 //
 Route::group(['prefix' => 'v1'], function () {
     //common
-    //client
+    Route::group([
+
+    ], function ($router) {
+
+    });
+    //client (web)
+    Route::group([
+        'prefix' => 'client'
+
+    ], function ($router) {
+        //
+        Route::get('/settings', [ClientConfigController::class, 'settings']);
         //auth
         Route::group([
             'prefix' => 'auth'
@@ -36,5 +49,30 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/change-pass', [AuthController::class, 'changePassWord']);
             });
         });
-    //partner
+        //required login
+        Route::group([
+            'middleware' => 'api',
+
+        ], function ($router) {
+
+        });
+    });
+    //partner (app)
+    Route::group([
+        'prefix' => 'partner'
+    ], function ($router) {
+        Route::get('/settings', [PartnerConfigController::class, 'settings']);
+    });
+    //visitor (web)
+    Route::group([
+        'prefix' => 'partner'
+    ], function ($router) {
+
+    });
+    //client (app)
+    Route::group([
+        'prefix' => 'client-app'
+    ], function ($router) {
+
+    });
 });
