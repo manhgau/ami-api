@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\v1\AuthController;
+use App\Http\Controllers\v1\client\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,17 +16,25 @@ use App\Http\Controllers\v1\AuthController;
 
 //
 Route::group(['prefix' => 'v1'], function () {
-    //auth
-    Route::group([
-        'middleware' => 'api',
-        'prefix' => 'auth'
+    //common
+    //client
+        //auth
+        Route::group([
+            'prefix' => 'auth'
 
-    ], function ($router) {
-        Route::post('/login', [AuthController::class, 'login']);
-        Route::post('/register', [AuthController::class, 'register']);
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::post('/refresh', [AuthController::class, 'refresh']);
-        Route::get('/user-profile', [AuthController::class, 'userProfile']);
-        Route::post('/change-pass', [AuthController::class, 'changePassWord']);
-    });
+        ], function ($router) {
+            Route::post('/login', [AuthController::class, 'login']);
+            Route::post('/register', [AuthController::class, 'register']);
+
+            Route::group([
+                'middleware' => 'api',
+
+            ], function ($router) {
+                Route::post('/logout', [AuthController::class, 'logout']);
+                Route::post('/refresh', [AuthController::class, 'refresh']);
+                Route::get('/user-profile', [AuthController::class, 'userProfile']);
+                Route::post('/change-pass', [AuthController::class, 'changePassWord']);
+            });
+        });
+    //partner
 });

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\v1;
+namespace App\Http\Controllers\v1\client;
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Validator;
+use App\Helpers\ClientResponse;
 
 
 class AuthController extends Controller
@@ -15,9 +15,9 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function __construct() {
+    /*public function __construct() {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
+    }*/
 
     /**
      * Get a JWT via given credentials.
@@ -31,14 +31,15 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return ClientResponse::responseError('Vui lòng nhập email và mật khẩu',$validator->errors());
         }
 
         if (! $token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return ClientResponse::responseError('Email hoặc mật khẩu không đúng');
         }
 
-        return $this->createNewToken($token);
+        $user =  $this->createNewToken($token);
+        return ClientResponse::responseSuccess('Đăng nhập thành công', $user);
     }
 
     /**
@@ -54,7 +55,7 @@ class AuthController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+            return ClientResponse::responseError('Input invalid', $validator->errors());
         }
 
         $user = User::create(array_merge(
@@ -62,10 +63,7 @@ class AuthController extends Controller
                     ['password' => bcrypt($request->password)]
                 ));
 
-        return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user
-        ], 201);
+        return ClientResponse::responseSuccess('User successfully registered', $user);
     }
 
 
@@ -77,7 +75,7 @@ class AuthController extends Controller
     public function logout() {
         auth()->logout();
 
-        return response()->json(['message' => 'User successfully signed out']);
+        return ClientResponse::responseSuccess('User successfully signed out');
     }
 
     /**
@@ -86,7 +84,13 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function refresh() {
-        return $this->createNewToken(auth()->refresh());
+        if(!auth()->check()) {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Unauthorized');
+        }
+
+        return ClientResponse::responseSuccess('Refresh token success', [
+            $this->createNewToken(auth()->refresh())
+        ]);
     }
 
     /**
@@ -95,7 +99,13 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile() {
-        return response()->json(auth()->user());
+        if(auth()->check()) {
+            return ClientResponse::responseSuccess('User successfully registered', [
+                auth()->user()
+            ]);
+        }else{
+            return ClientResponse::responseError('Unauthorized');
+        }
     }
 
     /**
@@ -106,32 +116,31 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     protected function createNewToken($token){
-        return response()->json([
+        return [
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => auth()->user()
-        ]);
+        ];
     }
 
     public function changePassWord(Request $request) {
+        if(!auth()->check()) {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Unauthorized');
+        }
         $validator = Validator::make($request->all(), [
             'old_password' => 'required|string|min:6',
             'new_password' => 'required|string|confirmed|min:6',
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+            return ClientResponse::responseError('Vui lòng nhập email và mật khẩu',$validator->errors());
         }
         $userId = auth()->user()->id;
 
         $user = User::where('id', $userId)->update(
                     ['password' => bcrypt($request->new_password)]
                 );
-
-        return response()->json([
-            'message' => 'User successfully changed password',
-            'user' => $user,
-        ], 201);
+        return ClientResponse::responseSuccess('User successfully changed password', $user);
     }
 }
