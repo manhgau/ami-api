@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 });*/
 
 Route::get('/',function(){return response()->json([
-    'message' => 'Servey API...',
+    'message' => 'Survey API...',
     'code'    =>  200,
     'data'    =>  []
 ], 200);});
