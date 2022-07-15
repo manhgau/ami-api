@@ -8,10 +8,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * Class User: Tài khoản client
+ * @package App\Models
+ */
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
+    const IS_ACTIVE = 1;
+    const IS_NOT_ACTIVE = 0;
     /**
      * The attributes that are mass assignable.
      *
@@ -21,6 +27,11 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'active_code',
+        'is_active',
+        'active_expire',
+        'forgot_code',
+        'forgot_expire',
     ];
 
     /**
@@ -58,5 +69,22 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims() {
         return [];
+    }
+
+    public static function findUserByEmail($email){
+        return User::where('email', $email)->first();
+    }
+
+    public static function findUserActiveEmail($user_id, $active_code){
+        return User::where('id', $user_id)->whereRaw("BINARY `active_code`= ?",[$active_code])->first();
+    }
+
+    public static function checkUserByEmail($email){
+        $count = User::where('email', $email)->count();
+        if($count > 0){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

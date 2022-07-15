@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Validator;
 use App\Helpers\ClientResponse;
-
+use App\Jobs\SendActiveAcountEmailJob;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -31,11 +32,16 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return ClientResponse::responseError('Vui lòng nhập email và mật khẩu',$validator->errors());
+            return ClientResponse::responseError('Vui lòng nhập email và mật khẩu');
         }
 
         if (! $token = auth()->attempt($validator->validated())) {
             return ClientResponse::responseError('Email hoặc mật khẩu không đúng');
+        }
+        $userData = auth()->user();
+
+        if($userData->is_active!=User::IS_ACTIVE){
+            return ClientResponse::response(ClientResponse::$user_not_active, 'Tài khoản chưa kích hoạt');
         }
 
         $user =  $this->createNewToken($token);
@@ -53,17 +59,31 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
         ]);
-
         if($validator->fails()){
-            return ClientResponse::responseError('Input invalid', $validator->errors());
+            $errorString = implode(",",$validator->messages()->all());
+            return ClientResponse::responseError( $errorString);
         }
-
+        $active_code = Str::random(20);
+        $active_expire = (time() + 86400);
         $user = User::create(array_merge(
                     $validator->validated(),
-                    ['password' => bcrypt($request->password)]
+                    [
+                        'password' => bcrypt($request->password),
+                        'active_code'  =>  $active_code,
+                        'is_active'  =>  0,
+                        'active_expire'  =>  $active_expire,
+                    ]
                 ));
-
-        return ClientResponse::responseSuccess('User successfully registered', $user);
+        //gửi mail kích hoạt
+        $web_link = env('FRONTEND_APP_URL');
+        $app_name = env('APP_NAME');
+        dispatch(new SendActiveAcountEmailJob([
+            'to'    =>  $request->email,
+            'active_link' => ''.$web_link.'/client/active-account?uid='.$user->id.'&active_code='.$active_code.'',
+            'subject'   =>  'Kích hoạt tài khoản '.$app_name.' của bạn',
+            'expire_time'   =>  date('H:i:s d/m/Y' ,$active_expire),
+        ]));
+        return ClientResponse::responseSuccess('Đăng ký tài khoản thành công', $user);
     }
 
 
@@ -75,7 +95,7 @@ class AuthController extends Controller
     public function logout() {
         auth()->logout();
 
-        return ClientResponse::responseSuccess('User successfully signed out');
+        return ClientResponse::responseSuccess('Đăng xuất thành công');
     }
 
     /**
@@ -100,11 +120,13 @@ class AuthController extends Controller
      */
     public function userProfile() {
         if(auth()->check()) {
-            return ClientResponse::responseSuccess('User successfully registered', [
-                auth()->user()
+            return ClientResponse::responseSuccess('Thông tin tài khoản', [
+                [
+                    'user'  =>  auth()->user()
+                ]
             ]);
         }else{
-            return ClientResponse::responseError('Unauthorized');
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Unauthorized');
         }
     }
 
@@ -129,18 +151,78 @@ class AuthController extends Controller
             return ClientResponse::response(ClientResponse::$required_login_code, 'Unauthorized');
         }
         $validator = Validator::make($request->all(), [
-            'old_password' => 'required|string|min:6',
             'new_password' => 'required|string|confirmed|min:6',
         ]);
 
         if($validator->fails()){
-            return ClientResponse::responseError('Vui lòng nhập email và mật khẩu',$validator->errors());
+            $errorString = implode(",",$validator->messages()->all());
+            return ClientResponse::responseError($errorString);
         }
         $userId = auth()->user()->id;
 
         $user = User::where('id', $userId)->update(
                     ['password' => bcrypt($request->new_password)]
                 );
-        return ClientResponse::responseSuccess('User successfully changed password', $user);
+        return ClientResponse::responseSuccess('Thay đổi mật khẩu thành công', $user);
+    }
+
+    public function activeByEmail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required',
+            'active_code' => 'required',
+        ]);
+
+        if($validator->fails()){
+            $errorString = implode(",",$validator->messages()->all());
+            return ClientResponse::responseError($errorString);
+        }
+        $user_id = $request->user_id;
+        $active_code = $request->active_code;
+
+        $user = User::findUserActiveEmail($user_id, $active_code);
+        if(!$user){
+            return ClientResponse::responseError('Dữ liệu không hợp lệ');
+        }
+        if($user->active_expire < time()){
+            return ClientResponse::responseError('Link kích hoạt đã hết hạn');
+        }
+        $user->is_active = User::IS_ACTIVE;
+        $user->active_code = '';
+        $user->active_expire = time();
+        $user->save();
+
+        return ClientResponse::responseSuccess('Kích hoạt tài khoản thành công');
+    }
+
+    public function resendActiveEmail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if($validator->fails()){
+            return ClientResponse::responseError('Vui lòng nhập email đúng định dạng');
+        }
+        $email = $request->email;
+        $user = User::findUserByEmail($email);
+        if($user){
+            $active_code = Str::random(20);
+            $active_expire = (time() + 86400);
+            //
+            $user->active_code = $active_code;
+            $user->active_expire = $active_expire;
+            if($user->save()){
+                //gửi mail kích hoạt
+                $web_link = env('FRONTEND_APP_URL');
+                $app_name = env('APP_NAME');
+                dispatch(new SendActiveAcountEmailJob([
+                    'to'    =>  $request->email,
+                    'active_link' => ''.$web_link.'/client/active-account?user_id='.$user->id.'&active_code='.$active_code.'',
+                    'subject'   =>  'Kích hoạt tài khoản '.$app_name.' của bạn',
+                    'expire_time'   =>  date('H:i:s d/m/Y' ,$active_expire),
+                ]));
+            }
+        }
+
+        return ClientResponse::responseSuccess('Gửi email kích hoạt thành công, vui lòng xem hộp thư hoặc thư mục thư rác( spam) để kích hoạt tài khoản');
     }
 }

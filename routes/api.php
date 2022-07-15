@@ -39,6 +39,8 @@ Route::group(['prefix' => 'v1'], function () {
         ], function ($router) {
             Route::post('/login', [AuthController::class, 'login']);
             Route::post('/register', [AuthController::class, 'register']);
+            Route::post('/active-by-email', [AuthController::class, 'activeByEmail']);
+            Route::post('/resend-active-email', [AuthController::class, 'resendActiveEmail']);
 
             Route::group([
                 'middleware' => 'api',
