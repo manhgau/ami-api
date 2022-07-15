@@ -7,6 +7,7 @@ use App\Models\User;
 use Validator;
 use App\Helpers\ClientResponse;
 use App\Jobs\SendActiveAcountEmailJob;
+use App\Jobs\SendResetPasswordEmailJob;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -77,7 +78,7 @@ class AuthController extends Controller
         $user = User::create(array_merge(
                     $validator->validated(),
                     [
-                        'password' => bcrypt($request->password),
+                        'password' => User::generatePasswordHash($request->password),
                         'active_code'  =>  $active_code,
                         'is_active'  =>  0,
                         'active_expire'  =>  $active_expire,
@@ -170,7 +171,7 @@ class AuthController extends Controller
         $userId = auth()->user()->id;
 
         $user = User::where('id', $userId)->update(
-                    ['password' => bcrypt($request->new_password)]
+                    ['password' => User::generatePasswordHash($request->new_password)]
                 );
         return ClientResponse::responseSuccess('Thay đổi mật khẩu thành công', $user);
     }
@@ -233,5 +234,64 @@ class AuthController extends Controller
         }
 
         return ClientResponse::responseSuccess('Gửi email kích hoạt thành công, vui lòng xem hộp thư hoặc thư mục thư rác( spam) để kích hoạt tài khoản');
+    }
+
+    public function forgotPassword(Request $request){
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+        ]);
+        $email = $request->email;
+        if ($validator->fails()) {
+            return ClientResponse::responseError('Vui lòng nhập địa chỉ email');
+        }
+        $user = User::findUserByEmail($email);
+        if($user){
+            $forgot_code = Str::random(20);
+            $forgot_expire = (time() + 86400);
+            //
+            $user->forgot_code = $forgot_code;
+            $user->forgot_expire = $forgot_expire;
+            if($user->save()){
+                //gửi mail reset password
+                $web_link = env('FRONTEND_APP_URL');
+                $app_name = env('APP_NAME');
+                dispatch(new SendResetPasswordEmailJob([
+                    'to'    =>  $request->email,
+                    'active_link' => ''.$web_link.'/reset-password?uid='.$user->id.'&forgot_code='.$forgot_code.'',
+                    'subject'   =>  'Thay đổi mật khẩu tài khoản '.$app_name.' của bạn',
+                    'expire_time'   =>  date('H:i:s d/m/Y' ,$forgot_expire),
+                    'fullname'  =>  $user->name,
+                    'app_name'  =>  $app_name,
+                ]));
+            }
+        }
+        return ClientResponse::responseSuccess('Chúng tôi đã gửi cho bạn một email vào địa chỉ '.$email.', làm theo hướng dẫn trong email để thay đổi mật khẩu cho tài khoản của bạn');
+    }
+
+    public function resetPassword(Request $request){
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required',
+            'forgot_code' => 'required',
+            'password' => 'required|string|confirmed|min:6',
+        ]);
+        $user_id = $request->user_id;
+        $forgot_code = $request->forgot_code;
+        if($validator->fails()){
+            $errorString = implode(",",$validator->messages()->all());
+            return ClientResponse::responseError( $errorString);
+        }
+        $user = User::findUserForgotPassByEmail($user_id, $forgot_code);
+        if(!$user){
+            return ClientResponse::responseError('Dữ liệu không hợp lệ');
+        }
+        if($user->forgot_expire < time()){
+            return ClientResponse::responseError('Link thay đổi mật khẩu đã hết hạn');
+        }
+        $user->password = User::generatePasswordHash($request->password);
+        $user->forgot_code = '';
+        $user->forgot_expire = time();
+        $user->save();
+
+        return ClientResponse::responseSuccess('Đổi mật khẩu thành công');
     }
 }

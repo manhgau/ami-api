@@ -41,6 +41,8 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/register', [AuthController::class, 'register']);
             Route::post('/active-by-email', [AuthController::class, 'activeByEmail']);
             Route::post('/resend-active-email', [AuthController::class, 'resendActiveEmail']);
+            Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+            Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
             Route::group([
                 'middleware' => 'api',

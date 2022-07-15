@@ -63,6 +63,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
+    public static function generatePasswordHash($plain_text){
+        return bcrypt($plain_text);
+    }
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
@@ -78,6 +81,10 @@ class User extends Authenticatable implements JWTSubject
 
     public static function findUserActiveEmail($user_id, $active_code){
         return User::where('id', $user_id)->whereRaw("BINARY `active_code`= ?",[$active_code])->first();
+    }
+
+    public static function findUserForgotPassByEmail($user_id, $forgot_code){
+        return User::where('id', $user_id)->whereRaw("BINARY `forgot_code`= ?",[$forgot_code])->first();
     }
 
     public static function checkUserByEmail($email){
