@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mail;
 use App\Mail\ResetPassword;
+use Illuminate\Support\Facades\Log;
 
 class SendResetPasswordEmailJob implements ShouldQueue
 {
@@ -34,6 +35,10 @@ class SendResetPasswordEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        Mail::to($this->mailData['to'])->send(new ResetPassword($this->mailData));
+        try {
+            Mail::to($this->mailData['to'])->send(new ResetPassword($this->mailData));
+        }catch (\Exception $ex){
+            Log::error("#SendResetPasswordEmailJob Error: ".$ex->getMessage());
+        }
     }
 }
