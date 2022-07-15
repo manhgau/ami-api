@@ -31,7 +31,6 @@ Route::group(['prefix' => 'v1'], function () {
     ], function ($router) {
         //
         Route::get('/settings', [ClientConfigController::class, 'settings']);
-        Route::get('/test-email', [ClientConfigController::class, 'testEmail']);
         //auth
         Route::group([
             'prefix' => 'auth'
