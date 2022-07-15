@@ -26,6 +26,7 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
         'active_code',
         'is_active',
