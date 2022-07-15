@@ -88,7 +88,7 @@ class AuthController extends Controller
         $app_name = env('APP_NAME');
         dispatch(new SendActiveAcountEmailJob([
             'to'    =>  $request->email,
-            'active_link' => ''.$web_link.'/client/active-account?uid='.$user->id.'&active_code='.$active_code.'',
+            'active_link' => ''.$web_link.'/active-account?uid='.$user->id.'&active_code='.$active_code.'',
             'subject'   =>  'Kích hoạt tài khoản '.$app_name.' của bạn',
             'expire_time'   =>  date('H:i:s d/m/Y' ,$active_expire),
         ]));
@@ -225,7 +225,7 @@ class AuthController extends Controller
                 $app_name = env('APP_NAME');
                 dispatch(new SendActiveAcountEmailJob([
                     'to'    =>  $request->email,
-                    'active_link' => ''.$web_link.'/client/active-account?user_id='.$user->id.'&active_code='.$active_code.'',
+                    'active_link' => ''.$web_link.'/active-account?uid='.$user->id.'&active_code='.$active_code.'',
                     'subject'   =>  'Kích hoạt tài khoản '.$app_name.' của bạn',
                     'expire_time'   =>  date('H:i:s d/m/Y' ,$active_expire),
                 ]));
