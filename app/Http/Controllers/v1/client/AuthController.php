@@ -230,10 +230,13 @@ class AuthController extends Controller
                     'subject'   =>  'Kích hoạt tài khoản '.$app_name.' của bạn',
                     'expire_time'   =>  date('H:i:s d/m/Y' ,$active_expire),
                 ]));
+                return ClientResponse::responseSuccess('Gửi email kích hoạt thành công, vui lòng xem hộp thư hoặc thư mục thư rác( spam) để kích hoạt tài khoản');
+            }else{
+                return ClientResponse::responseError('Không thể lưu dữ liệu');
             }
+        }else{
+            return ClientResponse::responseError('Email không khớp với tài khoản nào');
         }
-
-        return ClientResponse::responseSuccess('Gửi email kích hoạt thành công, vui lòng xem hộp thư hoặc thư mục thư rác( spam) để kích hoạt tài khoản');
     }
 
     public function forgotPassword(Request $request){
@@ -263,9 +266,13 @@ class AuthController extends Controller
                     'fullname'  =>  $user->name,
                     'app_name'  =>  $app_name,
                 ]));
+                return ClientResponse::responseSuccess('Chúng tôi đã gửi cho bạn một email vào địa chỉ '.$email.', làm theo hướng dẫn trong email để thay đổi mật khẩu cho tài khoản của bạn');
+            }else{
+                return ClientResponse::responseError('Không thể lưu dữ liệu');
             }
+        }else{
+            return ClientResponse::responseError('Email không khớp với tài khoản nào');
         }
-        return ClientResponse::responseSuccess('Chúng tôi đã gửi cho bạn một email vào địa chỉ '.$email.', làm theo hướng dẫn trong email để thay đổi mật khẩu cho tài khoản của bạn');
     }
 
     public function resetPassword(Request $request){
