@@ -19,6 +19,8 @@ class ConfigController extends Controller
     public function settings(Request $request){
         $msg = 'Basic setting for web client';
         $settings = new \stdClass();
+        $settings->image_domain = env('IMAGE_DOMAIN');
+        $settings->is_maintain = 0;
         //
         return ClientResponse::responseSuccess($msg, $settings);
     }

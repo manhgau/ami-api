@@ -16,7 +16,11 @@ class ConfigController extends Controller
     public function settings(Request $request){
         $msg = 'Basic setting for partner app';
         $settings = new \stdClass();
+
         //
+        $settings->image_domain = env('IMAGE_DOMAIN');
+        $settings->is_maintain = 0;
+
         $settings->newest_version = floatval(1.0);
         $is_force_update = false;
         $is_update = false;
