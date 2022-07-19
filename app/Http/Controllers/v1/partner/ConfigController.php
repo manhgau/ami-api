@@ -22,9 +22,9 @@ class ConfigController extends Controller
         $settings->is_maintain = 0;
 
         $settings->newest_version = floatval(1.0);
-        $is_force_update = false;
-        $is_update = false;
-        $review_app = false;
+        $is_force_update = 0;
+        $is_update = 0;
+        $review_app = 0;
         $version = $request->version;
         $arr_os = ConstValue::$arr_os;
         $os = request()->header('os', '');
@@ -33,8 +33,8 @@ class ConfigController extends Controller
 
         if ($version_now > 0 && version_compare($version_now, $version) > 0) {
             $msg = ConstValue::$message_update_version;
-            $is_update = false;
-            $is_force_update = true;
+            $is_update = 0;
+            $is_force_update = 1;
         }
         $settings->is_force_update = $is_force_update;
         $settings->is_update = $is_update;
