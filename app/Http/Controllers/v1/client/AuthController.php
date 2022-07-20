@@ -29,7 +29,7 @@ class AuthController extends Controller
     public function login(Request $request){
     	$validator = Validator::make($request->all(), [
             'username' => 'required',
-            'password' => 'required|string|min:6',
+            'password' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -128,7 +128,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function userProfile() {
+    public function profile() {
         if(auth()->check()) {
             return ClientResponse::responseSuccess('Thông tin tài khoản', [
                 [
@@ -136,7 +136,7 @@ class AuthController extends Controller
                 ]
             ]);
         }else{
-            return ClientResponse::response(ClientResponse::$required_login_code, 'Unauthorized');
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
         }
     }
 

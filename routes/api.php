@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\v1\client\AuthController;
+use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
 use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
 
@@ -24,6 +25,8 @@ Route::group(['prefix' => 'v1'], function () {
     ], function ($router) {
 
     });
+    //END common
+
     //client (web)
     Route::group([
         'prefix' => 'client'
@@ -49,10 +52,11 @@ Route::group(['prefix' => 'v1'], function () {
             ], function ($router) {
                 Route::post('/logout', [AuthController::class, 'logout']);
                 Route::post('/refresh', [AuthController::class, 'refresh']);
-                Route::get('/user-profile', [AuthController::class, 'userProfile']);
+                Route::get('/profile', [AuthController::class, 'profile']);
                 Route::post('/change-pass', [AuthController::class, 'changePassWord']);
             });
         });
+        //END auth
         //required login
         Route::group([
             'middleware' => 'api',
@@ -61,22 +65,45 @@ Route::group(['prefix' => 'v1'], function () {
 
         });
     });
+    //END client (web)
+
     //partner (app)
     Route::group([
         'prefix' => 'partner'
     ], function ($router) {
         Route::get('/settings', [PartnerConfigController::class, 'settings']);
+        //auth
+        Route::group([
+            'prefix' => 'auth'
+
+        ], function ($router) {
+            Route::post('/login', [PartnerAuthController::class, 'login']);
+
+            Route::group([
+                'middleware' => 'partner_auth',
+
+            ], function ($router) {
+                Route::post('/logout', [PartnerAuthController::class, 'logout']);
+                Route::get('/profile', [PartnerAuthController::class, 'profile']);
+            });
+        });
+        //end auth
     });
+    //END partner (app)
+
     //visitor (web)
     Route::group([
         'prefix' => 'partner'
     ], function ($router) {
 
     });
+    //END visitor (web)
+
     //client (app)
     Route::group([
         'prefix' => 'client-app'
     ], function ($router) {
 
     });
+    //END client (app)
 });

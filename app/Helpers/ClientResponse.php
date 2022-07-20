@@ -7,6 +7,9 @@ class ClientResponse{
     public static $success_code = 200;    //OK
     public static $required_login_code = 401;     //Unauthorized
     public static $user_not_active = 402;     //TK chưa kích hoạt
+    public static $required_refresh_token = 403;     //user phải gọi refresh token
+    //
+    public static $partner_required_fill_info = 421;     //Partner cập nhật hồ sơ cá nhân
 
     public static function response($code, $message, $data = [],$headers=[], $options=[]){
         return response()->json([
