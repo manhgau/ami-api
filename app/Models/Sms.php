@@ -57,4 +57,8 @@ class Sms extends Model
         return 'Ma kich hoat cua ban la: '.$otp.'. Ma kich hoat co hieu luc trong '.Otp::OTP_EXPIRE.' phut.';
     }
 
+    public static function generateForgotPasswordSms($otp){
+        return 'Ma dat lai mat khau cua ban la: '.$otp.'. Ma kich hoat co hieu luc trong '.Otp::OTP_EXPIRE.' phut.';
+    }
+
 }

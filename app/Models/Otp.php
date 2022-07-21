@@ -9,6 +9,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+
 
 class Otp extends Model{
     const TYPE_REGISTER = 'register';
@@ -94,7 +96,10 @@ class Otp extends Model{
     }
 
     private static function __countOtpSentByPhonePerDay($phone){
-        return OtpLog::where('phone', $phone)->count();
+        $from = date('Y-m-d 00:00:00');
+        $to = date('Y-m-d 23:59:59');
+
+        return OtpLog::where('phone', $phone)->whereBetween('created_at', [$from, $to])->count();
     }
 
     private static function __getMaxOtpByPhone($phone){

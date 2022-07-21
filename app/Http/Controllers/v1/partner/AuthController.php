@@ -142,12 +142,78 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request)
     {
-
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return ClientResponse::responseError('Vui lòng nhập số điện thoại');
+        }
+        $phone = $request->phone;
+        $partner = Partner::getPartnerByPhone($phone);
+        if($partner){
+            //Tạo, gửi OTP
+            $otp = Otp::genOtp();
+            $otp_send = Otp::sendOtpToPhone($otp, $phone, Sms::generateForgotPasswordSms($otp));
+            if (isset($otp_send['status']) && $otp_send['status'] == 1) {
+                return ClientResponse::responseSuccess('Gửi OTP thành công');
+            } else {
+                return ClientResponse::responseError($otp_send['message'] ?? 'Không thể gửi OTP, vui lòng thử lại sau');
+            }
+        }else{
+            return ClientResponse::responseError('Tài khoản không tồn tại');
+        }
     }
 
     public function resetPassword(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required',
+            'password' => 'required|string|confirmed|min:6',
+            'otp' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $errorString = implode(",", $validator->messages()->all());
+            return ClientResponse::responseError($errorString);
+        }
+        $phone = $request->phone;
+        $password = $request->password;
+        $otp = $request->otp;
 
+        if (!CFunction::isPhoneNumber($phone)) {
+            return ClientResponse::responseError('Số điện thoại không đúng định dạng');
+        }
+        $validate_otp = Otp::validateOtpByPhone($otp, $phone);
+        if(isset($validate_otp['status']) && $validate_otp['status']==1){
+            $partner = Partner::getPartnerByPhone($phone);
+            if($partner){
+                $partner->password = Partner::generatePasswordHash($password);
+                if($partner->save()){
+                    //vô hiệu hóa otp
+                    $otpInfo = Otp::getOtpByPhone($otp, $phone);
+                    if($otpInfo){
+                        $otpInfo->expire_at = time();
+                        $otpInfo->save();
+                    }
+                    return ClientResponse::responseSuccess('Cập nhật mật khẩu thành công');
+                }else{
+                    return ClientResponse::responseError('Không thể cập nhật mật khẩu, vui lòng thử lại sau');
+                }
+            }else{
+                return ClientResponse::responseError('Tài khoản không tồn tại');
+            }
+        }else{
+            return ClientResponse::responseError($validate_otp['message']??'OTP không hợp lệ');
+        }
+    }
+
+    public function changePassword(Request $request){
+        //TODO,..
+        //step 1: validate params, change pass
+        //step 2:
+    }
+
+    public function changeRefresh(Request $request){
+        //TODO,..
     }
 
 

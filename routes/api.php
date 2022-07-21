@@ -43,8 +43,8 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/register', [AuthController::class, 'register']);
             Route::post('/active-by-email', [AuthController::class, 'activeByEmail']);
             Route::post('/resend-active-email', [AuthController::class, 'resendActiveEmail']);
-            Route::post('/reset-password', [AuthController::class, 'resetPassword']);
             Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+            Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
             Route::group([
                 'middleware' => 'api',
@@ -80,13 +80,17 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/login', [PartnerAuthController::class, 'login']);
             Route::post('/check-register', [PartnerAuthController::class, 'checkRegister']);
             Route::post('/register', [PartnerAuthController::class, 'register']);
+            Route::post('/forgot-password', [PartnerAuthController::class, 'forgotPassword']);
+            Route::post('/reset-password', [PartnerAuthController::class, 'resetPassword']);
 
             Route::group([
                 'middleware' => 'partner_auth',
 
             ], function ($router) {
                 Route::post('/logout', [PartnerAuthController::class, 'logout']);
+                Route::post('/refresh', [PartnerAuthController::class, 'refresh']);
                 Route::get('/profile', [PartnerAuthController::class, 'profile']);
+                Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
             });
         });
         //end auth
