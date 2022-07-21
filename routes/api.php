@@ -78,6 +78,8 @@ Route::group(['prefix' => 'v1'], function () {
 
         ], function ($router) {
             Route::post('/login', [PartnerAuthController::class, 'login']);
+            Route::post('/check-register', [PartnerAuthController::class, 'checkRegister']);
+            Route::post('/register', [PartnerAuthController::class, 'register']);
 
             Route::group([
                 'middleware' => 'partner_auth',

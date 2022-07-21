@@ -28,17 +28,15 @@ class AuthController extends Controller
      */
     public function login(Request $request){
     	$validator = Validator::make($request->all(), [
-            'username' => 'required',
+            'email' => 'required|string',
             'password' => 'required',
         ]);
 
         if ($validator->fails()) {
             return ClientResponse::responseError('Vui lòng nhập email và mật khẩu');
         }
-        $fieldType = $this->__username();
-        $token = auth()->attempt(array($fieldType => $request->username, 'password' => $request->password));
-        if (! $token ) {
-            return ClientResponse::responseError('Tài khoản hoặc mật khẩu không đúng');
+        if (! $token = auth()->attempt($validator->validated())) {
+            return ClientResponse::responseError('Email hoặc mật khẩu không đúng');
         }
         $userData = auth()->user();
 
@@ -66,7 +64,6 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:255|unique:users',
-            'username' => 'required|string|min:6|max:100|unique:users|alpha_dash',
             'password' => 'required|string|confirmed|min:6',
         ]);
         if($validator->fails()){

@@ -80,4 +80,9 @@ class Partner extends Model{
             return false;
         }
     }
+
+    public static function isCompletedProfile($partner_id){
+        //TODO,...
+        return true;
+    }
 }
