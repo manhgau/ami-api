@@ -67,8 +67,7 @@ class Partner extends Model{
             $aid = $access_token->aid??0;
             $tokenInfo = PartnerAccessToken::where('aid',$aid)->select(['partner_id'])->first();
             if($tokenInfo){
-                $partner_id = $tokenInfo->partner_id??0;
-                $partner = Partner::find($partner_id)->first();
+                $partner = $tokenInfo->partner;
                 if($partner){
                     return $partner;
                 }else{

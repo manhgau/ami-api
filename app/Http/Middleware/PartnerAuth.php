@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 namespace App\Http\Middleware;
 use App\Helpers\JWT;
+use App\Helpers\Context;
 use App\Helpers\ClientResponse;
 use App\Models\PartnerAccessToken;
 use Closure;
@@ -25,6 +26,7 @@ class PartnerAuth{
                 }else if($refresh_expire < $time){
                     return ClientResponse::response(ClientResponse::$required_login_code, 'Bạn cần đăng nhập để thực hiện chức năng này');
                 }else{
+                    Context::getInstance()->set(Context::PARTNER_ACCESS_TOKEN,$tokenInfo) ;
                     return $next($request);
                 }
             }else{

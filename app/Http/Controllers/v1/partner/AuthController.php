@@ -9,6 +9,7 @@ use Validator;
 use App\Helpers\ClientResponse;
 use DB;
 use App\Helpers\JWT;
+use App\Helpers\Context;
 
 class AuthController extends Controller
 {
@@ -64,20 +65,22 @@ class AuthController extends Controller
         }
     }
 
+    public function register(Request $request){
+
+    }
+
+    public function registerFinish(Request $request){
+
+    }
+
+
     public function logout(){
-        $token = request()->header('Authorization');
-        $access_token = JWT::checkAccessToken($token);
-        if($access_token){
-            $aid = $access_token->aid??0;
-            $tokenInfo = PartnerAccessToken::where('aid',$aid)->first();
-            if($tokenInfo){
-                if($tokenInfo->delete()){
-                    return ClientResponse::responseSuccess('Đăng xuất thành công');
-                }else{
-                    return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
-                }
+        $tokenInfo  = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if($tokenInfo){
+            if($tokenInfo->delete()){
+                return ClientResponse::responseSuccess('Đăng xuất thành công');
             }else{
-                return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+                return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
             }
         }else{
             return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
@@ -85,9 +88,14 @@ class AuthController extends Controller
     }
 
     public function profile(){
-        $partner  = Partner::getPartnerFromAccessToken();
-        if($partner){
-            return ClientResponse::responseSuccess('Thông tin tài khoản',$partner);
+        $tokenInfo  = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if($tokenInfo){
+            $partner = $tokenInfo->partner;
+            if($partner){
+                return ClientResponse::responseSuccess('Thông tin tài khoản',$partner);
+            }else{
+                return ClientResponse::responseError('Tài khoản không tồn tại');
+            }
         }else{
             return ClientResponse::responseError('Tài khoản không tồn tại');
         }

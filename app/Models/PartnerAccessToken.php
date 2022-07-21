@@ -34,6 +34,11 @@ class PartnerAccessToken extends Model{
         'password',
     ];
 
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class,'partner_id', 'id');
+    }
+
 
     public static function generateAcessToken($partner_id){
         //
