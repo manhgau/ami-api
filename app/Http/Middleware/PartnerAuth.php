@@ -10,6 +10,7 @@ use App\Models\PartnerAccessToken;
 use Closure;
 
 class PartnerAuth{
+    private $__except_check_expire = ['refresh'];
 
     public function handle($request, Closure $next){
         $token = $request->header('Authorization');

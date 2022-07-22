@@ -207,13 +207,42 @@ class AuthController extends Controller
     }
 
     public function changePassword(Request $request){
-        //TODO,..
-        //step 1: validate params, change pass
-        //step 2:
+        try{
+            $validator = Validator::make($request->all(), [
+                'new_password' => 'required|string|confirmed|min:6',
+            ]);
+
+            if($validator->fails()){
+                $errorString = implode(",",$validator->messages()->all());
+                return ClientResponse::responseError($errorString);
+            }
+            $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+            if ($tokenInfo) {
+                $partner = $tokenInfo->partner;
+                if($partner){
+                    $partner->password = Partner::generatePasswordHash($request->new_password);
+                    if($partner->save()){
+                        //xóa token cũ
+                        $tokenInfo->delete();
+                        return ClientResponse::responseSuccess('Đổi mật khẩu thành công');
+                    }else{
+                        return ClientResponse::responseError('Không thể đổi mật khẩu');
+                    }
+                }else{
+                    return ClientResponse::responseError('Tài khoản không tồn tại');
+                }
+            } else {
+                return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+            }
+        }catch (\Exception $ex){
+            return ClientResponse::responseError($ex->getMessage());
+        }
+
     }
 
-    public function changeRefresh(Request $request){
-        //TODO,..
+
+    public function refresh(Request $request){
+
     }
 
 

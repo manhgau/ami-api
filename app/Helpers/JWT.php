@@ -66,7 +66,14 @@ class JWT
 
     private static function __bearerToken($authorization_token){
         $header = $authorization_token;
-        $position = strrpos($header, 'Bearer ');
+        $p1 = strrpos($header, 'Bearer ');
+        $p2 = strrpos($header, 'bearer ');
+        if($p1!==false){
+            $position = $p1;
+        }else{
+            $position = $p2;
+        }
+
         if ($position !== false) {
             $header = substr($header, $position + 7);
             return strpos($header, ',') !== false ? strstr($header, ',', true) : $header;
