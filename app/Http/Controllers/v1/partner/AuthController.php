@@ -242,7 +242,41 @@ class AuthController extends Controller
 
 
     public function refresh(Request $request){
-
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if($partner){
+                //
+                DB::beginTransaction();
+                try {
+                    //step 1: xóa access token hiện tại (cũ)
+                    $tokenInfo->delete();
+                    //step 2: tạo access token mới
+                    $access_token = PartnerAccessToken::generateAcessToken($partner->id??0);
+                    if ($access_token) {
+                        $data = [
+                            'user' => [
+                                'id' => $partner->id??0,
+                                'name' => $partner->name ?? '',
+                                'phone' => $partner->phone??'',
+                            ],
+                            'access_token' => $access_token
+                        ];
+                        DB::commit();
+                        return ClientResponse::responseSuccess('Refresh token thành công', $data);
+                    } else {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
+                    }
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    return ClientResponse::responseError($e->getMessage());
+                }
+            }else{
+                return ClientResponse::responseError('Tài khoản không tồn tại');
+            }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
     }
 
 
