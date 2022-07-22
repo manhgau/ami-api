@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+
+class Blog extends Model
+{
+    protected $fillable = [
+        'title',
+        'slug',
+        'description',
+        'content',
+        'category_id',
+        'publish',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
+        'deleted',
+        'thumbnail'
+    ];
+
+    const PUBLISH = 1;
+    const INPUBLISH = 0;
+    const NOT_DELETED  = 0;
+    const DELETED  = 1;
+
+    public static  function getALL($perPage=10, $page=1,  $category_id = null)
+    {
+        $blogs =  DB::table('blogs')
+            ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
+            ->select('blogs.*', 'blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)->orderBy('blogs.id', 'desc');
+        if ($category_id != null) {
+            $blogs->where('blogs.category_id', $category_id );
+        }
+        $datas = $blogs->paginate($perPage, "*", "page", $page)->toArray(); 
+        return $datas;
+    }
+
+    public static  function getDetail($slug)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('slug', $slug)->first();
+    }
+}
