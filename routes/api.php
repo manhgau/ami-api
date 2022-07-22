@@ -5,6 +5,8 @@ use App\Http\Controllers\v1\client\AuthController;
 use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
 use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
+use App\Http\Controllers\v1\visitor\BlogCategoryController;
+use App\Http\Controllers\v1\visitor\BlogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +22,7 @@ use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
 //
 Route::group(['prefix' => 'v1'], function () {
     //common
-    Route::group([
-
-    ], function ($router) {
-
+    Route::group([], function ($router) {
     });
     //END common
 
@@ -62,7 +61,6 @@ Route::group(['prefix' => 'v1'], function () {
             'middleware' => 'api',
 
         ], function ($router) {
-
         });
     });
     //END client (web)
@@ -99,9 +97,17 @@ Route::group(['prefix' => 'v1'], function () {
 
     //visitor (web)
     Route::group([
-        'prefix' => 'partner'
+        'prefix' => 'visitor'
     ], function ($router) {
+        Route::group([
+            'prefix' => 'blog'
 
+        ], function ($router) {
+            Route::get('blog-category', [BlogCategoryController::class, 'getAll']);
+            Route::get('blog-category/{id}', [BlogCategoryController::class, 'getDetail']);
+            Route::get('get-list', [BlogController::class, 'getAll']);
+            Route::get('get-detail/{slug}', [BlogController::class, 'getDetail']);
+        });
     });
     //END visitor (web)
 
@@ -109,7 +115,6 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group([
         'prefix' => 'client-app'
     ], function ($router) {
-
     });
     //END client (app)
 });
