@@ -239,7 +239,7 @@ class AuthController extends Controller
     }
 
 
-    public function refresh(Request $request){
+    public function refresh(){
         $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
         if ($tokenInfo) {
             $partner = $tokenInfo->partner;
