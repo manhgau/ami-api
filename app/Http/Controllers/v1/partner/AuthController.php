@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\v1\partner;
 
-use App\Models\OtpLog;
 use Illuminate\Http\Request;
 
 use App\Models\Partner;
@@ -13,7 +12,6 @@ use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
 use DB;
-use App\Helpers\JWT;
 use App\Helpers\Context;
 
 class AuthController extends Controller
@@ -207,13 +205,76 @@ class AuthController extends Controller
     }
 
     public function changePassword(Request $request){
-        //TODO,..
-        //step 1: validate params, change pass
-        //step 2:
+        try{
+            $validator = Validator::make($request->all(), [
+                'new_password' => 'required|string|confirmed|min:6',
+            ]);
+
+            if($validator->fails()){
+                $errorString = implode(",",$validator->messages()->all());
+                return ClientResponse::responseError($errorString);
+            }
+            $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+            if ($tokenInfo) {
+                $partner = $tokenInfo->partner;
+                if($partner){
+                    $partner->password = Partner::generatePasswordHash($request->new_password);
+                    if($partner->save()){
+                        //xóa token cũ
+                        $tokenInfo->delete();
+                        return ClientResponse::responseSuccess('Đổi mật khẩu thành công');
+                    }else{
+                        return ClientResponse::responseError('Không thể đổi mật khẩu');
+                    }
+                }else{
+                    return ClientResponse::responseError('Tài khoản không tồn tại');
+                }
+            } else {
+                return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+            }
+        }catch (\Exception $ex){
+            return ClientResponse::responseError($ex->getMessage());
+        }
+
     }
 
-    public function changeRefresh(Request $request){
-        //TODO,..
+
+    public function refresh(){
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if($partner){
+                //
+                DB::beginTransaction();
+                try {
+                    //step 1: xóa access token hiện tại (cũ)
+                    $tokenInfo->delete();
+                    //step 2: tạo access token mới
+                    $access_token = PartnerAccessToken::generateAcessToken($partner->id??0);
+                    if ($access_token) {
+                        $data = [
+                            'user' => [
+                                'id' => $partner->id??0,
+                                'name' => $partner->name ?? '',
+                                'phone' => $partner->phone??'',
+                            ],
+                            'access_token' => $access_token
+                        ];
+                        DB::commit();
+                        return ClientResponse::responseSuccess('Refresh token thành công', $data);
+                    } else {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
+                    }
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    return ClientResponse::responseError($e->getMessage());
+                }
+            }else{
+                return ClientResponse::responseError('Tài khoản không tồn tại');
+            }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
     }
 
 
