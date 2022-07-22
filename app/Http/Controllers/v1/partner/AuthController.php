@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\v1\partner;
 
-use App\Models\OtpLog;
 use Illuminate\Http\Request;
 
 use App\Models\Partner;
@@ -13,7 +12,6 @@ use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
 use DB;
-use App\Helpers\JWT;
 use App\Helpers\Context;
 
 class AuthController extends Controller
