@@ -26,7 +26,7 @@ class BlogCategoryController extends Controller
             $datas = BlogCategory::getAll($perPage,  $page);
             $datas = removeData::removeUnusedData($datas);
             if (!$datas) {
-                return ClientResponse::responseError('Blog Category not found');
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             return ClientResponse::responseSuccess('OK', $datas);
         } catch (\Exception $ex) {
@@ -39,7 +39,7 @@ class BlogCategoryController extends Controller
         try {
             $detail = BlogCategory::getDetail($id);
             if (!$detail) {
-                return ClientResponse::responseError('Blog Category not found');
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             return ClientResponse::responseSuccess('OK', $detail);
         } catch (\Exception $ex) {
