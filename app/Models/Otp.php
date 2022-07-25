@@ -91,6 +91,7 @@ class Otp extends Model{
     }
 
     public static function genOtp($phone='', $length = self::OTP_LENGTH){
+        return self::$_default_otp; //TODO, for test
         if(in_array($phone, self::$__default_phone_otp_arr)){
             return self::$_default_otp;
         }else {
