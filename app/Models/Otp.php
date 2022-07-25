@@ -87,7 +87,7 @@ class Otp extends Model{
         return OtpLog::where('phone', $phone)->where('otp', $otp)->orderByDesc('id')->first();
     }
 
-    public static function genOtp($length = self::OTP_LENGTH){
+    public static function genOtp($phone='', $length = self::OTP_LENGTH){
         return rand(100000,999999);
     }
 

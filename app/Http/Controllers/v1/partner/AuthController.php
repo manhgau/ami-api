@@ -92,7 +92,7 @@ class AuthController extends Controller
             return ClientResponse::responseError('Số điện thoại không đúng định dạng');
         }
         //Tạo, gửi OTP
-        $otp = Otp::genOtp();
+        $otp = Otp::genOtp($phone);
         $otp_send = Otp::sendOtpToPhone($otp, $phone, Sms::generateRegisterSms($otp));
         if (isset($otp_send['status']) && $otp_send['status'] == 1) {
             return ClientResponse::responseSuccess('Kiểm tha thông tin đăng nhập thành công, chuyển qua màn hình xác nhận OTP');
@@ -153,7 +153,7 @@ class AuthController extends Controller
         $partner = Partner::getPartnerByPhone($phone);
         if($partner){
             //Tạo, gửi OTP
-            $otp = Otp::genOtp();
+            $otp = Otp::genOtp($phone);
             $otp_send = Otp::sendOtpToPhone($otp, $phone, Sms::generateForgotPasswordSms($otp));
             if (isset($otp_send['status']) && $otp_send['status'] == 1) {
                 return ClientResponse::responseSuccess('Gửi OTP thành công');
