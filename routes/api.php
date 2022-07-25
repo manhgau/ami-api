@@ -76,6 +76,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         ], function ($router) {
             Route::post('/login', [PartnerAuthController::class, 'login']);
+            Route::post('/refresh', [PartnerAuthController::class, 'refresh']);
             Route::post('/check-register', [PartnerAuthController::class, 'checkRegister']);
             Route::post('/register', [PartnerAuthController::class, 'register']);
             Route::post('/forgot-password', [PartnerAuthController::class, 'forgotPassword']);
@@ -86,7 +87,6 @@ Route::group(['prefix' => 'v1'], function () {
 
             ], function ($router) {
                 Route::post('/logout', [PartnerAuthController::class, 'logout']);
-                Route::post('/refresh', [PartnerAuthController::class, 'refresh']);
                 Route::get('/profile', [PartnerAuthController::class, 'profile']);
                 Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
             });
