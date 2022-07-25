@@ -106,6 +106,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('blog-category', [BlogCategoryController::class, 'getAll']);
             Route::get('blog-category/{id}', [BlogCategoryController::class, 'getDetail']);
             Route::get('get-list', [BlogController::class, 'getAll']);
+            Route::get('blog-relate/{slug}', [BlogController::class, 'getBlogRelate']);
             Route::get('get-detail/{slug}', [BlogController::class, 'getDetail']);
         });
     });

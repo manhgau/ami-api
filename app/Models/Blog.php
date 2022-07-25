@@ -39,6 +39,16 @@ class Blog extends Model
         return $datas;
     }
 
+    public static  function getBlogRelate($perPage=10, $page=1,  $category_id , $slug)
+    {
+        $blogs =  DB::table('blogs')
+            ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
+            ->select('blogs.*', 'blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)->orderBy('blogs.id', 'desc')
+            ->where('blogs.category_id', $category_id )->where('blogs.slug','<>', $slug );
+        $datas = $blogs->paginate($perPage, "*", "page", $page)->toArray(); 
+        return $datas;
+    }
+
     public static  function getDetail($slug)
     {
         return self::where('deleted', self::NOT_DELETED)->where('slug', $slug)->first();
