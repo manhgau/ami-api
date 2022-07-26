@@ -8,11 +8,13 @@ use App\Models\Partner;
 use App\Models\Otp;
 use App\Models\Sms;
 use App\Models\PartnerAccessToken;
+use Mockery\Exception;
 use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
 use DB;
 use App\Helpers\Context;
+use App\Helpers\JWT;
 
 class AuthController extends Controller
 {
@@ -48,16 +50,17 @@ class AuthController extends Controller
             try {
                 //đăng xuất tất cả các tài khoản trên các thiết bị khác
                 $this->__logoutOtherDevices($partner->id ?? 0);
-                //tạo access token mới
-                $access_token = PartnerAccessToken::generateAcessToken($partner->id);
-                if ($access_token) {
+                //tạo access và refresh token mới
+                $token = PartnerAccessToken::generateAccessRefreshToken($partner->id);
+                if ($token) {
                     $data = [
                         'user' => [
                             'id' => $partner->id,
                             'name' => $partner->name ?? '',
                             'phone' => $partner->phone,
                         ],
-                        'access_token' => $access_token
+                        'access_token'  => $token['access_token']??'',
+                        'refresh_token' => $token['refresh_token']??'',
                     ];
                     DB::commit();
                     return ClientResponse::responseSuccess('Đăng nhập thành công', $data);
@@ -89,7 +92,7 @@ class AuthController extends Controller
             return ClientResponse::responseError('Số điện thoại không đúng định dạng');
         }
         //Tạo, gửi OTP
-        $otp = Otp::genOtp();
+        $otp = Otp::genOtp($phone);
         $otp_send = Otp::sendOtpToPhone($otp, $phone, Sms::generateRegisterSms($otp));
         if (isset($otp_send['status']) && $otp_send['status'] == 1) {
             return ClientResponse::responseSuccess('Kiểm tha thông tin đăng nhập thành công, chuyển qua màn hình xác nhận OTP');
@@ -150,7 +153,7 @@ class AuthController extends Controller
         $partner = Partner::getPartnerByPhone($phone);
         if($partner){
             //Tạo, gửi OTP
-            $otp = Otp::genOtp();
+            $otp = Otp::genOtp($phone);
             $otp_send = Otp::sendOtpToPhone($otp, $phone, Sms::generateForgotPasswordSms($otp));
             if (isset($otp_send['status']) && $otp_send['status'] == 1) {
                 return ClientResponse::responseSuccess('Gửi OTP thành công');
@@ -239,41 +242,61 @@ class AuthController extends Controller
     }
 
 
-    public function refresh(){
-        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
-        if ($tokenInfo) {
-            $partner = $tokenInfo->partner;
-            if($partner){
-                //
-                DB::beginTransaction();
-                try {
-                    //step 1: xóa access token hiện tại (cũ)
-                    $tokenInfo->delete();
-                    //step 2: tạo access token mới
-                    $access_token = PartnerAccessToken::generateAcessToken($partner->id??0);
-                    if ($access_token) {
-                        $data = [
-                            'user' => [
-                                'id' => $partner->id??0,
-                                'name' => $partner->name ?? '',
-                                'phone' => $partner->phone??'',
-                            ],
-                            'access_token' => $access_token
-                        ];
-                        DB::commit();
-                        return ClientResponse::responseSuccess('Refresh token thành công', $data);
-                    } else {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
+    public function refresh(Request $request){
+        try{
+            $token = $request->header('Authorization');
+            $refresh_token = JWT::checkAccessToken($token);
+            if($refresh_token){
+                $access_token_id = $refresh_token->aid??0;
+                $type = $refresh_token->type??'';
+                $tokenInfo = PartnerAccessToken::where('aid',$access_token_id)->first();
+                if ($tokenInfo && $type==PartnerAccessToken::TYPE_REFRESH_TOKEN) {
+                    $partner = $tokenInfo->partner;
+                    if($partner){
+                        $time = time();
+
+                        $refresh_token_expire = $tokenInfo->refresh_expire ?? 0;
+                        if ($refresh_token_expire >= $time) {
+                            //
+                            DB::beginTransaction();
+                            try {
+                                //đăng xuất tất cả các tài khoản trên các thiết bị khác
+                                $this->__logoutOtherDevices($partner->id ?? 0);
+                                //tạo access và refresh token mới
+                                $token = PartnerAccessToken::generateAccessRefreshToken($partner->id);
+                                if ($token) {
+                                    $data = [
+                                        /*'user' => [
+                                            'id' => $partner->id,
+                                            'name' => $partner->name ?? '',
+                                            'phone' => $partner->phone,
+                                        ],*/
+                                        'access_token'  => $token['access_token']??'',
+                                        'refresh_token' => $token['refresh_token']??'',
+                                    ];
+                                    DB::commit();
+                                    return ClientResponse::responseSuccess('Đăng nhập thành công', $data);
+                                } else {
+                                    return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
+                                }
+                            } catch (\Exception $e) {
+                                DB::rollBack();
+                                return ClientResponse::responseError($e->getMessage());
+                            }
+                        }else{
+                            return ClientResponse::response(ClientResponse::$required_login_code, 'Refresh token đã hết hạn');
+                        }
+                    }else{
+                        return ClientResponse::responseError('Tài khoản không tồn tại');
                     }
-                } catch (\Exception $e) {
-                    DB::rollBack();
-                    return ClientResponse::responseError($e->getMessage());
+                } else {
+                    return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
                 }
             }else{
-                return ClientResponse::responseError('Tài khoản không tồn tại');
+                return ClientResponse::response(ClientResponse::$required_login_code, 'Yêu cầu truy cập bị từ chối');
             }
-        } else {
-            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }catch (\Exception $ex){
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Yêu cầu truy cập bị từ chối');
         }
     }
 
