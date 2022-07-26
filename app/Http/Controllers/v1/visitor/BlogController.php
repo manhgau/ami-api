@@ -4,7 +4,7 @@ namespace App\Http\Controllers\v1\visitor;
 
 
 use App\Helpers\ClientResponse;
-use App\Helpers\removeData;
+use App\Helpers\RemoveData;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,7 @@ class BlogController extends Controller
             $page = $request->page??1;
             $category_id = $request->category_id;
             $data = Blog::getAll( $perPage, $page,  $category_id);
-            $data = removeData::removeUnusedData($data);
+            $data = RemoveData::removeUnusedData($data);
             if (!$data) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
@@ -39,7 +39,7 @@ class BlogController extends Controller
                 return ClientResponse::responseSuccess('Không có bản ghi liên quan');
             }
             $data = Blog::getBlogRelate( $perPage, $page,  $category_id, $slug);
-            $data = removeData::removeUnusedData($data);
+            $data = RemoveData::removeUnusedData($data);
             if (!$data) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

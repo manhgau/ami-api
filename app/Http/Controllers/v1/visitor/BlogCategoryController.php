@@ -13,7 +13,7 @@ namespace App\Http\Controllers\v1\visitor;
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\ConstValue;
-use App\Helpers\removeData;
+use App\Helpers\RemoveData;
 use App\Models\BlogCategory;
 
 class BlogCategoryController extends Controller
@@ -25,7 +25,7 @@ class BlogCategoryController extends Controller
             $perPage = $request->per_page??10;
             $page = $request->page??1;
             $datas = BlogCategory::getAll($perPage,  $page);
-            $datas = removeData::removeUnusedData($datas);
+            $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
