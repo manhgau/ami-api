@@ -2,19 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+use App\Helpers\JWTClient;
 
 /**
  * Class User: Tài khoản client
  * @package App\Models
  */
-class User extends Authenticatable implements JWTSubject
+class User extends Model
 {
-    use HasFactory, Notifiable;
 
     const IS_ACTIVE = 1;
     const IS_NOT_ACTIVE = 0;
@@ -53,17 +50,17 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
-     */
-    public function getJWTIdentifier() {
-        return $this->getKey();
-    }
 
     public static function generatePasswordHash($plain_text){
-        return bcrypt($plain_text);
+        return  Hash::make($plain_text);
+    }
+
+    public static function checkPasswordHash($plain_text, $hashed_password){
+        if (Hash::check($plain_text, $hashed_password)) {
+            return true;
+        }else{
+            return false;
+        }
     }
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
@@ -90,6 +87,38 @@ class User extends Authenticatable implements JWTSubject
         $count = User::where('email', $email)->count();
         if($count > 0){
             return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static function loginAttempByEmail($email, $password){
+        $rs = false;
+        $user = self::findUserByEmail($email);
+        if($user){
+            if(self::checkPasswordHash($password, $user->password??'')){
+                $rs = $user;
+            }
+        }
+        return $rs;
+    }
+
+    public static function getUserFromAccessToken(){
+        $token = request()->header('Authorization');
+        $access_token = JWTClient::checkAccessToken($token);
+        if($access_token){
+            $aid = $access_token->aid??0;
+            $tokenInfo = UserRefreshToken::where('aid',$aid)->select(['user_id'])->first();
+            if($tokenInfo){
+                $user = $tokenInfo->user;
+                if($user){
+                    return $user;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
         }else{
             return false;
         }

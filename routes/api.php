@@ -41,6 +41,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         ], function ($router) {
             Route::post('/login', [AuthController::class, 'login']);
+            Route::post('/refresh', [AuthController::class, 'refresh']);
             Route::post('/register', [AuthController::class, 'register']);
             Route::post('/active-by-email', [AuthController::class, 'activeByEmail']);
             Route::post('/resend-active-email', [AuthController::class, 'resendActiveEmail']);
@@ -48,11 +49,10 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
             Route::group([
-                'middleware' => 'api',
+                'middleware' => 'client_auth',
 
             ], function ($router) {
                 Route::post('/logout', [AuthController::class, 'logout']);
-                Route::post('/refresh', [AuthController::class, 'refresh']);
                 Route::get('/profile', [AuthController::class, 'profile']);
                 Route::post('/change-pass', [AuthController::class, 'changePassWord']);
             });
@@ -60,7 +60,7 @@ Route::group(['prefix' => 'v1'], function () {
         //END auth
         //required login
         Route::group([
-            'middleware' => 'api',
+            'middleware' => 'client_auth',
 
         ], function ($router) {
         });
@@ -94,6 +94,12 @@ Route::group(['prefix' => 'v1'], function () {
             });
         });
         //end auth
+        //required login
+        Route::group([
+            'middleware' => 'partner_auth',
+
+        ], function ($router) {
+        });
     });
     //END partner (app)
 

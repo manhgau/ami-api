@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\v1\client;
+use App\Helpers\Context;
+use App\Helpers\JWTClient;
 use Illuminate\Http\Request;
 
 use App\Models\User;
@@ -9,6 +11,8 @@ use App\Helpers\ClientResponse;
 use App\Jobs\SendActiveAcountEmailJob;
 use App\Jobs\SendResetPasswordEmailJob;
 use Illuminate\Support\Str;
+use App\Models\UserRefreshToken;
+use DB;
 
 class AuthController extends Controller
 {
@@ -35,17 +39,33 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return ClientResponse::responseError('Vui lòng nhập email và mật khẩu');
         }
-        if (! $token = auth()->attempt($validator->validated())) {
+        $email = $request->email;
+        $password = $request->password;
+        $user = User::loginAttempByEmail($email, $password);
+        if($user){
+            if($user->is_active!=User::IS_ACTIVE){
+                return ClientResponse::response(ClientResponse::$user_not_active, 'Tài khoản chưa kích hoạt');
+            }
+            //tạo access và refresh token mới
+            $token = UserRefreshToken::generateAccessRefreshToken($user->id);
+            if ($token) {
+                $data = [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name ?? '',
+                        'phone' => $user->email??'',
+                    ],
+                    'access_token'  => $token['access_token']??'',
+                    'refresh_token' => $token['refresh_token']??'',
+                ];
+                return ClientResponse::responseSuccess('Đăng nhập thành công', $data);
+
+            } else {
+                return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
+            }
+        }else{
             return ClientResponse::responseError('Email hoặc mật khẩu không đúng');
         }
-        $userData = auth()->user();
-
-        if($userData->is_active!=User::IS_ACTIVE){
-            return ClientResponse::response(ClientResponse::$user_not_active, 'Tài khoản chưa kích hoạt');
-        }
-
-        $user =  $this->createNewToken($token);
-        return ClientResponse::responseSuccess('Đăng nhập thành công', $user);
     }
 
     private function __username(){
@@ -72,25 +92,29 @@ class AuthController extends Controller
         }
         $active_code = Str::random(20);
         $active_expire = (time() + 86400);
-        $user = User::create(array_merge(
-                    $validator->validated(),
-                    [
-                        'password' => User::generatePasswordHash($request->password),
-                        'active_code'  =>  $active_code,
-                        'is_active'  =>  0,
-                        'active_expire'  =>  $active_expire,
-                    ]
-                ));
-        //gửi mail kích hoạt
-        $web_link = env('FRONTEND_APP_URL');
-        $app_name = env('APP_NAME');
-        dispatch(new SendActiveAcountEmailJob([
-            'to'    =>  $request->email,
-            'active_link' => ''.$web_link.'/active-account?uid='.$user->id.'&active_code='.$active_code.'',
-            'subject'   =>  'Kích hoạt tài khoản '.$app_name.' của bạn',
-            'expire_time'   =>  date('H:i:s d/m/Y' ,$active_expire),
-        ]));
-        return ClientResponse::responseSuccess('Đăng ký tài khoản thành công. Chúng tôi đã gửi cho bạn một email vào địa chỉ '.$request->email.', làm theo hướng dẫn trong email để kích hoạt tài khoản', $user);
+        try{
+            $user = User::create(array_merge(
+                $validator->validated(),
+                [
+                    'password' => User::generatePasswordHash($request->password),
+                    'active_code'  =>  $active_code,
+                    'is_active'  =>  0,
+                    'active_expire'  =>  $active_expire,
+                ]
+            ));
+            //gửi mail kích hoạt
+            $web_link = env('FRONTEND_APP_URL');
+            $app_name = env('APP_NAME');
+            dispatch(new SendActiveAcountEmailJob([
+                'to'    =>  $request->email,
+                'active_link' => ''.$web_link.'/active-account?uid='.$user->id.'&active_code='.$active_code.'',
+                'subject'   =>  'Kích hoạt tài khoản '.$app_name.' của bạn',
+                'expire_time'   =>  date('H:i:s d/m/Y' ,$active_expire),
+            ]));
+            return ClientResponse::responseSuccess('Đăng ký tài khoản thành công. Chúng tôi đã gửi cho bạn một email vào địa chỉ '.$request->email.', làm theo hướng dẫn trong email để kích hoạt tài khoản');
+        }catch (\Exception $ex){
+            return ClientResponse::responseError($ex->getMessage());
+        }
     }
 
 
@@ -100,8 +124,6 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function logout() {
-        auth()->logout();
-
         return ClientResponse::responseSuccess('Đăng xuất thành công');
     }
 
@@ -110,14 +132,56 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function refresh() {
-        if(!auth()->check()) {
-            return ClientResponse::response(ClientResponse::$required_login_code, 'Unauthorized');
-        }
+    public function refresh(Request $request) {
+        $token = $request->header('Authorization');
+        $refresh_token = JWTClient::checkAccessToken($token);
+        if($refresh_token){
+            $access_token_id = $refresh_token->aid??0;
+            $type = $refresh_token->type??'';
+            $tokenInfo = UserRefreshToken::where('aid',$access_token_id)->first();
+            if ($tokenInfo && $type==UserRefreshToken::TYPE_REFRESH_TOKEN) {
+                $user = $tokenInfo->user;
+                if($user){
+                    $time = time();
 
-        return ClientResponse::responseSuccess('Refresh token success', [
-            $this->createNewToken(auth()->refresh())
-        ]);
+                    $refresh_token_expire = $tokenInfo->refresh_expire ?? 0;
+                    if ($refresh_token_expire >= $time) {
+                        //
+                        DB::beginTransaction();
+                        try {
+                            //tạo access và refresh token mới
+                            $token = UserRefreshToken::generateAccessRefreshToken($user->id);
+                            if ($token) {
+                                $data = [
+                                    /*'user' => [
+                                        'id' => $user->id,
+                                        'name' => $user->name ?? '',
+                                        'phone' => $user->email,
+                                    ],*/
+                                    'access_token'  => $token['access_token']??'',
+                                    'refresh_token' => $token['refresh_token']??'',
+                                ];
+                                DB::commit();
+                                return ClientResponse::responseSuccess('Refresh thành công', $data);
+                            } else {
+                                return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
+                            }
+                        } catch (\Exception $e) {
+                            DB::rollBack();
+                            return ClientResponse::responseError($e->getMessage());
+                        }
+                    }else{
+                        return ClientResponse::response(ClientResponse::$required_login_code, 'Refresh token đã hết hạn');
+                    }
+                }else{
+                    return ClientResponse::responseError('Tài khoản không tồn tại');
+                }
+            } else {
+                return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+            }
+        }else{
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Yêu cầu truy cập bị từ chối');
+        }
     }
 
     /**
@@ -126,51 +190,33 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function profile() {
-        if(auth()->check()) {
-            return ClientResponse::responseSuccess('Thông tin tài khoản', [
-                [
-                    'user'  =>  auth()->user()
-                ]
-            ]);
-        }else{
-            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
-        }
+        $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+        $user = User::find($user_id);
+        return ClientResponse::responseSuccess('Thông tin tài khoản', $user);
     }
 
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function createNewToken($token){
-        return [
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
-        ];
-    }
 
     public function changePassWord(Request $request) {
-        if(!auth()->check()) {
-            return ClientResponse::response(ClientResponse::$required_login_code, 'Unauthorized');
-        }
+
         $validator = Validator::make($request->all(), [
             'new_password' => 'required|string|confirmed|min:6',
         ]);
-
         if($validator->fails()){
             $errorString = implode(",",$validator->messages()->all());
             return ClientResponse::responseError($errorString);
         }
-        $userId = auth()->user()->id;
 
-        $user = User::where('id', $userId)->update(
-                    ['password' => User::generatePasswordHash($request->new_password)]
-                );
-        return ClientResponse::responseSuccess('Thay đổi mật khẩu thành công', $user);
+        $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+        $user = User::find($user_id);
+        if($user){
+            $userId = $user->id;
+            User::where('id', $userId)->update(
+                ['password' => User::generatePasswordHash($request->new_password)]
+            );
+            return ClientResponse::responseSuccess('Thay đổi mật khẩu thành công');
+        }else{
+            return ClientResponse::responseError('Tài khoản không tồn tại');
+        }
     }
 
     public function activeByEmail(Request $request){

@@ -2,9 +2,9 @@
 namespace App\Helpers;
 use Illuminate\Support\Str;
 
-class JWT
+class JWTClient
 {
-    const _KEY = 'nguyenpv^&phamvan@2022^))(((^@hl#$.CoDecDotVN:';
+    const _KEY = 'PhamVan@2022^Nguyen^@^@hl#$.CoDecDotVN@2022';
     const _ALGO = 'HS256';
 
 
@@ -49,7 +49,7 @@ class JWT
             $access_token = self::__bearerToken($token);
             if($access_token){
                 try{
-                    $data = JWT::decode($access_token, self::_KEY);
+                    $data = JWTClient::decode($access_token, self::_KEY);
                     if(isset($data['status']) && $data['status']==1){
                         $data = $data['data']??[];
                         return $data;
@@ -145,7 +145,7 @@ class JWT
     {
         $json = json_encode($input);
         if (function_exists('json_last_error') && $errno = json_last_error()) {
-            JWT::__handleJsonError($errno);
+            JWTClient::__handleJsonError($errno);
         } else if ($json === 'null' && $input !== null) {
             throw new \DomainException('Null result with non-null input');
         }
