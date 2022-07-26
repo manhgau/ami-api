@@ -12,11 +12,10 @@ namespace App\Http\Controllers\v1\visitor;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
-use App\Helpers\Common\ConstValue;
 use App\Helpers\removeData;
-use App\Models\BlogCategory;
+use App\Models\QAndACategory;
 
-class BlogCategoryController extends Controller
+class QAndACategoryController extends Controller
 {
     public function getAll(Request $request)
     {
@@ -24,7 +23,7 @@ class BlogCategoryController extends Controller
         try {
             $perPage = $request->per_page??10;
             $page = $request->page??1;
-            $datas = BlogCategory::getAll($perPage,  $page);
+            $datas = QAndACategory::getAll($perPage,  $page);
             $datas = removeData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
@@ -38,7 +37,7 @@ class BlogCategoryController extends Controller
     public function getDetail($id)
     {
         try {
-            $detail = BlogCategory::getDetail($id);
+            $detail = QAndACategory::getDetail($id);
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

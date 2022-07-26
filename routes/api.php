@@ -7,6 +7,8 @@ use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
 use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
 use App\Http\Controllers\v1\visitor\BlogCategoryController;
 use App\Http\Controllers\v1\visitor\BlogController;
+use App\Http\Controllers\v1\visitor\QAndACategoryController;
+use App\Http\Controllers\v1\visitor\QAndAController;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,7 +108,18 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('blog-category', [BlogCategoryController::class, 'getAll']);
             Route::get('blog-category/{id}', [BlogCategoryController::class, 'getDetail']);
             Route::get('get-list', [BlogController::class, 'getAll']);
+            Route::get('blog-relate/{slug}', [BlogController::class, 'getBlogRelate']);
             Route::get('get-detail/{slug}', [BlogController::class, 'getDetail']);
+        });
+        Route::group([
+            'prefix' => 'qa'
+
+        ], function ($router) {
+            Route::get('qa-category', [QAndACategoryController::class, 'getAll']);
+            Route::get('qa-category/{id}', [QAndACategoryController::class, 'getDetail']);
+            Route::get('get-list', [QAndAController::class, 'getAll']);
+            Route::get('qa-relate/{slug}', [QAndAController::class, 'getQAndARelate']);
+            Route::get('get-detail/{slug}', [QAndAController::class, 'getDetail']);
         });
     });
     //END visitor (web)

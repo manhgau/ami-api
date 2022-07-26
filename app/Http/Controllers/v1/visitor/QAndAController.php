@@ -6,9 +6,10 @@ namespace App\Http\Controllers\v1\visitor;
 use App\Helpers\ClientResponse;
 use App\Helpers\removeData;
 use App\Models\Blog;
+use App\Models\QAndA;
 use Illuminate\Http\Request;
 
-class BlogController extends Controller
+class QAndAController extends Controller
 {
     public function getAll(Request $request)
     {
@@ -16,7 +17,7 @@ class BlogController extends Controller
             $perPage = $request->per_page??10;
             $page = $request->page??1;
             $category_id = $request->category_id;
-            $data = Blog::getAll( $perPage, $page,  $category_id);
+            $data = QAndA::getAll( $perPage, $page,  $category_id);
             $data = removeData::removeUnusedData($data);
             if (!$data) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
@@ -27,18 +28,18 @@ class BlogController extends Controller
         }
     }
 
-    public function getBlogRelate(Request $request)
+    public function getQAndARelate(Request $request)
     {
         try {
             $perPage = $request->per_page??10;
             $page = $request->page??1;
             $category_id = $request->category_id;
             $slug = $request->slug;
-            $detail = Blog::getDetail($slug);
+            $detail = QAndA::getDetail($slug);
             if(!$detail){
                 return ClientResponse::responseSuccess('Không có bản ghi liên quan');
             }
-            $data = Blog::getBlogRelate( $perPage, $page,  $category_id, $slug);
+            $data = QAndA::getQAndARelate( $perPage, $page,  $category_id, $slug);
             $data = removeData::removeUnusedData($data);
             if (!$data) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
@@ -52,7 +53,7 @@ class BlogController extends Controller
     public function getDetail($slug)
     {
         try {
-            $detail = Blog::getDetail($slug);
+            $detail = QAndA::getDetail($slug);
             if(!$detail){
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
