@@ -56,7 +56,7 @@ class Blog extends Model
     {
         $blogs =  DB::table('blogs')
             ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
-            ->select('blogs.*', 'blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)->where('blogs.status', self::STATUS_ACTIVE)->orderBy('blogs.id', 'desc')
+            ->select('blogs.id', 'blogs.title', 'blogs.slug', 'blogs.description', 'blogs.category_id', 'blogs.thumbnail', 'blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)->where('blogs.status', self::STATUS_ACTIVE)->orderBy('blogs.id', 'desc')
             ->where('blogs.category_id', $category_id)->where('blogs.slug', '<>', $slug);
         $datas = $blogs->paginate($perPage, "*", "page", $page)->toArray();
         return $datas;

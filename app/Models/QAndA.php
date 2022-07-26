@@ -42,7 +42,7 @@ class QAndA extends Model
     {
         $q_and_a_s =  DB::table('q_and_a_s')
             ->join('q_and_a_categories', 'q_and_a_categories.id', '=', 'q_and_a_s.category_id')
-            ->select('q_and_a_s.*', 'q_and_a_categories.title as category_name')->where('q_and_a_s.deleted', self::NOT_DELETED)->where('q_and_a_s.status', self::STATUS_ACTIVE)->orderBy('q_and_a_s.id', 'desc')
+            ->select('q_and_a_s.id', 'q_and_a_s.title', 'q_and_a_s.slug', 'q_and_a_s.description', 'q_and_a_s.category_id', 'q_and_a_s.thumbnail', 'q_and_a_categories.title as category_name')->where('q_and_a_s.deleted', self::NOT_DELETED)->where('q_and_a_s.status', self::STATUS_ACTIVE)->orderBy('q_and_a_s.id', 'desc')
             ->where('q_and_a_s.category_id', $category_id)->where('q_and_a_s.slug', '<>', $slug);
         $datas = $q_and_a_s->paginate($perPage, "*", "page", $page)->toArray();
         return $datas;
