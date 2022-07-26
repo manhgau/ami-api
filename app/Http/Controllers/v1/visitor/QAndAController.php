@@ -33,12 +33,12 @@ class QAndAController extends Controller
         try {
             $perPage = $request->per_page??10;
             $page = $request->page??1;
-            $category_id = $request->category_id;
             $slug = $request->slug;
             $detail = QAndA::getDetail($slug);
             if(!$detail){
                 return ClientResponse::responseSuccess('Không có bản ghi liên quan');
             }
+            $category_id = $detail->category_id;
             $data = QAndA::getQAndARelate( $perPage, $page,  $category_id, $slug);
             $data = RemoveData::removeUnusedData($data);
             if (!$data) {
