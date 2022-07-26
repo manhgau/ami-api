@@ -12,7 +12,7 @@ namespace App\Http\Controllers\v1\visitor;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
-use App\Helpers\removeData;
+use App\Helpers\RemoveData;
 use App\Models\QAndACategory;
 
 class QAndACategoryController extends Controller
@@ -24,7 +24,7 @@ class QAndACategoryController extends Controller
             $perPage = $request->per_page??10;
             $page = $request->page??1;
             $datas = QAndACategory::getAll($perPage,  $page);
-            $datas = removeData::removeUnusedData($datas);
+            $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

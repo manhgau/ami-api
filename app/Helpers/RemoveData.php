@@ -1,6 +1,6 @@
 <?php
 namespace App\Helpers;
-class removeData
+class RemoveData
 {
     public static function removeUnusedData($datas){        
         $unuse_data_arr = ['first_page_url', 'from' ,'to','links','last_page','last_page_url','next_page_url','prev_page_url','path'];     
