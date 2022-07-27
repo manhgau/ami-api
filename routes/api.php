@@ -4,18 +4,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\v1\client\AuthController;
 use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
+use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
 use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
-use App\Http\Controllers\v1\visitor\AcademicLevelCotroller;
+use App\Http\Controllers\v1\partner\DistrictController;
+use App\Http\Controllers\v1\partner\JobStatusController;
+use App\Http\Controllers\v1\partner\JobTypeCotroller;
+use App\Http\Controllers\v1\partner\ProvinceController as PartnerProvinceController;
+use App\Http\Controllers\v1\partner\WardController;
 use App\Http\Controllers\v1\visitor\BlogCategoryController;
 use App\Http\Controllers\v1\visitor\BlogController;
-use App\Http\Controllers\v1\visitor\DistrictController;
-use App\Http\Controllers\v1\visitor\JobStatusController;
-use App\Http\Controllers\v1\visitor\JobTypeCotroller;
 use App\Http\Controllers\v1\visitor\PageController;
-use App\Http\Controllers\v1\visitor\ProvinceController;
 use App\Http\Controllers\v1\visitor\QAndACategoryController;
 use App\Http\Controllers\v1\visitor\QAndAController;
-use App\Http\Controllers\v1\visitor\WardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +64,13 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/change-pass', [AuthController::class, 'changePassWord']);
             });
         });
+        Route::get('get-province', [PartnerProvinceController::class, 'getProvince']);
+        Route::get('get-district/{province_code}', [DistrictController::class, 'getDistrict']);
+        Route::get('get-ward/{district_code}', [WardController::class, 'getWard']);
+        //
+        Route::get('get-job-status', [JobStatusController::class, 'getJobStatus']);
+        Route::get('get-job-type', [JobTypeCotroller::class, 'getJobType']);
+        Route::get('get-academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
         //END auth
         //required login
         Route::group([

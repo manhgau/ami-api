@@ -7,25 +7,24 @@
  * Time: 11:15
  */
 
-namespace App\Http\Controllers\v1\visitor;
+namespace App\Http\Controllers\v1\partner;
 
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\RemoveData;
-use App\Models\Ward;
+use App\Models\AcademicLevel;
+use App\Models\JobType;
 
-class WardController extends Controller
+class AcademicLevelCotroller extends Controller
 {
-    public function getWard(Request $request)
+    public function getAcademicLevel(Request $request)
     {
 
         try {
             $perPage = $request->per_page??100;
             $page = $request->page??1;
-            $name = $request->name;
-            $district_code = $request->district_code;
-            $datas = Ward::getWard($perPage,  $page, $name, $district_code);
+            $datas = AcademicLevel::getAcademicLevel($perPage,  $page);
             $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
@@ -35,4 +34,5 @@ class WardController extends Controller
             return ClientResponse::responseError($ex->getMessage());
         }
     }
+
 }

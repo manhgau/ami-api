@@ -7,13 +7,12 @@
  * Time: 11:15
  */
 
-namespace App\Http\Controllers\v1\visitor;
+namespace App\Http\Controllers\v1\partner;
 
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\RemoveData;
-use App\Models\Page;
 use App\Models\Province;
 
 class ProvinceController extends Controller

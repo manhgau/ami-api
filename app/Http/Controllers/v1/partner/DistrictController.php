@@ -7,24 +7,25 @@
  * Time: 11:15
  */
 
-namespace App\Http\Controllers\v1\visitor;
+namespace App\Http\Controllers\v1\partner;
 
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\RemoveData;
-use App\Models\AcademicLevel;
-use App\Models\JobType;
+use App\Models\District;
 
-class AcademicLevelCotroller extends Controller
+class DistrictController extends Controller
 {
-    public function getAcademicLevel(Request $request)
+    public function getDistrict(Request $request)
     {
 
         try {
             $perPage = $request->per_page??100;
             $page = $request->page??1;
-            $datas = AcademicLevel::getAcademicLevel($perPage,  $page);
+            $name = $request->name;
+            $province_code = $request->province_code;
+            $datas = District::getDistrict($perPage,  $page, $name, $province_code);
             $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
@@ -34,5 +35,4 @@ class AcademicLevelCotroller extends Controller
             return ClientResponse::responseError($ex->getMessage());
         }
     }
-
 }
