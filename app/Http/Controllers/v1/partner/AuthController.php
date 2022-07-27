@@ -243,59 +243,55 @@ class AuthController extends Controller
 
 
     public function refresh(Request $request){
-        try{
-            $token = $request->header('Authorization');
-            $refresh_token = JWT::checkAccessToken($token);
-            if($refresh_token){
-                $access_token_id = $refresh_token->aid??0;
-                $type = $refresh_token->type??'';
-                $tokenInfo = PartnerAccessToken::where('aid',$access_token_id)->first();
-                if ($tokenInfo && $type==PartnerAccessToken::TYPE_REFRESH_TOKEN) {
-                    $partner = $tokenInfo->partner;
-                    if($partner){
-                        $time = time();
+        $token = $request->header('Authorization');
+        $refresh_token = JWT::checkAccessToken($token);
+        if($refresh_token){
+            $access_token_id = $refresh_token->aid??0;
+            $type = $refresh_token->type??'';
+            $tokenInfo = PartnerAccessToken::where('aid',$access_token_id)->first();
+            if ($tokenInfo && $type==PartnerAccessToken::TYPE_REFRESH_TOKEN) {
+                $partner = $tokenInfo->partner;
+                if($partner){
+                    $time = time();
 
-                        $refresh_token_expire = $tokenInfo->refresh_expire ?? 0;
-                        if ($refresh_token_expire >= $time) {
-                            //
-                            DB::beginTransaction();
-                            try {
-                                //đăng xuất tất cả các tài khoản trên các thiết bị khác
-                                $this->__logoutOtherDevices($partner->id ?? 0);
-                                //tạo access và refresh token mới
-                                $token = PartnerAccessToken::generateAccessRefreshToken($partner->id);
-                                if ($token) {
-                                    $data = [
-                                        /*'user' => [
-                                            'id' => $partner->id,
-                                            'name' => $partner->name ?? '',
-                                            'phone' => $partner->phone,
-                                        ],*/
-                                        'access_token'  => $token['access_token']??'',
-                                        'refresh_token' => $token['refresh_token']??'',
-                                    ];
-                                    DB::commit();
-                                    return ClientResponse::responseSuccess('Đăng nhập thành công', $data);
-                                } else {
-                                    return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
-                                }
-                            } catch (\Exception $e) {
-                                DB::rollBack();
-                                return ClientResponse::responseError($e->getMessage());
+                    $refresh_token_expire = $tokenInfo->refresh_expire ?? 0;
+                    if ($refresh_token_expire >= $time) {
+                        //
+                        DB::beginTransaction();
+                        try {
+                            //đăng xuất tất cả các tài khoản trên các thiết bị khác
+                            $this->__logoutOtherDevices($partner->id ?? 0);
+                            //tạo access và refresh token mới
+                            $token = PartnerAccessToken::generateAccessRefreshToken($partner->id);
+                            if ($token) {
+                                $data = [
+                                    /*'user' => [
+                                        'id' => $partner->id,
+                                        'name' => $partner->name ?? '',
+                                        'phone' => $partner->phone,
+                                    ],*/
+                                    'access_token'  => $token['access_token']??'',
+                                    'refresh_token' => $token['refresh_token']??'',
+                                ];
+                                DB::commit();
+                                return ClientResponse::responseSuccess('Refresh thành công', $data);
+                            } else {
+                                return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
                             }
-                        }else{
-                            return ClientResponse::response(ClientResponse::$required_login_code, 'Refresh token đã hết hạn');
+                        } catch (\Exception $e) {
+                            DB::rollBack();
+                            return ClientResponse::responseError($e->getMessage());
                         }
                     }else{
-                        return ClientResponse::responseError('Tài khoản không tồn tại');
+                        return ClientResponse::response(ClientResponse::$required_login_code, 'Refresh token đã hết hạn');
                     }
-                } else {
-                    return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+                }else{
+                    return ClientResponse::responseError('Tài khoản không tồn tại');
                 }
-            }else{
-                return ClientResponse::response(ClientResponse::$required_login_code, 'Yêu cầu truy cập bị từ chối');
+            } else {
+                return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
             }
-        }catch (\Exception $ex){
+        }else{
             return ClientResponse::response(ClientResponse::$required_login_code, 'Yêu cầu truy cập bị từ chối');
         }
     }
