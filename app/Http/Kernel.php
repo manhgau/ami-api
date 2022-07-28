@@ -37,10 +37,12 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Spatie\ResponseCache\Middlewares\CacheResponse::class,
         ],
 
         'api' => [
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Spatie\ResponseCache\Middlewares\CacheResponse::class,
         ],
     ];
 
@@ -63,5 +65,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'partner_auth'   => \App\Http\Middleware\PartnerAuth::class,
         'client_auth'   => \App\Http\Middleware\ClientAuth::class,
+        'doNotCacheResponse' => \Spatie\ResponseCache\Middlewares\DoNotCacheResponse::class,
+        'cacheResponse' => \Spatie\ResponseCache\Middlewares\CacheResponse::class,
     ];
 }

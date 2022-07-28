@@ -12,6 +12,7 @@ namespace App\Http\Controllers\v1\visitor;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
+use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
 use App\Models\Page;
 
@@ -23,8 +24,13 @@ class PageController extends Controller
         try {
             $perPage = $request->per_page??10;
             $page = $request->page??1;
-            $datas = Page::getAll($perPage,  $page);
-            $datas = RemoveData::removeUnusedData($datas);
+            $ckey  = CommonCached::cache_find_page . "_" . $perPage . "_" . $page;
+            $datas = CommonCached::getData($ckey);
+            if (empty($datas)) {
+                $datas = Page::getAll($perPage,  $page);
+                $datas = RemoveData::removeUnusedData($datas);
+                CommonCached::storeData($ckey, $datas);
+            }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
@@ -37,7 +43,12 @@ class PageController extends Controller
     public function getDetail($slug)
     {
         try {
-            $detail = Page::getDetail($slug);
+            $ckey  = CommonCached::cache_find_page_by_slug."_".$slug;
+            $detail = CommonCached::getData($ckey);
+            if (empty($detail)) {
+                $detail = Page::getDetail($slug);
+                CommonCached::storeData($ckey, $detail);
+            }
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

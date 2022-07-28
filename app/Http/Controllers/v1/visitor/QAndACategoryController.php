@@ -12,6 +12,7 @@ namespace App\Http\Controllers\v1\visitor;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
+use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
 use App\Models\QAndACategory;
 
@@ -23,8 +24,13 @@ class QAndACategoryController extends Controller
         try {
             $perPage = $request->per_page??10;
             $page = $request->page??1;
-            $datas = QAndACategory::getAll($perPage,  $page);
-            $datas = RemoveData::removeUnusedData($datas);
+            $ckey  = CommonCached::cache_find_qa_category . "_" . $perPage . "_" . $page;
+            $datas = CommonCached::getData($ckey);
+            if (empty($datas)) {
+                $datas = QAndACategory::getAll($perPage,  $page);
+                $datas = RemoveData::removeUnusedData($datas);
+                CommonCached::storeData($ckey, $datas);
+            }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
@@ -37,7 +43,12 @@ class QAndACategoryController extends Controller
     public function getDetail($id)
     {
         try {
-            $detail = QAndACategory::getDetail($id);
+            $ckey  = CommonCached::cache_find_qa_category_by_id."_".$id;
+            $detail = CommonCached::getData($ckey);
+            if (empty($detail)) {
+                $detail = QAndACategory::getDetail($id);
+                CommonCached::storeData($ckey, $detail);
+            }
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

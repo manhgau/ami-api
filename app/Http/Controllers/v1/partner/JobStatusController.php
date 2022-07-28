@@ -12,6 +12,7 @@ namespace App\Http\Controllers\v1\partner;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
+use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
 use App\Models\JobStatus;
 use App\Models\Page;
@@ -24,8 +25,13 @@ class JobStatusController extends Controller
         try {
             $perPage = $request->per_page??100;
             $page = $request->page??1;
-            $datas = JobStatus::getJobStatus($perPage,  $page);
-            $datas = RemoveData::removeUnusedData($datas);
+            $ckey  = CommonCached::api_list_job_status . "_" . $perPage . "_" . $page;
+            $datas = CommonCached::getData($ckey);
+            if (empty($datas)) {
+                $datas = JobStatus::getJobStatus($perPage,  $page);
+                $datas = RemoveData::removeUnusedData($datas);
+                CommonCached::storeData($ckey, $datas);
+            }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

@@ -11,6 +11,7 @@
         "laravel/framework": "^8.54",
         "laravel/tinker": "^2.5",
         "predis/predis": "^2.0",
+        "spatie/laravel-responsecache": "^6.6",
         "tymon/jwt-auth": "^1.0.2"
     },
     "require-dev": {
