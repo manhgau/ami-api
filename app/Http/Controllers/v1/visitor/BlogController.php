@@ -22,7 +22,7 @@ class BlogController extends Controller
             if (empty($datas)) {
                 $datas = Blog::getAll($perPage, $page,  $category_id);
                 $datas = RemoveData::removeUnusedData($datas);
-                CommonCached::storeData($ckey, $datas);
+                CommonCached ::storeData($ckey, $datas);
             }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
