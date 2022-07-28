@@ -12,6 +12,7 @@ namespace App\Http\Controllers\v1\visitor;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
+use App\Helpers\Common\CommonCached;
 use App\Helpers\Common\ConstValue;
 use App\Helpers\RemoveData;
 use App\Models\BlogCategory;
@@ -24,8 +25,13 @@ class BlogCategoryController extends Controller
         try {
             $perPage = $request->per_page??10;
             $page = $request->page??1;
-            $datas = BlogCategory::getAll($perPage,  $page);
-            $datas = RemoveData::removeUnusedData($datas);
+            $ckey  = CommonCached::cache_find_blog_category . "_" . $perPage . "_" . $page;
+            $datas = CommonCached::getData($ckey);
+            if (empty($datas)) {
+                $datas = BlogCategory::getAll($perPage,  $page);
+                $datas = RemoveData::removeUnusedData($datas);
+                CommonCached::storeData($ckey, $datas);
+            }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
@@ -38,7 +44,12 @@ class BlogCategoryController extends Controller
     public function getDetail($id)
     {
         try {
-            $detail = BlogCategory::getDetail($id);
+            $ckey  = CommonCached::cache_find_blog_category_by_id."_".$id;
+            $detail = CommonCached::getData($ckey);
+            if (empty($detail)) {
+                $detail = BlogCategory::getDetail($id);
+                CommonCached::storeData($ckey, $detail);
+            }
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

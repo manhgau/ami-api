@@ -12,6 +12,7 @@ namespace App\Http\Controllers\v1\partner;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
+use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
 use App\Models\District;
 
@@ -21,12 +22,17 @@ class DistrictController extends Controller
     {
 
         try {
-            $perPage = $request->per_page??100;
-            $page = $request->page??1;
+            $perPage = $request->per_page ?? 100;
+            $page = $request->page ?? 1;
             $name = $request->name;
             $province_code = $request->province_code;
-            $datas = District::getDistrict($perPage,  $page, $name, $province_code);
-            $datas = RemoveData::removeUnusedData($datas);
+            $ckey  = CommonCached::api_list_district . "_" . $perPage . "_" . $name . "_" . $page . "_" . $province_code;
+            $datas = CommonCached::getData($ckey);
+            if (empty($datas)) {
+                $datas =  District::getDistrict($perPage,  $page, $name, $province_code);
+                $datas = RemoveData::removeUnusedData($datas);
+                CommonCached::storeData($ckey, $datas);
+            }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

@@ -64,6 +64,11 @@ class Blog extends Model
 
     public static  function getDetail($slug)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('slug', $slug)->first();
+        $blog =  DB::table('blogs')
+            ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
+            ->select('blogs.*','blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)
+            ->where('blogs.status', self::STATUS_ACTIVE)
+            ->where('blogs.slug', $slug)->first();
+        return $blog;
     }
 }

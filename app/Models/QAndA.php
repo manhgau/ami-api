@@ -50,6 +50,11 @@ class QAndA extends Model
 
     public static  function getDetail($slug)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('slug', $slug)->first();
+        $qa =  DB::table('q_and_a_s')
+        ->join('q_and_a_categories', 'q_and_a_categories.id', '=', 'q_and_a_s.category_id')
+        ->select('q_and_a_s.*','q_and_a_categories.title as category_name')->where('q_and_a_s.deleted', self::NOT_DELETED)
+        ->where('q_and_a_s.status', self::STATUS_ACTIVE)
+        ->where('q_and_a_s.slug', $slug)->first();
+    return $qa;
     }
 }

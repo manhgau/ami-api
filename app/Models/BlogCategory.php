@@ -30,6 +30,7 @@ class BlogCategory extends Model
 
     public static  function getDetail( $id)
     {
+
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('status',self::STATUS_ACTIVE)->first();
     }
 

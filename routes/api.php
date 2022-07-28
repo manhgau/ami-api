@@ -148,13 +148,6 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('get-list', [PageController::class, 'getAll']);
             Route::get('get-detail/{slug}', [PageController::class, 'getDetail']);
         });
-        Route::get('get-province', [ProvinceController::class, 'getProvince']);
-        Route::get('get-district/{province_code}', [DistrictController::class, 'getDistrict']);
-        Route::get('get-ward/{district_code}', [WardController::class, 'getWard']);
-        //
-        Route::get('get-job-status', [JobStatusController::class, 'getJobStatus']);
-        Route::get('get-job-type', [JobTypeCotroller::class, 'getJobType']);
-        Route::get('get-academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
     });
     //END visitor (web)
 

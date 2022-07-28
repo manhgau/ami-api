@@ -9,8 +9,27 @@ class CommonCached {
     const EXPIRE_SLOW                           = 1200; //20 minutes
 
     const api_list_province                                 = 'api_cached:api_list_province';
+    const api_list_district                                 = 'api_cached:api_list_district';
+    const api_list_ward                                     = 'api_cached:api_list_ward';
+    //
+    const api_list_job_status                               = 'api_cached:api_list_job_status';
+    const api_list_job_type                                 = 'api_cached:api_list_job_type';
+    const api_list_academic_level                           = 'api_cached:api_list_academic_level';
+    //
     const cache_find_blog_category_by_id                    = "api_cached:cache_find_blog_category_by_id:id:";
+    const cache_find_blog_category                          = "api_cached:cache_find_blog_category";
     const cache_find_blog_by_slug                           = 'api_cached:cache_find_blog_by_slug:slug';
+    const cache_find_blog                                   = 'api_cached:cache_find_blog';
+    const cache_find_blog_relate                            = 'api_cached:cache_find_blog_relate';
+    //
+    const cache_find_qa_category_by_id                    = "api_cached:cache_find_qa_category_by_id:id:";
+    const cache_find_qa_category                          = "api_cached:cache_find_qa_category";
+    const cache_find_qa_by_slug                           = 'api_cached:cache_find_qa_by_slug:slug';
+    const cache_find_qa                                   = 'api_cached:cache_find_qa';
+    const cache_find_qa_relate                            = 'api_cached:cache_find_qa_relate';
+    //
+    const cache_find_page_by_slug                           = 'api_cached:cache_find_page_by_slug:slug';
+    const cache_find_page                                   = 'api_cached:cache_find_page';
 
 
     public static function storeData($key_cache, $datas, $fast = false){

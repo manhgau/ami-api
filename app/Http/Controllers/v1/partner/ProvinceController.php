@@ -12,6 +12,7 @@ namespace App\Http\Controllers\v1\partner;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
+use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
 use App\Models\Province;
 
@@ -24,8 +25,14 @@ class ProvinceController extends Controller
             $perPage = $request->per_page ?? 100;
             $page = $request->page ?? 1;
             $name = $request->name;
-            $datas =  Province::getProvince($perPage,  $page, $name);
-            $datas = RemoveData::removeUnusedData($datas);
+            $ckey = CommonCached::api_list_province . "_" . $perPage . "_" . $name . "_" . $page;
+            $datas = CommonCached::getData($ckey);
+            if (empty($datas)) {
+                $datas =  Province::getProvince($perPage,  $page, $name);
+                $datas = RemoveData::removeUnusedData($datas);
+                CommonCached::storeData($ckey, $datas);
+            }
+
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
