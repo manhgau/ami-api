@@ -16,6 +16,7 @@ use App\Http\Controllers\v1\visitor\BlogController;
 use App\Http\Controllers\v1\visitor\PageController;
 use App\Http\Controllers\v1\visitor\QAndACategoryController;
 use App\Http\Controllers\v1\visitor\QAndAController;
+use App\Http\Controllers\v1\common\ToolsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +32,12 @@ use App\Http\Controllers\v1\visitor\QAndAController;
 //
 Route::group(['prefix' => 'v1'], function () {
     //common
-    Route::group([], function ($router) {
+    Route::group([
+        'prefix' => 'common'
+    ], function ($router) {
+        //clear cache, config cache
+         Route::post('/clear-config-cache', [ToolsController::class, 'clearConfigCache']);
+         Route::post('/delete-cache', [ToolsController::class, 'deleteCache']);
     });
     //END common
 
