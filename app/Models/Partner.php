@@ -32,6 +32,11 @@ class Partner extends Model{
         'password',
     ];
 
+    public function profile()
+    {
+        return $this->hasOne(PartnerProfile::class,'partner_id', 'id');
+    }
+
     public static function generatePasswordHash($plain_text){
         return  Hash::make($plain_text);
     }
