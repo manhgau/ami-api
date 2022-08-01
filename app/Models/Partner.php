@@ -86,8 +86,23 @@ class Partner extends Model{
         }
     }
 
-    public static function isCompletedProfile($partner_id){
-        //TODO,...
-        return true;
+    /**
+     * @param $partner
+     * @return bool
+     */
+    public static function isCompletedProfile($partner){
+        return true;    //TODO, for test...
+        $profile = $partner->profile;
+        if($profile){
+            if($profile->province_code=='' || $profile->district_code=='' && $profile->ward_code==''
+                || $profile->job_type_id==0 || $profile->job_status_id==0 || $profile->academic_level_id==0
+            ){
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return false;
+        }
     }
 }

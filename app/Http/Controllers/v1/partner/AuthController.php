@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\v1\partner;
 
+use App\Models\PartnerProfile;
 use Illuminate\Http\Request;
 
 use App\Models\Partner;
 use App\Models\Otp;
 use App\Models\Sms;
 use App\Models\PartnerAccessToken;
-use Mockery\Exception;
+use App\Models\PartnerChildrenAgeRange;
 use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
@@ -42,7 +43,7 @@ class AuthController extends Controller
                 return ClientResponse::response(ClientResponse::$user_not_active, 'Tài khoản chưa kích hoạt');
             }
 
-            if (!Partner::isCompletedProfile($partner->id ?? 0)) {
+            if (!Partner::isCompletedProfile($partner??null)) {
                 return ClientResponse::response(ClientResponse::$partner_required_fill_info, 'Tài khoản chưa hoàn thiện hồ sơ');
             }
             //
@@ -317,12 +318,90 @@ class AuthController extends Controller
         if ($tokenInfo) {
             $partner = $tokenInfo->partner;
             if ($partner) {
-                return ClientResponse::responseSuccess('Thông tin tài khoản', $partner);
+                return ClientResponse::responseSuccess('Thông tin tài khoản', [
+                    'user'      =>  $partner,
+                    'profile'   =>  $partner->profile
+                ]);
             } else {
                 return ClientResponse::responseError('Tài khoản không tồn tại');
             }
         } else {
             return ClientResponse::responseError('Tài khoản không tồn tại');
+        }
+    }
+
+    public function updateProfile(Request $request){
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try{
+                    $partner_id = $partner->id??0;
+                    $validator = Validator::make($request->all(), [
+                        //required
+                        'province_code' => 'required|string|exists:App\Models\Province,code',
+                        'district_code' => 'required|string|exists:App\Models\District,code',
+                        'ward_code' => 'required|string|exists:App\Models\Ward,code',
+                        'job_type_id'   => 'required|integer|exists:App\Models\JobType,id',
+                        'job_status_id' => 'required|integer|exists:App\Models\JobStatus,id',
+                        'academic_level_id' => 'required|integer|exists:App\Models\AcademicLevel,id',
+                        //
+                        'marital_status_id' => 'integer|exists:App\Models\MaritalStatus,id',
+                        'personal_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
+                        'family_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
+                        'family_people' => 'integer',
+                        'is_key_shopper' => 'boolean',
+                        'childrend_age_ranges' => 'array',
+                        'childrend_age_ranges.*' => 'exists:App\Models\ChildrendAgeRanges,id', // check each item in the array
+
+                    ]);
+
+                    if ($validator->fails()) {
+                        $errorString = implode(",", $validator->messages()->all());
+                        return ClientResponse::responseError($errorString);
+                    }
+                    //$input = $validator->valid();
+
+                    $profile = $partner->profile;
+                    if(!$profile) {
+                        $profile = new PartnerProfile();
+                        $profile->partner_id = $partner_id;
+                    }
+                    $profile->province_code = $request->province_code;
+                    $profile->district_code = $request->district_code;
+                    $profile->ward_code = $request->ward_code;
+                    $profile->job_type_id = $request->job_type_id;
+                    $profile->job_status_id = $request->job_status_id;
+                    $profile->academic_level_id = $request->academic_level_id;
+
+                    $profile->personal_income_level_id = $request->personal_income_level_id;
+                    $profile->family_income_level_id = $request->family_income_level_id;
+                    $profile->family_people = $request->family_people;
+                    $profile->is_key_shopper = $request->is_key_shopper;
+                    //update profile
+                    $profile->save();
+                    //update childrend_age_ranges
+                    $childrend_age_ranges = $request->childrend_age_ranges;
+                    if(is_array($childrend_age_ranges) && count($childrend_age_ranges) > 0){
+                        $rs = PartnerChildrenAgeRange::where('partner_id', $partner_id)->delete();
+                        if($rs) {
+                            foreach ($childrend_age_ranges as $cr) {
+                                $m = new PartnerChildrenAgeRange();
+                                $m->partner_id = $partner_id;
+                                $m->childrend_age_range_id = $cr;
+                                $m->save();
+                            }
+                        }
+                    }
+
+                    return ClientResponse::responseSuccess('Cập nhật thông tin tài khoản thành công');
+
+                }catch (\Exception $ex){
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            }
+        }else{
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
         }
     }
 
