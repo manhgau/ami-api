@@ -383,14 +383,12 @@ class AuthController extends Controller
                     //update childrend_age_ranges
                     $childrend_age_ranges = $request->childrend_age_ranges;
                     if(is_array($childrend_age_ranges) && count($childrend_age_ranges) > 0){
-                        $rs = PartnerChildrenAgeRange::where('partner_id', $partner_id)->delete();
-                        if($rs) {
-                            foreach ($childrend_age_ranges as $cr) {
-                                $m = new PartnerChildrenAgeRange();
-                                $m->partner_id = $partner_id;
-                                $m->childrend_age_range_id = $cr;
-                                $m->save();
-                            }
+                        PartnerChildrenAgeRange::where('partner_id', $partner_id)->delete();
+                        foreach ($childrend_age_ranges as $cr) {
+                            $m = new PartnerChildrenAgeRange();
+                            $m->partner_id = $partner_id;
+                            $m->childrend_age_range_id = $cr;
+                            $m->save();
                         }
                     }
 
