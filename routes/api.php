@@ -119,6 +119,7 @@ Route::group(['prefix' => 'v1'], function () {
             ], function ($router) {
                 Route::post('/logout', [PartnerAuthController::class, 'logout']);
                 Route::get('/profile', [PartnerAuthController::class, 'profile']);
+                Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
                 Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
             });
         });

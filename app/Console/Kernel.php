@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('deleteExpire:user-refresh-token')->everyMinute();
+        $schedule->command('deleteExpire:user-refresh-token')->dailyAt('02:00');
     }
 
     /**
