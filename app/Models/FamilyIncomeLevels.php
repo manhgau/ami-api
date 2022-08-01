@@ -17,5 +17,10 @@ class FamilyIncomeLevels extends Model
     const NOT_DELETED  = 0;
     const DELETED  = 1;
 
+    public static  function getAcademicFamilyIncomeLevels($perPage = 100,  $page = 1)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('status',self::STATUS_ACTIVE)->paginate($perPage, "*", "page", $page)->toArray();
+    }
+
 }
 

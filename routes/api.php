@@ -17,6 +17,9 @@ use App\Http\Controllers\v1\visitor\PageController;
 use App\Http\Controllers\v1\visitor\QAndACategoryController;
 use App\Http\Controllers\v1\visitor\QAndAController;
 use App\Http\Controllers\v1\common\ToolsController;
+use App\Http\Controllers\v1\partner\ChildrendAgeRangesController;
+use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
+use App\Http\Controllers\v1\partner\PackageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,13 +73,19 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/change-pass', [AuthController::class, 'changePassWord']);
             });
         });
-        Route::get('get-province', [PartnerProvinceController::class, 'getProvince']);
-        Route::get('get-district/{province_code}', [DistrictController::class, 'getDistrict']);
-        Route::get('get-ward/{district_code}', [WardController::class, 'getWard']);
+        Route::get('province', [PartnerProvinceController::class, 'getProvince']);
+        Route::get('district/{province_code}', [DistrictController::class, 'getDistrict']);
+        Route::get('ward/{district_code}', [WardController::class, 'getWard']);
         //
-        Route::get('get-job-status', [JobStatusController::class, 'getJobStatus']);
-        Route::get('get-job-type', [JobTypeCotroller::class, 'getJobType']);
-        Route::get('get-academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
+        Route::get('job-status', [JobStatusController::class, 'getJobStatus']);
+        Route::get('job-type', [JobTypeCotroller::class, 'getJobType']);
+        Route::get('academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
+        //
+        Route::get('family-income-level', [FamilyIncomeLevelsController::class, 'getAcademicFamilyIncomeLevels']);
+        Route::get('childrend-age-range', [ChildrendAgeRangesController::class, 'getChildrendAgeRanges']);
+        //package
+        Route::get('package', [PackageController::class, 'getListPackage']);
+        Route::get('package/{id}', [PackageController::class, 'getDetailPackage']);
         //END auth
         //required login
         Route::group([
