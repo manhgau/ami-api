@@ -29,7 +29,7 @@ class PackageController extends Controller
             if (empty($datas)) {
                 $datas = Package::getListPackage($perPage,  $page);
                 $datas = RemoveData::removeUnusedData($datas);
-                CommonCached::storeData($ckey, $datas);
+                CommonCached::storeData($ckey, $datas, true);
             }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
@@ -47,7 +47,7 @@ class PackageController extends Controller
             $detail = CommonCached::getData($ckey);
             if (empty($detail)) {
                 $detail = Package::getDetailPackage($id);
-                CommonCached::storeData($ckey, $detail);
+                CommonCached::storeData($ckey, $detail, true);
             }
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
