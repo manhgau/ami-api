@@ -19,7 +19,9 @@ use App\Http\Controllers\v1\visitor\QAndAController;
 use App\Http\Controllers\v1\common\ToolsController;
 use App\Http\Controllers\v1\partner\ChildrendAgeRangesController;
 use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
+use App\Http\Controllers\v1\partner\GendersController;
 use App\Http\Controllers\v1\partner\PackageController;
+use App\Http\Controllers\v1\partner\PersonalIncomeLevelsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,8 +83,10 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('job-type', [JobTypeCotroller::class, 'getJobType']);
         Route::get('academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
         //
-        Route::get('family-income-level', [FamilyIncomeLevelsController::class, 'getAcademicFamilyIncomeLevels']);
+        Route::get('family-income-level', [FamilyIncomeLevelsController::class, 'getFamilyIncomeLevels']);
         Route::get('childrend-age-range', [ChildrendAgeRangesController::class, 'getChildrendAgeRanges']);
+        Route::get('personal-income-level', [PersonalIncomeLevelsController::class, 'getPersonalIncomeLevels']);
+        Route::get('gender', [GendersController::class, 'getGenders']);
         //package
         Route::get('package', [PackageController::class, 'getListPackage']);
         Route::get('package/{id}', [PackageController::class, 'getDetailPackage']);

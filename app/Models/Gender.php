@@ -4,16 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Gender extends Model
+class Genders extends Model
 {
     protected $fillable = [
         'name',
     ];
-
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
+    protected $hidden = ['deleted', 'created_at', 'updated_at', 'status'];
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+
+    public static  function getGenders($perPage = 100,  $page = 1)
+    {
+        return self::where('deleted', self::NOT_DELETED)->paginate($perPage, "*", "page", $page)->toArray();
+    }
 
 }
 

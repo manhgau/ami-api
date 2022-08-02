@@ -17,6 +17,8 @@ class CommonCached {
     const api_list_academic_level                           = 'api_cached:api_list_academic_level';
     const api_list_family_income_levels                     = 'api_cached:api_list_family_income_levels';
     const api_list_childrend_age_ranges                     = 'api_cached:api_list_childrend_age_ranges';
+    const api_list_personal_income_levels                   = 'api_cached:api_list_personal_income_levels';
+    const api_list_genders                                  = 'api_cached:api_list_genders';
     //
     const cache_find_blog_category_by_id                    = "api_cached:cache_find_blog_category_by_id:id:";
     const cache_find_blog_category                          = "api_cached:cache_find_blog_category";
