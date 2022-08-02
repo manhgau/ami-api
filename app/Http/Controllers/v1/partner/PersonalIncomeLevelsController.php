@@ -14,20 +14,20 @@ use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
-use App\Models\FamilyIncomeLevels;
+use App\Models\PersonalIncomeLevels;
 
-class FamilyIncomeLevelsController extends Controller
+class PersonalIncomeLevelsController extends Controller
 {
-    public function getFamilyIncomeLevels(Request $request)
+    public function getPersonalIncomeLevels(Request $request)
     {
 
         try {
             $perPage = $request->per_page ?? 100;
             $page = $request->page ?? 1;
-            $ckey = CommonCached::api_list_family_income_levels . "_" . $perPage . "_" . $page;
+            $ckey = CommonCached::api_list_personal_income_levels . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas =  FamilyIncomeLevels::getFamilyIncomeLevels($perPage,  $page);
+                $datas =  PersonalIncomeLevels::getPersonalIncomeLevels($perPage,  $page);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }
