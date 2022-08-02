@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
-use App\Models\Genders;
+use App\Models\Gender;
 
 class GendersController extends Controller
 {
@@ -27,7 +27,7 @@ class GendersController extends Controller
             $ckey = CommonCached::api_list_genders . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas =  Genders::getGenders($perPage,  $page);
+                $datas =  Gender::getGenders($perPage,  $page);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }
