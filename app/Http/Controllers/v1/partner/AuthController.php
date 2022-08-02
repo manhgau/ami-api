@@ -42,10 +42,6 @@ class AuthController extends Controller
             if ($partner->is_active == Partner::IS_NOT_ACTIVE) {
                 return ClientResponse::response(ClientResponse::$user_not_active, 'Tài khoản chưa kích hoạt');
             }
-
-            if (!Partner::isCompletedProfile($partner??null)) {
-                return ClientResponse::response(ClientResponse::$partner_required_fill_info, 'Tài khoản chưa hoàn thiện hồ sơ');
-            }
             //
             DB::beginTransaction();
             try {
@@ -64,7 +60,11 @@ class AuthController extends Controller
                         'refresh_token' => $token['refresh_token']??'',
                     ];
                     DB::commit();
-                    return ClientResponse::responseSuccess('Đăng nhập thành công', $data);
+                    if (Partner::isCompletedProfile($partner??null)) {
+                        return ClientResponse::responseSuccess('Đăng nhập thành công', $data);
+                    }else{
+                        return ClientResponse::response(ClientResponse::$partner_required_fill_info, 'Tài khoản chưa hoàn thiện hồ sơ', $data);
+                    }
                 } else {
                     return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
                 }
@@ -339,18 +339,22 @@ class AuthController extends Controller
                     $partner_id = $partner->id??0;
                     $validator = Validator::make($request->all(), [
                         //required
+                        'year_of_birth' => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
+                        'gender'        => 'required|digits:1|integer|exists:App\Models\Gender,id',
                         'province_code' => 'required|string|exists:App\Models\Province,code',
                         'district_code' => 'required|string|exists:App\Models\District,code',
                         'ward_code' => 'required|string|exists:App\Models\Ward,code',
                         'job_type_id'   => 'required|integer|exists:App\Models\JobType,id',
-                        'job_status_id' => 'required|integer|exists:App\Models\JobStatus,id',
                         'academic_level_id' => 'required|integer|exists:App\Models\AcademicLevel,id',
-                        //
                         'marital_status_id' => 'integer|exists:App\Models\MaritalStatus,id',
+                        //
+                        'job_status_id' => 'required|integer|exists:App\Models\JobStatus,id',
                         'personal_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
                         'family_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
                         'family_people' => 'integer',
                         'is_key_shopper' => 'boolean',
+                        'has_children' => 'boolean',
+                        'most_cost_of_living' => 'boolean',
                         'childrend_age_ranges' => 'array',
                         'childrend_age_ranges.*' => 'exists:App\Models\ChildrendAgeRanges,id', // check each item in the array
 
@@ -367,17 +371,23 @@ class AuthController extends Controller
                         $profile = new PartnerProfile();
                         $profile->partner_id = $partner_id;
                     }
+                    //required
+                    $profile->year_of_birth = $request->year_of_birth;
+                    $profile->gender = $request->gender;
                     $profile->province_code = $request->province_code;
                     $profile->district_code = $request->district_code;
                     $profile->ward_code = $request->ward_code;
                     $profile->job_type_id = $request->job_type_id;
                     $profile->job_status_id = $request->job_status_id;
                     $profile->academic_level_id = $request->academic_level_id;
+                    $profile->marital_status_id = $request->marital_status_id;
 
                     $profile->personal_income_level_id = $request->personal_income_level_id;
                     $profile->family_income_level_id = $request->family_income_level_id;
                     $profile->family_people = $request->family_people;
                     $profile->is_key_shopper = $request->is_key_shopper;
+                    $profile->has_children = $request->has_children;
+                    $profile->most_cost_of_living = $request->most_cost_of_living;
                     //update profile
                     $profile->save();
                     //update childrend_age_ranges

@@ -94,8 +94,9 @@ class Partner extends Model{
         return true;    //TODO, for test...
         $profile = $partner->profile;
         if($profile){
-            if($profile->province_code=='' || $profile->district_code=='' && $profile->ward_code==''
-                || $profile->job_type_id==0 || $profile->job_status_id==0 || $profile->academic_level_id==0
+            if( $profile->year_of_birth ==0 || $profile->gender==0 ||
+                $profile->province_code=='' || $profile->district_code=='' && $profile->ward_code=='' ||
+                $profile->academic_level_id==0 || $profile->job_type_id==0 || $profile->marital_status_id==0
             ){
                 return false;
             }else{
