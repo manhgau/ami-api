@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\v1\client;
+use App\Helpers\Common\CFunction;
 use App\Helpers\Context;
 use App\Helpers\JWTClient;
 use Illuminate\Http\Request;
@@ -103,7 +104,7 @@ class AuthController extends Controller
                 ]
             ));
             //gửi mail kích hoạt
-            $web_link = env('FRONTEND_APP_URL');
+            $web_link = CFunction::getFrontendWebUrl();
             $app_name = env('APP_NAME');
             dispatch(new SendActiveAcountEmailJob([
                 'to'    =>  $request->email,
@@ -299,7 +300,7 @@ class AuthController extends Controller
             $user->forgot_expire = $forgot_expire;
             if($user->save()){
                 //gửi mail reset password
-                $web_link = env('FRONTEND_APP_URL');
+                $web_link = $web_link = CFunction::getFrontendWebUrl();
                 $app_name = env('APP_NAME');
                 dispatch(new SendResetPasswordEmailJob([
                     'to'    =>  $request->email,
