@@ -23,8 +23,8 @@ class AcademicLevelCotroller extends Controller
     {
 
         try {
-            $perPage = $request->per_page??100;
-            $page = $request->page??1;
+            $perPage = $request->per_page ?? 100;
+            $page = $request->current_page ?? 1;
             $ckey  = CommonCached::api_list_academic_level . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
@@ -40,5 +40,4 @@ class AcademicLevelCotroller extends Controller
             return ClientResponse::responseError($ex->getMessage());
         }
     }
-
 }

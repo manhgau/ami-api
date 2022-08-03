@@ -22,8 +22,8 @@ class PackageController extends Controller
     public function getListPackage(Request $request)
     {
         try {
-            $perPage = $request->per_page??10;
-            $page = $request->page??1;
+            $perPage = $request->per_page ?? 10;
+            $page = $request->current_page ?? 1;
             $ckey  = CommonCached::cache_find_package . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
@@ -43,7 +43,7 @@ class PackageController extends Controller
     public function getDetailPackage($id)
     {
         try {
-            $ckey  = CommonCached::cache_find_package_by_id."_".$id;
+            $ckey  = CommonCached::cache_find_package_by_id . "_" . $id;
             $detail = CommonCached::getData($ckey);
             if (empty($detail)) {
                 $detail = Package::getDetailPackage($id);
