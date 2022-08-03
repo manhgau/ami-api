@@ -22,8 +22,8 @@ class QAndACategoryController extends Controller
     {
 
         try {
-            $perPage = $request->per_page??10;
-            $page = $request->page??1;
+            $perPage = $request->per_page ?? 10;
+            $page = $request->current_page ?? 1;
             $ckey  = CommonCached::cache_find_qa_category . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
@@ -43,7 +43,7 @@ class QAndACategoryController extends Controller
     public function getDetail($id)
     {
         try {
-            $ckey  = CommonCached::cache_find_qa_category_by_id."_".$id;
+            $ckey  = CommonCached::cache_find_qa_category_by_id . "_" . $id;
             $detail = CommonCached::getData($ckey);
             if (empty($detail)) {
                 $detail = QAndACategory::getDetail($id);

@@ -23,7 +23,7 @@ class DistrictController extends Controller
 
         try {
             $perPage = $request->per_page ?? 100;
-            $page = $request->page ?? 1;
+            $page = $request->current_page ?? 1;
             $name = $request->name;
             $province_code = $request->province_code;
             $ckey  = CommonCached::api_list_district . "_" . $perPage . "_" . $name . "_" . $page . "_" . $province_code;

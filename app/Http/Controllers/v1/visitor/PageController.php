@@ -22,8 +22,8 @@ class PageController extends Controller
     {
 
         try {
-            $perPage = $request->per_page??10;
-            $page = $request->page??1;
+            $perPage = $request->per_page ?? 10;
+            $page = $request->current_page ?? 1;
             $ckey  = CommonCached::cache_find_page . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
@@ -43,7 +43,7 @@ class PageController extends Controller
     public function getDetail($slug)
     {
         try {
-            $ckey  = CommonCached::cache_find_page_by_slug."_".$slug;
+            $ckey  = CommonCached::cache_find_page_by_slug . "_" . $slug;
             $detail = CommonCached::getData($ckey);
             if (empty($detail)) {
                 $detail = Page::getDetail($slug);

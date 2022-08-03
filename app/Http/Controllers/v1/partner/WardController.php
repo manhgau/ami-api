@@ -22,8 +22,8 @@ class WardController extends Controller
     {
 
         try {
-            $perPage = $request->per_page??100;
-            $page = $request->page??1;
+            $perPage = $request->per_page ?? 100;
+            $page = $request->current_page ?? 1;
             $name = $request->name;
             $district_code = $request->district_code;
             $ckey  = CommonCached::api_list_ward . "_" . $perPage . "_" . $name . "_" . $page . "_" . $district_code;
