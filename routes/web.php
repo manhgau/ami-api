@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-/*Route::fallback(function () {
+Route::fallback(function () {
     return response()->json([
-        'message' => 'Unknown error',
+        'message' => 'Not found',
         'code'    =>  405,
         'data'    =>  []
     ], 405);
-});*/
+});
 
 Route::get('/',function(){return response()->json([
     'message' => 'Survey API...',
