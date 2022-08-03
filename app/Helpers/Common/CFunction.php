@@ -23,6 +23,6 @@ class CFunction{
     }
 
     public static function getFrontendWebUrl(){
-        return AppSetting::getByKey(AppSetting::FRONTEND_APP_URL);
+        return AppSetting::getByKey(AppSetting::FRONTEND_WEB_URL);
     }
 }

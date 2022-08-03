@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AppSetting extends Model
 {
-    const FRONTEND_APP_URL                  = 'frontend_app_url';
+    const FRONTEND_WEB_URL                  = 'frontend_web_url';
     const IMAGE_DOMAIN                      = 'image_domain';
     const IS_MAINTAIN                       = 'is_maintain';
 
