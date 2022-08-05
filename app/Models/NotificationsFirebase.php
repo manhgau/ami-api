@@ -29,13 +29,16 @@ class NotificationsFirebase extends Model
     const DELETED  = 1;
 
     public function sendNotifyTopicFCM(){
+        $all_settings = AppSetting::getAllSetting();
+        //setting
+        $image_domain     = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
         $data = [
             'id'                => $this->id,
             'title'             => $this->title,
             'slug'              => $this->slug,
             'content'           => $this->content,
             'description'       => $this->description,
-            'thumbnail'         => $this->thumbnail,
+            'thumbnail'         => $image_domain.$this->thumbnail,
         ];
         $tos = MappingUidFcmToken::query()
         ->where('status_fcm', 0)
@@ -48,7 +51,7 @@ class NotificationsFirebase extends Model
                 'notification' => [
                     'title'             => $this->title,
                     'body'              => $this->content,
-                    'thumbnail'         => $this->thumbnail,
+                    'thumbnail'         => $image_domain.$this->thumbnail,
                 ]
             ];
             dd($push);

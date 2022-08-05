@@ -23,6 +23,7 @@ use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
 use App\Http\Controllers\v1\partner\GendersController;
 use App\Http\Controllers\v1\partner\PackageController;
 use App\Http\Controllers\v1\partner\PersonalIncomeLevelsController;
+use App\Http\Controllers\v1\visitor\PartnerContactsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -169,6 +170,12 @@ Route::group(['prefix' => 'v1'], function () {
         ], function ($router) {
             Route::get('get-list', [PageController::class, 'getAll']);
             Route::get('get-detail/{slug}', [PageController::class, 'getDetail']);
+        });
+        Route::group([
+            'prefix' => 'partner-contact'
+
+        ], function ($router) {
+            Route::post('create', [PartnerContactsController::class, 'createPartnerContact']);
         });
     });
     //END visitor (web)
