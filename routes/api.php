@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\v1\client\AuthController;
 use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
+use App\Http\Controllers\v1\partner\MappingUidFcmTokenController;
 use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
 use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
 use App\Http\Controllers\v1\partner\DistrictController;
@@ -125,6 +126,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('/profile', [PartnerAuthController::class, 'profile']);
                 Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
                 Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
+                Route::post('/mapping-uid-fcmtoken', [MappingUidFcmTokenController::class, 'MappingUidFcmToken']);
             });
         });
         //end auth

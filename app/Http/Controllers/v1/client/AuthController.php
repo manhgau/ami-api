@@ -344,4 +344,5 @@ class AuthController extends Controller
 
         return ClientResponse::responseSuccess('Đổi mật khẩu thành công');
     }
+    
 }
