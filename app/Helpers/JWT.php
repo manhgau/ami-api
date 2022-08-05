@@ -70,15 +70,18 @@ class JWT
         $p2 = strrpos($header, 'bearer ');
         if($p1!==false){
             $position = $p1;
-        }else{
+        }else if($p2!=false){
             $position = $p2;
+        }else{
+            $position = false;
         }
 
         if ($position !== false) {
             $header = substr($header, $position + 7);
             return strpos($header, ',') !== false ? strstr($header, ',', true) : $header;
+        }else{
+            return $header;
         }
-        return false;
     }
 
 

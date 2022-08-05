@@ -244,7 +244,7 @@ class AuthController extends Controller
 
 
     public function refresh(Request $request){
-        $token = $request->header('Authorization');
+        $token = $request->header('Authorization')??$request->refresh_token;
         $refresh_token = JWT::checkAccessToken($token);
         if($refresh_token){
             $access_token_id = $refresh_token->aid??0;
@@ -275,7 +275,7 @@ class AuthController extends Controller
                                     'refresh_token' => $token['refresh_token']??'',
                                 ];
                                 DB::commit();
-                                return ClientResponse::responseSuccess('Refresh thành công', $data);
+                                return ClientResponse::responseSuccess('Refresh token thành công', $data);
                             } else {
                                 return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
                             }
