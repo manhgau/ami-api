@@ -8,6 +8,8 @@
 
 namespace App\Helpers\Common;
 
+use App\Models\AppSetting;
+
 class CFunction{
     /**
      * @param $phone
@@ -18,5 +20,9 @@ class CFunction{
             return true;
         }
         return false;
+    }
+
+    public static function getFrontendWebUrl(){
+        return AppSetting::getByKey(AppSetting::FRONTEND_WEB_URL);
     }
 }

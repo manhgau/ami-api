@@ -9,18 +9,18 @@ namespace App\Http\Controllers\v1\client;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
-use App\Helpers\Common\ConstValue;
 use Mail;
-use App\Mail\ActiveAccount;
-use App\Jobs\SendActiveAcountEmailJob;
+use App\Models\AppSetting;
 
 class ConfigController extends Controller
 {
     public function settings(Request $request){
         $msg = 'Basic setting for web client';
         $settings = new \stdClass();
-        $settings->image_domain = env('IMAGE_DOMAIN');
-        $settings->is_maintain = 0;
+        //
+        $all_settings = AppSetting::getAllSetting();
+        $settings->image_domain     = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+        $settings->is_maintain      = (int)AppSetting::getByKey(AppSetting::IS_MAINTAIN, $all_settings);
         //
         return ClientResponse::responseSuccess($msg, $settings);
     }

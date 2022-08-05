@@ -5,9 +5,12 @@ use Cache;
 
 class CommonCached {
 
-    const EXPIRE_FAST                           = 120; //2 minutes
-    const EXPIRE_SLOW                           = 1200; //20 minutes
+    const EXPIRE_FAST                                       = 120; //2 minutes
+    const EXPIRE_SLOW                                       = 1200; //20 minutes
+    //app settings
+    const app_all_setting                                   = "api_cached:app_all_setting:";
 
+    //API
     const api_list_province                                 = 'api_cached:api_list_province';
     const api_list_district                                 = 'api_cached:api_list_district';
     const api_list_ward                                     = 'api_cached:api_list_ward';
