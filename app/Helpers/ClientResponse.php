@@ -18,7 +18,7 @@ class ClientResponse{
             'data'      =>  $data,
             /*'headers'   =>  $headers,
             'options'   =>  $options*/
-        ]);
+        ], $code);
     }
 
     public static function responseSuccess($message, $data = []){
