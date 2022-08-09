@@ -91,7 +91,7 @@ class Partner extends Model{
      * @return bool
      */
     public static function isCompletedProfile($partner){
-        return true;    //TODO, for test...
+        // return true;    //TODO, for test...
         $profile = $partner->profile;
         if($profile){
             if( $profile->year_of_birth ==0 || $profile->gender==0 ||
