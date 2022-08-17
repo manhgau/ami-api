@@ -31,7 +31,7 @@ class NotificationsFirebase extends Model
     public function sendNotifyTopicFCM(){
         $all_settings = AppSetting::getAllSetting();
         //setting
-        $image_domain     = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+        $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
         $data = [
             'id'                => $this->id,
             'title'             => $this->title,
@@ -48,33 +48,37 @@ class NotificationsFirebase extends Model
             $push = [
                 'to' => $to->fcm_token,
                 'data' => $data,
-                'notification' => [
-                    'title'             => $this->title,
-                    'body'              => $this->content,
-                    'thumbnail'         => $image_domain.$this->thumbnail,
-                ]
             ];
-            dd($push);
+            //dd($push);
             $this->sendFCM($push);
         }
         return true;
     }
 
     public function sendFCM($data){
-        $url = 'https://fcm.googleapis.com/fcm/send';
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: key=' . Firebase::ACCESS_KEY,
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => 'https://fcm.googleapis.com/fcm/send',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS =>json_encode($data),
+          CURLOPT_HTTPHEADER => array(
+            'Authorization: key='. Firebase::ACCESS_KEY,
             'Content-Type: application/json'
-        ]);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        $data = curl_exec($ch);
-        $res = json_decode($data);
-        return $res;
+          ),
+        ));
+        
+        $response = curl_exec($curl);
+        
+        curl_close($curl);
+        return $response;
+          
     }
 
 

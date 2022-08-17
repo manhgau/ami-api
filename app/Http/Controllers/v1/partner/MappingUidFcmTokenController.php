@@ -25,6 +25,9 @@ class MappingUidFcmTokenController extends Controller
             return ClientResponse::responseError($errorString);
         }
         $os = Str::lower($request->os);
+        if(is_array($os, MappingUidFcmToken::getOSList())==false) {
+            return ClientResponse::responseError('Nhập sai os');
+        }
 
         $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
         if ($tokenInfo) {
@@ -42,6 +45,7 @@ class MappingUidFcmTokenController extends Controller
             }
             $create = MappingUidFcmToken::create(['partner_id' => $partner_id, 'fcm_token' => $request->fcm_token, 'os'=>$os]);
             return ClientResponse::responseSuccess('Thêm mới thành công', $create);
+
+        }
     }
-}
 }

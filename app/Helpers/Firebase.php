@@ -16,11 +16,12 @@ class Firebase{
             ->where('is_push', 0)
             ->first();
         if($notify) {
-            $notify->sendNotifyTopicFCM();
-            $notify->response = 'OK';
-            $notify->is_push = 1;
-            $notify->save();
-            return true;
+            $result = $notify->sendNotifyTopicFCM();
+            if($result){
+                $notify->is_push = 1;
+                $notify->save();
+                return true;
+            }
         }
         //end push
         return false;

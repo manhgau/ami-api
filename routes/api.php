@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\v1\client\AuthController;
 use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
+use App\Http\Controllers\v1\client\SurveyCategoryController;
+use App\Http\Controllers\v1\client\SurveyController;
 use App\Http\Controllers\v1\partner\MappingUidFcmTokenController;
 use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
 use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
@@ -75,6 +77,26 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/logout', [AuthController::class, 'logout']);
                 Route::get('/profile', [AuthController::class, 'profile']);
                 Route::post('/change-pass', [AuthController::class, 'changePassWord']);
+            });
+        });
+        Route::group([
+            'prefix' => 'survey'
+
+        ], function ($router) {
+            Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
+            Route::group([
+                'middleware' => 'client_auth',
+            ], function ($router) {
+                Route::post('/create', [SurveyController::class, 'createSurvey']);
+                Route::get('/get-list', [SurveyController::class, 'getListSurvey']);
+                Route::get('/get-detail/{id}', [SurveyController::class, 'getDetailSurvey']);
+                Route::group([
+                    'middleware' => 'client_owner_survey',
+    
+                ], function ($router) {
+                    Route::post('/edit/{id}', [SurveyController::class, 'editSurvey']);
+                    Route::delete('/del/{id}', [SurveyController::class, 'deleteSurvey']);
+                });
             });
         });
         Route::get('province', [PartnerProvinceController::class, 'getProvince']);

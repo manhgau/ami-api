@@ -41,6 +41,12 @@ class CommonCached {
     const cache_find_package_by_id                          = 'api_cached:cache_find_package_by_id:id';
     const cache_find_package                                = 'api_cached:cache_find_package';
 
+    //
+    const cache_find_survey_category                         = 'api_cached:cache_find_survey_category';
+    const cache_find_survey_user_by_id                       = 'api_cached:cache_find_survey_user_by_id:id';
+    const cache_find_survey_user                             = 'api_cached:cache_find_survey_user';
+
+
 
     public static function storeData($key_cache, $datas, $fast = false){
         $time = $fast?self::EXPIRE_FAST:self::EXPIRE_SLOW;
