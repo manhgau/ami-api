@@ -13,6 +13,7 @@ class Context
     CONST PARTNER_ACCESS_TOKEN = 'partner_access_token';
     CONST CLIENT_ACCESS_TOKEN = 'client_access_token';
     CONST CLIENT_USER_ID = 'client_user_id';
+    CONST SURVEY_USER_ID = 'survey_user_id';
 
     protected $data = [];
 
