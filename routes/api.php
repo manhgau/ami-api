@@ -6,6 +6,7 @@ use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
 use App\Http\Controllers\v1\client\SurveyCategoryController;
 use App\Http\Controllers\v1\client\SurveyController;
+use App\Http\Controllers\v1\client\SurveyQuestionController;
 use App\Http\Controllers\v1\partner\MappingUidFcmTokenController;
 use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
 use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
@@ -96,6 +97,11 @@ Route::group(['prefix' => 'v1'], function () {
                 ], function ($router) {
                     Route::post('/edit/{id}', [SurveyController::class, 'editSurvey']);
                     Route::delete('/del/{id}', [SurveyController::class, 'deleteSurvey']);
+                    Route::post('/question/{survey_id}', [SurveyQuestionController::class, 'createSurveyQuestion']);
+                    Route::get('/question/{survey_id}', [SurveyQuestionController::class, 'getListSurveyQuestion']);
+                    Route::post('/question/{survey_id}/edit/{question_id}', [SurveyQuestionController::class, 'updateSurveyQuestion']);
+                    Route::post('/question-answer/{survey_id}/edit/{answer_id}', [SurveyQuestionController::class, 'updateSurveyQuestionAnswer']);
+                    Route::delete('/question/{survey_id}/del/{question_id}', [SurveyQuestionController::class, 'delSurveyQuestion']);
                 });
             });
         });

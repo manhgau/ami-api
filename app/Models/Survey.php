@@ -33,6 +33,7 @@ class Survey extends Model
         'created_by',
         'updated_by',
         'deleted',
+        'note',
     ];
 
     const ACTIVE = 1;
@@ -74,7 +75,7 @@ class Survey extends Model
         if(!$survey_user_number){
            $package_free =  Package::query()
             ->where('status', self::STATUS_ACTIVE)
-            ->where('level', 0)
+            ->where('level', Package::FREE)
             ->first();
             $limit_projects = $package_free->limit_projects;
         }

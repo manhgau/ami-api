@@ -29,6 +29,7 @@ class Package extends Model
     const STATUS_INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+    const FREE  = 0;
 
     public static  function getListPackage($perPage = 10,  $page = 1)
     {
