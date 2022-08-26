@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\client;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
+use App\Models\Package;
 use App\Models\QuestionType;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
@@ -26,6 +27,9 @@ class SurveyQuestionController extends Controller
             }
             $input = $request->all();
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+            if((SurveyQuestion:: countQuestion($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_questions)){
+                return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
+            }
             $input['user_id'] = $user_id;
             $input['created_by'] = $user_id;
             $input['survey_id'] = $request->survey_id;
@@ -144,7 +148,7 @@ class SurveyQuestionController extends Controller
             return ClientResponse::responseError($ex->getMessage());
         }
     }
-
+ 
     public static function updateSurveyQuestion( Request $request ) {
         try {
             $validator = Validator::make($request->all(), [

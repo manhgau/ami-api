@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class SurveyQuestion extends Model
 {
@@ -64,6 +65,11 @@ class SurveyQuestion extends Model
     {
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->update($data);
     }
+
+    public static function countQuestion($survey_id){
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->count();
+    }
+    
 
 
 

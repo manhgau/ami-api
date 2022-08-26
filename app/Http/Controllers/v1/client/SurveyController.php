@@ -6,6 +6,7 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
+use App\Models\Package;
 use App\Models\Survey;
 use App\Models\SurveyUser;
 use Validator;
@@ -24,7 +25,8 @@ class SurveyController extends Controller
             }
             $input = $request->all();
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            if(Survey:: CheckNumberOfSurvey($user_id) == false){
+            
+            if((Survey:: countSurvey($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_projects)){
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
             $input['user_id'] = $user_id;
