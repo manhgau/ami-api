@@ -28,7 +28,7 @@ class SurveyQuestionAnswer extends Model
 
     public static  function SurveyQuestionAnswer($data)
     {
-        return SurveyQuestion::create($data);
+        return self::create($data);
     }
 
     public static  function getAllSurveyQuestionAnswer($id)
@@ -44,6 +44,11 @@ class SurveyQuestionAnswer extends Model
     public static  function updateSurveyQuestionAnswer($data, $id)
     {
         return self::where('id', $id)->update($data);
+    }
+
+    public static  function deleteSurveyQuestionAnswer( $id)
+    {
+        return self::where('question_id', $id)->orWhere('matrix_question_id', $id)->delete();
     }
 
 
