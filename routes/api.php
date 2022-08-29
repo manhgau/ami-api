@@ -26,6 +26,8 @@ use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
 use App\Http\Controllers\v1\partner\GendersController;
 use App\Http\Controllers\v1\partner\PackageController;
 use App\Http\Controllers\v1\partner\PersonalIncomeLevelsController;
+use App\Http\Controllers\v1\partner\SurveyPartnerInputController;
+use App\Http\Controllers\v1\partner\SurveyPartnerInputLineController;
 use App\Http\Controllers\v1\visitor\PartnerContactsController;
 
 /*
@@ -155,9 +157,23 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('/profile', [PartnerAuthController::class, 'profile']);
                 Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
                 Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
-                Route::post('/mapping-uid-fcmtoken', [MappingUidFcmTokenController::class, 'MappingUidFcmToken']);
+                Route::post('/mapping-uid-fcmtoken', [MappingUidFcmTokenController::class, 'mappingUidFcmToken']);
             });
         });
+
+        Route::group([
+            'prefix' => 'survey'
+
+        ], function ($router) {
+            Route::group([
+                'middleware' => 'partner_auth',
+
+            ], function ($router) {
+                Route::post('/input/{survey_id}', [SurveyPartnerInputController::class, 'answerSurvey']);
+                Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
+            });
+        });
+        
         //end auth
         //required login
         Route::group([

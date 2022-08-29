@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class MappingUidFcmTokenController extends Controller
 {
 
-    public function MappingUidFcmToken(Request $request)
+    public function mappingUidFcmToken(Request $request)
     {
 
         $validator = Validator::make($request->all(), [

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class SurveyQuestion extends Model
 {
+
     protected $fillable = [
         'survey_id',
         'title',
@@ -36,8 +37,8 @@ class SurveyQuestion extends Model
         'updated_at',
         'created_by',
         'updated_by',
-        'deleted',
     ];
+
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
