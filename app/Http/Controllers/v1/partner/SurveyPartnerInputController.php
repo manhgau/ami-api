@@ -61,15 +61,12 @@ class SurveyPartnerInputController extends Controller
                     $errorString = implode(",", $validator->messages()->all());
                     return ClientResponse::responseError($errorString);
                 }
-                $input['survey_id'] = $request->survey_id;
-                $input['state'] = SurveyPartnerInput::STATE_NEW;
-                $input['start_datetime'] =  Carbon::now();
-                $result=SurveyPartnerInput::create($input);
+                $partner_input_id = $request->partner_input_id;
+                $result = SurveyPartnerInput::updateSurveyPartnerInput(['state' =>SurveyPartnerInput::STATE_DONE], $partner_input_id);
                 if(!$result){
                     return ClientResponse::responseError('Đã có lỗi xảy ra');
                 }
-                return ClientResponse::responseSuccess('Thêm mới thành công', $result);
-
+                return ClientResponse::responseSuccess('Cập nhập thành công', $result);
             }catch (\Exception $ex){
                 return ClientResponse::responseError($ex->getMessage());
             }

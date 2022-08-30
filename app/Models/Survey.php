@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\DB;
 
 class Survey extends Model
 {
+    public $incrementing = false;
+    
     protected $fillable = [
+        'id',
         'title',
         'user_id',
         'color',

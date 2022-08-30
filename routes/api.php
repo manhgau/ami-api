@@ -6,6 +6,8 @@ use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
 use App\Http\Controllers\v1\client\SurveyCategoryController;
 use App\Http\Controllers\v1\client\SurveyController;
+use App\Http\Controllers\v1\client\SurveyPartnerInputAnynomousController;
+use App\Http\Controllers\v1\client\SurveyPartnerInputLineAnynomousController;
 use App\Http\Controllers\v1\client\SurveyQuestionController;
 use App\Http\Controllers\v1\partner\MappingUidFcmTokenController;
 use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
@@ -87,6 +89,14 @@ Route::group(['prefix' => 'v1'], function () {
 
         ], function ($router) {
             Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
+            Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
+            Route::group([
+                'prefix' => 'anynomous'
+            ], function ($router) {
+            Route::post('/input/{survey_id}', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
+            Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
+            Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
+            });
             Route::group([
                 'middleware' => 'client_auth',
             ], function ($router) {
@@ -163,6 +173,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::group([
             'prefix' => 'survey'
+            
 
         ], function ($router) {
             Route::group([
@@ -170,6 +181,7 @@ Route::group(['prefix' => 'v1'], function () {
 
             ], function ($router) {
                 Route::post('/input/{survey_id}', [SurveyPartnerInputController::class, 'answerSurvey']);
+                Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
                 Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
             });
         });

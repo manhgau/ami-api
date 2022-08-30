@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\v1\client;
 
 use App\Helpers\ClientResponse;
+use App\Helpers\Common\CFunction;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
 use App\Models\Package;
+use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyUser;
 use Validator;
@@ -30,6 +32,7 @@ class SurveyController extends Controller
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
             $input['user_id'] = $user_id;
+            $input['id'] = CFunction::generateUuid();
             $input['created_by'] = $user_id;
             $survey=Survey::create($input);
             if(!$survey){
@@ -119,6 +122,18 @@ class SurveyController extends Controller
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
             return ClientResponse::responseSuccess('Xóa thành công');
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getQuestionType() {
+        try {
+            $result = QuestionType::getTypeQuestionList();
+            if (!$result) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            return ClientResponse::responseSuccess('OK', $result);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

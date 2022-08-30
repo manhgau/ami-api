@@ -9,6 +9,8 @@
 namespace App\Helpers\Common;
 
 use App\Models\AppSetting;
+use Illuminate\Support\Str;
+
 
 class CFunction{
     /**
@@ -24,5 +26,9 @@ class CFunction{
 
     public static function getFrontendWebUrl(){
         return AppSetting::getByKey(AppSetting::FRONTEND_WEB_URL);
+    }
+
+    public static function generateUuid(){
+        return (string) Str::uuid();
     }
 }
