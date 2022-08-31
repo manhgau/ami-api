@@ -35,6 +35,7 @@ class SurveyPartnerInputLineController extends Controller
                     $input['answer_type']   = $survey_question->question_type;
                     $input['created_by']   = $partner->id??0;
                     $input['answer_score']   = $request->answer_score??0;
+                    // to do ....   
                     switch ($input['answer_type'])
                     {
                         case QuestionType::MULTI_CHOICE_CHECKBOX:

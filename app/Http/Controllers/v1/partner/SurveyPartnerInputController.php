@@ -35,7 +35,6 @@ class SurveyPartnerInputController extends Controller
                     $input['state'] = SurveyPartnerInput::STATE_NEW;
                     $input['start_datetime'] =  Carbon::now();
                     $result=SurveyPartnerInput::create($input);
-                    // TO do
                     if(!$result){
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
