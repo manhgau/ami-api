@@ -51,7 +51,11 @@ class Partner extends Model{
 
 
     public static function getPartnerByPhone($phone){
-        return Partner::where('phone', $phone)->first();
+        return Partner::where('phone', $phone)->where('is_active',self::IS_ACTIVE)->first();
+    }
+
+    public static function getPartnerById($id){
+        return Partner::where('id', $id)->first();
     }
 
     public static function loginAttempByPhone($phone, $password){

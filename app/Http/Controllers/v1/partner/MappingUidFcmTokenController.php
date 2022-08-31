@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class MappingUidFcmTokenController extends Controller
 {
 
-    public function MappingUidFcmToken(Request $request)
+    public function mappingUidFcmToken(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
@@ -25,10 +25,9 @@ class MappingUidFcmTokenController extends Controller
             return ClientResponse::responseError($errorString);
         }
         $os = Str::lower($request->os);
-        if(is_array($os, MappingUidFcmToken::getOSList())==false) {
+        if(in_array($os, MappingUidFcmToken::getOSList())==false) {
             return ClientResponse::responseError('Nhập sai os');
         }
-
         $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
         if ($tokenInfo) {
             $partner = $tokenInfo->partner;

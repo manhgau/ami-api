@@ -17,11 +17,14 @@ class QuestionType
 
     const QUESTION_ENDED_SHORT_TEXT             = 'text_box';
     const QUESTION_ENDED_LONG_TEXT              = 'char_box';
-
+             
     const RATING_STAR                           = 'star_rating';
 
 
     const MULTI_FACTOR_MATRIX                  = 'matrix';
+
+    const MATRIX_VALUE_COLUMN                  = 'column';
+    const MATRIX_VALUE_ROW                     = 'row';
 
 
     public static function getTypeQuestionList(){

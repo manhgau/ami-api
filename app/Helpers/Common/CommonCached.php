@@ -45,6 +45,11 @@ class CommonCached {
     const cache_find_survey_category                         = 'api_cached:cache_find_survey_category';
     const cache_find_survey_user_by_id                       = 'api_cached:cache_find_survey_user_by_id:id';
     const cache_find_survey_user                             = 'api_cached:cache_find_survey_user';
+    //
+    const cache_find_survey_question_by_survey_id            = 'api_cached:cache_find_survey_question_by_survey_id';
+    //
+    const cache_find_survey_template                         = 'api_cached:cache_find_survey_template';
+    const cache_find_survey_template_by_id                   = 'api_cached:cache_find_survey_template_by_id';
 
 
 
