@@ -71,6 +71,10 @@ class SurveyQuestion extends Model
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->count();
     }
     
+    public static  function getSurveyQuestion( $ids)
+    {
+        return self::where('deleted', self::NOT_DELETED)->whereIn('id', $ids)->get();
+    }
 
 
 
