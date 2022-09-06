@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ChildrendAgeRanges extends Model
+class ChildrenAgeRanges extends Model
 {
     protected $fillable = [
         'name',

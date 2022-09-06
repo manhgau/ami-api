@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
-use App\Models\ChildrendAgeRanges;
+use App\Models\ChildrenAgeRanges;
 use App\Models\Province;
 
 class ChildrendAgeRangesController extends Controller
@@ -28,7 +28,7 @@ class ChildrendAgeRangesController extends Controller
             $ckey = CommonCached::api_list_childrend_age_ranges . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas =  ChildrendAgeRanges::getChildrendAgeRanges($perPage,  $page);
+                $datas =  ChildrenAgeRanges::getChildrendAgeRanges($perPage,  $page);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }
