@@ -41,7 +41,7 @@ class PartnerContactsController extends Controller
             'has_children' => 'boolean',
             'most_cost_of_living' => 'boolean',
             'childrend_age_ranges' => 'array',
-            'childrend_age_ranges.*' => 'exists:App\Models\ChildrendAgeRanges,id', // check each item in the array
+            'children_age_ranges.*' => 'exists:App\Models\ChildrenAgeRanges,id', // check each item in the array
 
         ]);
 

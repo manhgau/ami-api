@@ -58,7 +58,7 @@ class SurveyController extends Controller
             if (empty($datas)) {
                 $datas = Survey::getListSurvey($perPage,  $page, $user_id);
                 $datas = RemoveData::removeUnusedData($datas);
-                CommonCached::storeData($ckey, $datas);
+                CommonCached::storeData($ckey, $datas, true);
             }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');

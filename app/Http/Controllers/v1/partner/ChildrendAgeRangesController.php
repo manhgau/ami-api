@@ -17,18 +17,18 @@ use App\Helpers\RemoveData;
 use App\Models\ChildrenAgeRanges;
 use App\Models\Province;
 
-class ChildrendAgeRangesController extends Controller
+class ChildrenAgeRangesController extends Controller
 {
-    public function getChildrendAgeRanges(Request $request)
+    public function getChildrenAgeRanges(Request $request)
     {
 
         try {
             $perPage = $request->per_page ?? 100;
             $page = $request->current_page ?? 1;
-            $ckey = CommonCached::api_list_childrend_age_ranges . "_" . $perPage . "_" . $page;
+            $ckey = CommonCached::api_list_children_age_ranges . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas =  ChildrenAgeRanges::getChildrendAgeRanges($perPage,  $page);
+                $datas =  ChildrenAgeRanges::getChildrenAgeRanges($perPage,  $page);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }

@@ -24,7 +24,7 @@ use App\Http\Controllers\v1\visitor\PageController;
 use App\Http\Controllers\v1\visitor\QAndACategoryController;
 use App\Http\Controllers\v1\visitor\QAndAController;
 use App\Http\Controllers\v1\common\ToolsController;
-use App\Http\Controllers\v1\partner\ChildrendAgeRangesController;
+use App\Http\Controllers\v1\partner\ChildrenAgeRangesController;
 use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
 use App\Http\Controllers\v1\partner\GendersController;
 use App\Http\Controllers\v1\partner\PackageController;
@@ -130,7 +130,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
         //
         Route::get('family-income-level', [FamilyIncomeLevelsController::class, 'getFamilyIncomeLevels']);
-        Route::get('childrend-age-range', [ChildrendAgeRangesController::class, 'getChildrendAgeRanges']);
+        Route::get('children-age-range', [ChildrenAgeRangesController::class, 'getChildrenAgeRanges']);
         Route::get('personal-income-level', [PersonalIncomeLevelsController::class, 'getPersonalIncomeLevels']);
         Route::get('gender', [GendersController::class, 'getGenders']);
         //package

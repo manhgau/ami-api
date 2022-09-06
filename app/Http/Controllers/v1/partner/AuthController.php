@@ -355,8 +355,8 @@ class AuthController extends Controller
                         'is_key_shopper' => 'boolean',
                         'has_children' => 'boolean',
                         'most_cost_of_living' => 'boolean',
-                        'childrend_age_ranges' => 'array',
-                        'childrend_age_ranges.*' => 'exists:App\Models\ChildrendAgeRanges,id', // check each item in the array
+                        'children_age_ranges' => 'array',
+                        'children_age_ranges.*' => 'exists:App\Models\ChildrenAgeRanges,id', // check each item in the array
 
                     ]);
 
@@ -390,14 +390,14 @@ class AuthController extends Controller
                     $profile->most_cost_of_living = $request->most_cost_of_living;
                     //update profile
                     $profile->save();
-                    //update childrend_age_ranges
-                    $childrend_age_ranges = $request->childrend_age_ranges;
-                    if(is_array($childrend_age_ranges) && count($childrend_age_ranges) > 0){
+                    //update children_age_ranges
+                    $children_age_ranges = $request->children_age_ranges;
+                    if(is_array($children_age_ranges) && count($children_age_ranges) > 0){
                         PartnerChildrenAgeRange::where('partner_id', $partner_id)->delete();
-                        foreach ($childrend_age_ranges as $cr) {
+                        foreach ($children_age_ranges as $cr) {
                             $m = new PartnerChildrenAgeRange();
                             $m->partner_id = $partner_id;
-                            $m->childrend_age_range_id = $cr;
+                            $m->children_age_range_id = $cr;
                             $m->save();
                         }
                     }
