@@ -51,8 +51,8 @@ Route::group(['prefix' => 'v1'], function () {
         'prefix' => 'common'
     ], function ($router) {
         //clear cache, config cache
-         Route::post('/clear-config-cache', [ToolsController::class, 'clearConfigCache']);
-         Route::post('/delete-cache', [ToolsController::class, 'deleteCache']);
+        Route::post('/clear-config-cache', [ToolsController::class, 'clearConfigCache']);
+        Route::post('/delete-cache', [ToolsController::class, 'deleteCache']);
     });
     //END common
 
@@ -94,9 +94,9 @@ Route::group(['prefix' => 'v1'], function () {
             Route::group([
                 'prefix' => 'anynomous'
             ], function ($router) {
-            Route::post('/input/{survey_id}', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
-            Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
-            Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
+                Route::post('/input/{survey_id}', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
+                Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
+                Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
             });
             Route::group([
                 'middleware' => 'client_auth',
@@ -105,11 +105,12 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('/get-list', [SurveyController::class, 'getListSurvey']);
                 Route::get('/get-detail/{id}', [SurveyController::class, 'getDetailSurvey']);
                 Route::get('/template/get-list', [SurveyTemplateController::class, 'getListSurveyTemplate']);
+                Route::post('/template/update-logo/{template_id}', [SurveyTemplateController::class, 'updateLogoTemplate']);
                 Route::get('/template/get-detail/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
                 Route::post('/use-template/{survey_template_id}', [SurveyController::class, 'useSurveyTemplate']);
                 Route::group([
                     'middleware' => 'client_owner_survey',
-    
+
                 ], function ($router) {
                     Route::post('/edit/{id}', [SurveyController::class, 'editSurvey']);
                     Route::delete('/del/{id}', [SurveyController::class, 'deleteSurvey']);
@@ -177,7 +178,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::group([
             'prefix' => 'survey'
-            
+
 
         ], function ($router) {
             Route::group([
@@ -189,7 +190,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
             });
         });
-        
+
         //end auth
         //required login
         Route::group([
