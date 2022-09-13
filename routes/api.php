@@ -9,6 +9,7 @@ use App\Http\Controllers\v1\client\SurveyController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputAnynomousController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputLineAnynomousController;
 use App\Http\Controllers\v1\client\SurveyQuestionController;
+use App\Http\Controllers\v1\client\SurveyStatisticCpntroller;
 use App\Http\Controllers\v1\client\SurveyTemplateController;
 use App\Http\Controllers\v1\partner\MappingUidFcmTokenController;
 use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
@@ -91,6 +92,7 @@ Route::group(['prefix' => 'v1'], function () {
         ], function ($router) {
             Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
             Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
+            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
             Route::group([
                 'prefix' => 'anynomous'
             ], function ($router) {
@@ -108,6 +110,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/template/update-logo/{template_id}', [SurveyTemplateController::class, 'updateLogoTemplate']);
                 Route::get('/template/get-detail/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
                 Route::post('/use-template/{survey_template_id}', [SurveyController::class, 'useSurveyTemplate']);
+                //Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
                 Route::group([
                     'middleware' => 'client_owner_survey',
 
