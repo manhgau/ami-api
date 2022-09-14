@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class Survey extends Model
 {
     public $incrementing = false;
-    
+
     protected $fillable = [
         'id',
         'title',
@@ -43,28 +43,26 @@ class Survey extends Model
     const INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 0;
+    const STATUS_OPEN = 'open';
+    const STATUS_CLOSED = 'closed';
 
     public static  function getListSurvey($perPage = 10,  $page = 1, $user_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->orderBy('id', 'desc')->where('active',self::ACTIVE)->where('user_id',$user_id)->paginate($perPage, "*", "page", $page)->toArray();
+        return self::where('deleted', self::NOT_DELETED)->orderBy('id', 'desc')->where('active', self::ACTIVE)->where('user_id', $user_id)->paginate($perPage, "*", "page", $page)->toArray();
     }
 
-    public static  function getDetailSurvey( $id)
+    public static  function getDetailSurvey($id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('active',self::ACTIVE)->first();
+        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('active', self::ACTIVE)->first();
     }
 
     public static  function updateSurvey($data, $id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('active',self::ACTIVE)->where('id', $id)->update($data);
+        return self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)->where('id', $id)->update($data);
     }
 
     public static  function countSurvey($user_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('active',self::ACTIVE)->where('user_id',$user_id)->count();
+        return self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)->where('user_id', $user_id)->count();
     }
-
-
 }

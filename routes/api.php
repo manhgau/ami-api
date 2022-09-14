@@ -30,6 +30,7 @@ use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
 use App\Http\Controllers\v1\partner\GendersController;
 use App\Http\Controllers\v1\partner\PackageController;
 use App\Http\Controllers\v1\partner\PersonalIncomeLevelsController;
+use App\Http\Controllers\v1\partner\SurveyPartnerController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputLineController;
 use App\Http\Controllers\v1\visitor\PartnerContactsController;
@@ -191,6 +192,8 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/input/{survey_id}', [SurveyPartnerInputController::class, 'answerSurvey']);
                 Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
                 Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
+                Route::get('/partner', [SurveyPartnerController::class, 'getlistSurveyPartner']);
+                Route::get('/partner/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
             });
         });
 
