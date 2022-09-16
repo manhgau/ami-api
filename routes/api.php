@@ -4,11 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\v1\client\AuthController;
 use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
+use App\Http\Controllers\v1\client\SettingController;
 use App\Http\Controllers\v1\client\SurveyCategoryController;
 use App\Http\Controllers\v1\client\SurveyController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputAnynomousController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputLineAnynomousController;
 use App\Http\Controllers\v1\client\SurveyQuestionController;
+use App\Http\Controllers\v1\client\SurveyStatisticCpntroller;
 use App\Http\Controllers\v1\client\SurveyTemplateController;
 use App\Http\Controllers\v1\partner\MappingUidFcmTokenController;
 use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
@@ -29,6 +31,7 @@ use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
 use App\Http\Controllers\v1\partner\GendersController;
 use App\Http\Controllers\v1\partner\PackageController;
 use App\Http\Controllers\v1\partner\PersonalIncomeLevelsController;
+use App\Http\Controllers\v1\partner\SurveyPartnerController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputLineController;
 use App\Http\Controllers\v1\visitor\PartnerContactsController;
@@ -51,8 +54,8 @@ Route::group(['prefix' => 'v1'], function () {
         'prefix' => 'common'
     ], function ($router) {
         //clear cache, config cache
-         Route::post('/clear-config-cache', [ToolsController::class, 'clearConfigCache']);
-         Route::post('/delete-cache', [ToolsController::class, 'deleteCache']);
+        Route::post('/clear-config-cache', [ToolsController::class, 'clearConfigCache']);
+        Route::post('/delete-cache', [ToolsController::class, 'deleteCache']);
     });
     //END common
 
@@ -63,6 +66,7 @@ Route::group(['prefix' => 'v1'], function () {
     ], function ($router) {
         //
         Route::get('/settings', [ClientConfigController::class, 'settings']);
+        Route::get('/info', [SettingController::class, 'getInfo']);
         //auth
         Route::group([
             'prefix' => 'auth'
@@ -91,12 +95,14 @@ Route::group(['prefix' => 'v1'], function () {
         ], function ($router) {
             Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
             Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
+            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
+            Route::get('/get-statistic/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
             Route::group([
                 'prefix' => 'anynomous'
             ], function ($router) {
-            Route::post('/input/{survey_id}', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
-            Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
-            Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
+                Route::post('/input/{survey_id}', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
+                Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
+                Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
             });
             Route::group([
                 'middleware' => 'client_auth',
@@ -105,11 +111,14 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('/get-list', [SurveyController::class, 'getListSurvey']);
                 Route::get('/get-detail/{id}', [SurveyController::class, 'getDetailSurvey']);
                 Route::get('/template/get-list', [SurveyTemplateController::class, 'getListSurveyTemplate']);
+                Route::post('/template/update-logo/{template_id}', [SurveyTemplateController::class, 'updateLogoTemplate']);
                 Route::get('/template/get-detail/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
                 Route::post('/use-template/{survey_template_id}', [SurveyController::class, 'useSurveyTemplate']);
+                //Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
+                //            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
                 Route::group([
                     'middleware' => 'client_owner_survey',
-    
+
                 ], function ($router) {
                     Route::post('/edit/{id}', [SurveyController::class, 'editSurvey']);
                     Route::delete('/del/{id}', [SurveyController::class, 'deleteSurvey']);
@@ -177,7 +186,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::group([
             'prefix' => 'survey'
-            
+
 
         ], function ($router) {
             Route::group([
@@ -187,9 +196,11 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/input/{survey_id}', [SurveyPartnerInputController::class, 'answerSurvey']);
                 Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
                 Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
+                Route::get('/partner', [SurveyPartnerController::class, 'getlistSurveyPartner']);
+                Route::get('/partner/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
             });
         });
-        
+
         //end auth
         //required login
         Route::group([

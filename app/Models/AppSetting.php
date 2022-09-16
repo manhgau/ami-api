@@ -18,29 +18,36 @@ class AppSetting extends Model
         'comment',
     ];
 
-    public static function getAllSetting(){
+    public static function getAllSetting()
+    {
         $key    = CommonCached::app_all_setting;
         $data   = CommonCached::getData($key);
-        if(empty($data)){
+        if (empty($data)) {
             $data = AppSetting::all();
             CommonCached::storeData($key, $data, true);
         }
         return $data;
     }
 
-    public static function getByKey($key, $all_settings = null){
+    public static function getByKey($key, $all_settings = null)
+    {
         $val = '';
-        if(!$all_settings) {
+        if (!$all_settings) {
             $all_settings = self::getAllSetting();
         }
-        if($all_settings){
-            foreach ($all_settings as $v){
-                if(strtolower($v->key)==strtolower($key)){
+        if ($all_settings) {
+            foreach ($all_settings as $v) {
+                if (strtolower($v->key) == strtolower($key)) {
                     $val = $v->value;
                     break;
                 }
             }
         }
         return $val;
+    }
+
+    public static function getInfo()
+    {
+        return self::get();
     }
 }

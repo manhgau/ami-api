@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class SurveyPartnerInput extends Model
 {
@@ -34,5 +35,29 @@ class SurveyPartnerInput extends Model
         return self::where('id', $id)->update($data);
     }
 
-
+    public static  function countSurveyPartnerInput($survey_id)
+    {
+        return self::where('survey_id', $survey_id)->count();
+    }
+    public static  function getlistSurveyPartnerInput($perPage = 10,  $page = 1, $partner_id, $time_now)
+    {
+        return DB::table('survey_partner_inputs')
+            ->join('surveys', 'surveys.id', '=', 'survey_partner_inputs.survey_id')
+            ->select(
+                'surveys.title',
+                'surveys.category_id',
+                'surveys.description',
+                'surveys.start_time',
+                'surveys.end_time',
+                'surveys.real_end_time',
+                'surveys.count_questions',
+                'surveys.number_of_response_required',
+                'surveys.number_of_response',
+            )
+            ->where('survey_partner_inputs.partner_id', $partner_id)
+            ->where('surveys.start_time', '<', $time_now)
+            ->where('surveys.end_time', '>', $time_now)
+            ->orderBy('surveys.created_at', 'desc')
+            ->paginate($perPage, "*", "page", $page)->toArray();
+    }
 }

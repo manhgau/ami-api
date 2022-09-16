@@ -37,6 +37,7 @@ class SurveyQuestion extends Model
         'updated_at',
         'created_by',
         'updated_by',
+        'deleted',
     ];
 
 
@@ -57,7 +58,7 @@ class SurveyQuestion extends Model
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')->get();
     }
 
-    public static  function getDetailSurveyQuestion( $id)
+    public static  function getDetailSurveyQuestion($id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->first();
     }
@@ -67,15 +68,13 @@ class SurveyQuestion extends Model
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->update($data);
     }
 
-    public static function countQuestion($survey_id){
+    public static function countQuestion($survey_id)
+    {
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->count();
     }
-    
-    public static  function getSurveyQuestion( $ids)
+
+    public static  function getSurveyQuestion($ids)
     {
         return self::where('deleted', self::NOT_DELETED)->whereIn('id', $ids)->get();
     }
-
-
-
 }
