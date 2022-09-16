@@ -32,6 +32,7 @@ class SurveyQuestionController extends Controller
             if ((SurveyQuestion::countQuestion($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_questions)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
             }
+            $input['validation_required'] ? $input['validation_required'] = 1 : $input['validation_required'] = 0;
             $input['user_id'] = $user_id;
             $input['created_by'] = $user_id;
             $input['survey_id'] = $request->survey_id;

@@ -11,6 +11,7 @@ class CommonCached
     const EXPIRE_SLOW                                       = 1200; //20 minutes
     //app settings
     const app_all_setting                                   = "api_cached:app_all_setting:";
+    const api_get_info                                      = "api_cached:api_get_info:";
 
     //API
     const api_list_province                                 = 'api_cached:api_list_province';

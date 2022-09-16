@@ -13,9 +13,16 @@ class SurveyStatisticCpntroller extends Controller
 {
     public function getSurveyStatistic(Request $request)
     {
+        $survey_id = $request->survey_id;
+        $is_anynomous = $request->is_anynomous ?? null;
+        $result = SurveyPartnerInputLine::getSurveyStatistic($survey_id,  $is_anynomous);
+        return $result;
+    }
+    public function getSurveyStatisticDetail(Request $request)
+    {
         $perPage = $request->per_page ?? 5;
         $page = $request->current_page ?? 1;
-        $is_anynomous = $request->is_anynomous ?? 0;
+        $is_anynomous = $request->is_anynomous;
         $survey_id = $request->survey_id;
         $question_id = $request->question_id;
         $list = '';

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\v1\client\AuthController;
 use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
+use App\Http\Controllers\v1\client\SettingController;
 use App\Http\Controllers\v1\client\SurveyCategoryController;
 use App\Http\Controllers\v1\client\SurveyController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputAnynomousController;
@@ -65,6 +66,7 @@ Route::group(['prefix' => 'v1'], function () {
     ], function ($router) {
         //
         Route::get('/settings', [ClientConfigController::class, 'settings']);
+        Route::get('/info', [SettingController::class, 'getInfo']);
         //auth
         Route::group([
             'prefix' => 'auth'
@@ -93,7 +95,8 @@ Route::group(['prefix' => 'v1'], function () {
         ], function ($router) {
             Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
             Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
-            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
+            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
+            Route::get('/get-statistic/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
             Route::group([
                 'prefix' => 'anynomous'
             ], function ($router) {
@@ -111,7 +114,8 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/template/update-logo/{template_id}', [SurveyTemplateController::class, 'updateLogoTemplate']);
                 Route::get('/template/get-detail/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
                 Route::post('/use-template/{survey_template_id}', [SurveyController::class, 'useSurveyTemplate']);
-                //Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
+                //Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
+                //            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
                 Route::group([
                     'middleware' => 'client_owner_survey',
 

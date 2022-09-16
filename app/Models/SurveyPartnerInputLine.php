@@ -47,16 +47,37 @@ class SurveyPartnerInputLine extends Model
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('question_id', $question_id)->count();
     }
 
-    public static  function getSurveyStatisticCheckbox($question_id, $survey_id, $is_anynomous)
+    public static  function getSurveyStatistic($survey_id, $is_anynomous = null)
+    {
+        $result = DB::table('survey_partner_inputs')
+            ->join('surveys', 'surveys.id', '=', 'survey_partner_inputs.survey_id')
+            ->join('partner_profiles', 'partner_profiles.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->join('provinces', 'provinces.code', '=', 'partner_profiles.province_code')
+            ->select(
+                'survey_partner_inputs.*',
+                'surveys.*',
+                'partner_profiles.*',
+                'provinces.name as province_name'
+            )
+            ->where('survey_partner_inputs.survey_id', $survey_id);
+        if ($is_anynomous != null) {
+            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
+        };
+        $result = $result->get()->groupBy('province_name');
+        return $result;
+    }
+
+    public static  function getSurveyStatisticCheckbox($question_id, $survey_id, $is_anynomous = null)
     {
         $result = DB::table('survey_partner_input_lines')
             ->join('survey_partner_inputs', 'survey_partner_inputs.id', '=', 'survey_partner_input_lines.partner_input_id')
             ->select(DB::raw('count(*) as total , survey_partner_input_lines.suggested_answer_id'))
             ->where('survey_partner_input_lines.survey_id', $survey_id)
-            ->where('survey_partner_input_lines.question_id', $question_id)
-            ->where('survey_partner_inputs.is_anynomous', $is_anynomous)
-            ->groupBy('suggested_answer_id')
-            ->get();
+            ->where('survey_partner_input_lines.question_id', $question_id);
+        if ($is_anynomous != null) {
+            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
+        };
+        $result = $result->groupBy('suggested_answer_id')->get();
         $data_results = array();
         foreach ($result as $key => $value) {
             $name_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($value->suggested_answer_id);
@@ -68,7 +89,7 @@ class SurveyPartnerInputLine extends Model
         return $data_results;
     }
 
-    public static  function getSurveyStatisticRating($question_id, $survey_id, $is_anynomous)
+    public static  function getSurveyStatisticRating($question_id, $survey_id, $is_anynomous = null)
     {
         $result = DB::table('survey_partner_input_lines')
             ->join('survey_question_answers', 'survey_question_answers.id', '=', 'survey_partner_input_lines.suggested_answer_id')
@@ -81,9 +102,11 @@ class SurveyPartnerInputLine extends Model
                 'survey_question_answers.value as name_answer'
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
-            ->where('survey_partner_input_lines.question_id', $question_id)
-            ->where('survey_partner_inputs.is_anynomous', $is_anynomous)
-            ->orderBy('survey_partner_input_lines.value_star_rating', 'asc')
+            ->where('survey_partner_input_lines.question_id', $question_id);
+        if ($is_anynomous != null) {
+            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
+        };
+        $result = $result->orderBy('survey_partner_input_lines.value_star_rating', 'asc')
             ->get()
             ->groupBy('name_answer');
 
@@ -93,28 +116,6 @@ class SurveyPartnerInputLine extends Model
             foreach ($d as $key => $item) {
                 $array['total'] = count($item);
                 $array['value_star_rating'] = $key;
-                // $d = [
-                //     "1" => [
-                //         "total" => 0,
-                //         "value_star_rating" => 1
-                //     ],
-                //     "2" => [
-                //         "total" => 0,
-                //         "value_star_rating" => 2
-                //     ],
-                //     "3" => [
-                //         "total" => 0,
-                //         "value_star_rating" => 3
-                //     ],
-                //     "4" => [
-                //         "total" => 0,
-                //         "value_star_rating" => 4
-                //     ],
-                //     "5" => [
-                //         "total" => 0,
-                //         "value_star_rating" => 5
-                //     ],
-                // ];
                 $d[$key] = $array;
             }
             $result[$k] = $d;
@@ -123,7 +124,7 @@ class SurveyPartnerInputLine extends Model
     }
 
 
-    public static  function getSurveyStatisticTextOrDate($perPage, $page, $question_id, $survey_id, $question_type, $is_anynomous)
+    public static  function getSurveyStatisticTextOrDate($perPage, $page, $question_id, $survey_id, $question_type, $is_anynomous = null)
     {
         $result = DB::table('survey_partner_input_lines')
             ->join('survey_partner_inputs', 'survey_partner_inputs.id', '=', 'survey_partner_input_lines.partner_input_id')
@@ -136,9 +137,11 @@ class SurveyPartnerInputLine extends Model
                 'survey_partner_input_lines.value_date_end'
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
-            ->where('survey_partner_input_lines.question_id', $question_id)
-            ->where('survey_partner_inputs.is_anynomous', $is_anynomous)
-            ->paginate($perPage, "*", "page", $page)->toArray();
+            ->where('survey_partner_input_lines.question_id', $question_id);
+        if ($is_anynomous != null) {
+            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
+        };
+        $result = $result->paginate($perPage, "*", "page", $page)->toArray();
         $result =    RemoveData::removeUnusedData($result);
         $data = [];
         foreach ($result['data'] as $key => $value) {
@@ -162,7 +165,7 @@ class SurveyPartnerInputLine extends Model
         return $result;
     }
 
-    public static  function getSurveyStatisticMatrix($question_id, $survey_id, $is_anynomous)
+    public static  function getSurveyStatisticMatrix($question_id, $survey_id, $is_anynomous = null)
     {
         $result = DB::table('survey_partner_input_lines')
             ->join('survey_question_answers', 'survey_question_answers.id', '=', 'survey_partner_input_lines.matrix_column_id')
@@ -173,10 +176,11 @@ class SurveyPartnerInputLine extends Model
                 'survey_question_answers.value as name_answer_column',
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
-            ->where('survey_partner_input_lines.question_id', $question_id)
-            ->where('survey_partner_inputs.is_anynomous', $is_anynomous)
-            ->get()
-            ->groupBy('name_answer_column');
+            ->where('survey_partner_input_lines.question_id', $question_id);
+        if ($is_anynomous != null) {
+            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
+        };
+        $result = $result->get()->groupBy('name_answer_column');
         foreach ($result as $key => $value) {
             foreach ($value as $k => $item) {
                 $input = json_encode($item);
