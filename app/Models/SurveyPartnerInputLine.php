@@ -37,6 +37,11 @@ class SurveyPartnerInputLine extends Model
     const NOT_DELETED  = 0;
     const DELETED  = 1;
 
+    public static  function getALLSurveyPartnerInputLine($survey_id = 10,  $question_id = 1)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('question_id', $question_id);
+    }
+
     public static  function getALL($perPage = 10,  $page = 1)
     {
         return self::where('deleted', self::NOT_DELETED)->orderBy('id', 'desc')->paginate($perPage, "*", "page", $page)->toArray();

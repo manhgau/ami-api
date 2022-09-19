@@ -117,42 +117,51 @@ class SurveyQuestionController extends Controller
             $ckey  = CommonCached::cache_find_survey_question_by_survey_id . "_" . $survey_id;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $list = SurveyQuestion::getListSurveyQuestion($survey_id);
-                if (!$list) {
+                $datas = SurveyQuestion::getListSurveyQuestion($survey_id);
+                if (!$datas) {
                     return ClientResponse::responseError('Không có bản ghi phù hợp');
-                }
-                $datas = [];
-                foreach ($list as $key => $value) {
-                    switch ($value['question_type']) { // question_id 
-                        case QuestionType::MULTI_FACTOR_MATRIX:
-                            $data_response = $value;
-                            $data_response['response'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($value['id'])->orWhere('matrix_question_id', $value['id'])->get();
-                            $datas[$key] = $data_response;
-                            break;
-                        case QuestionType::MULTI_CHOICE_CHECKBOX:
-                        case QuestionType::MULTI_CHOICE_RADIO:
-                        case QuestionType::MULTI_CHOICE_DROPDOWN:
-                        case QuestionType::RATING_STAR:
-                            $data_response = $value;
-                            $data_response['response'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($value['id'])->get();
-                            $datas[$key] = $data_response;
-                            break;
-                        case QuestionType::DATETIME_DATE:
-                        case QuestionType::DATETIME_DATE_RANGE:
-                        case QuestionType::QUESTION_ENDED_SHORT_TEXT:
-                        case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                            $data_response = $value;
-                            $datas[$key] = $data_response;
-                            break;
-                        default:
-                            return ClientResponse::responseError('question type không hợp lệ', $value['question_type']);
-                            break;
-                    }
                 }
                 CommonCached::storeData($ckey, $datas, true);
             }
-            return $datas;
             return ClientResponse::responseSuccess('OK', $datas);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getDetailSurveyQuestion(Request $request)
+    {
+        try {
+            $question_id = $request->question_id;
+            $ckey  = CommonCached::cache_find_survey_question_by_question_id . "_" . $question_id;
+            $detail = CommonCached::getData($ckey);
+            if (empty($detail)) {
+                $detail = SurveyQuestion::getDetailSurveyQuestion($question_id);
+                if (!$detail) {
+                    return ClientResponse::responseError('Không có bản ghi phù hợp');
+                }
+                switch ($detail['question_type']) { // question_id 
+                    case QuestionType::MULTI_FACTOR_MATRIX:
+                        $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'])->orWhere('matrix_question_id', $detail['id'])->get();
+                        break;
+                    case QuestionType::MULTI_CHOICE_CHECKBOX:
+                    case QuestionType::MULTI_CHOICE_RADIO:
+                    case QuestionType::MULTI_CHOICE_DROPDOWN:
+                    case QuestionType::RATING_STAR:
+                        $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'])->get();
+                        break;
+                    case QuestionType::DATETIME_DATE:
+                    case QuestionType::DATETIME_DATE_RANGE:
+                    case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+                    case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                        break;
+                    default:
+                        return ClientResponse::responseError('question type không hợp lệ', $value['question_type']);
+                        break;
+                }
+                CommonCached::storeData($ckey, $detail, true);
+            }
+            return ClientResponse::responseSuccess('OK', $detail);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
@@ -257,6 +266,10 @@ class SurveyQuestionController extends Controller
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
+    }
+
+    public static function updateManySurveyQuestion(Request $request)
+    {
     }
 
     public static function updateSurveyQuestionAnswer(Request $request)

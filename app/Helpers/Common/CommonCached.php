@@ -20,6 +20,7 @@ class CommonCached
     //
     const api_list_job_status                               = 'api_cached:api_list_job_status';
     const api_list_job_type                                 = 'api_cached:api_list_job_type';
+    const api_list_business_scope                           = 'api_cached:api_list_business_scope';
     const api_list_academic_level                           = 'api_cached:api_list_academic_level';
     const api_list_family_income_levels                     = 'api_cached:api_list_family_income_levels';
     const api_list_children_age_ranges                     = 'api_cached:api_list_children_age_ranges';
@@ -50,6 +51,7 @@ class CommonCached
     const cache_find_survey_user                             = 'api_cached:cache_find_survey_user';
     //
     const cache_find_survey_question_by_survey_id            = 'api_cached:cache_find_survey_question_by_survey_id';
+    const cache_find_survey_question_by_question_id          = 'api_cached:cache_find_survey_question_by_question_id';
     //
     const cache_find_survey_template                         = 'api_cached:cache_find_survey_template';
     const cache_find_survey_template_by_id                   = 'api_cached:cache_find_survey_template_by_id';

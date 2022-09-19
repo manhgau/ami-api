@@ -33,10 +33,12 @@ class SurveyQuestionAnswer extends Model
 
     public static  function getAllSurveyQuestionAnswer($id)
     {
-        return self::where('question_id', $id);
+        return self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'value')->where('question_id', $id);
     }
 
-    public static  function getDetailSurveyQuestionAnswer( $id)
+
+
+    public static  function getDetailSurveyQuestionAnswer($id)
     {
         return self::where('id', $id)->first();
     }
@@ -46,11 +48,8 @@ class SurveyQuestionAnswer extends Model
         return self::where('id', $id)->update($data);
     }
 
-    public static  function deleteSurveyQuestionAnswer( $id)
+    public static  function deleteSurveyQuestionAnswer($id)
     {
         return self::where('question_id', $id)->orWhere('matrix_question_id', $id)->delete();
     }
-
-
-
 }
