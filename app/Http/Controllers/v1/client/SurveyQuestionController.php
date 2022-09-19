@@ -270,6 +270,7 @@ class SurveyQuestionController extends Controller
 
     public static function updateManySurveyQuestion(Request $request)
     {
+        die('111');
     }
 
     public static function updateSurveyQuestionAnswer(Request $request)
