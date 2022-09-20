@@ -14,9 +14,22 @@ class SurveyStatisticCpntroller extends Controller
     public function getSurveyStatistic(Request $request)
     {
         $survey_id = $request->survey_id;
+        $group_by = $request->group_by;
+        $limit = $request->limit;
         $is_anynomous = $request->is_anynomous ?? null;
         $result = SurveyPartnerInputLine::getSurveyStatistic($survey_id,  $is_anynomous);
-        return $result;
+        if (!$result) {
+            return ClientResponse::responseError('Đã có lỗi xảy ra');
+        }
+        $data = $result->groupBy($group_by);
+        $array = [];
+        foreach ($data as $key => $item) {
+            $array['total'] = count($item);
+            $array['value_group_by'] = $key;
+            $data[$key] = $array;
+        }
+        $data = $data->sortByDesc('total')->take($limit);
+        return ClientResponse::responseSuccess('Thêm mới thành công', $data);
     }
     public function getSurveyStatisticDetail(Request $request)
     {
@@ -46,6 +59,7 @@ class SurveyStatisticCpntroller extends Controller
             case QuestionType::QUESTION_ENDED_LONG_TEXT:
                 $data =  SurveyPartnerInputLine::getSurveyStatisticTextOrDate($perPage, $page,  $question_id, $survey_id, $question_type, $is_anynomous);
                 $list = $data;
+                return $list;
                 break;
             case QuestionType::MULTI_FACTOR_MATRIX:
                 $data =  SurveyPartnerInputLine::getSurveyStatisticMatrix($question_id, $survey_id, $is_anynomous);

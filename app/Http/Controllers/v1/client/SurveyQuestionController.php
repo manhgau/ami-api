@@ -182,9 +182,19 @@ class SurveyQuestionController extends Controller
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $input = $request->all();
+            $input['title'] = $request->title;
             $input['updated_by'] = $user_id;
             $question_type = Str::lower($request->question_type);
+            if ($request->responde) {
+                $data['updated_by'] = $user_id;
+                foreach ($request->responde as $item) {
+                    $data['value'] = $item['value'];
+                    $result = SurveyQuestionAnswer::updateSurveyQuestionAnswer($data,  $item['question_answer_id']);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                }
+            }
             if ($question_type && $question_type !== $survey_user->question_type) {
                 if (QuestionType::checkQuestionTypeValid($question_type) === false) {
                     return ClientResponse::responseError('Lỗi ! Không có dạng câu hỏi khảo sát này.');
@@ -256,8 +266,6 @@ class SurveyQuestionController extends Controller
                         break;
                 }
             }
-            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $input['updated_by'] = $user_id;
             $update_survey = SurveyQuestion::updateSurveyQuestion($input, $request->question_id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -270,29 +278,21 @@ class SurveyQuestionController extends Controller
 
     public static function updateManySurveyQuestion(Request $request)
     {
-        die('111');
-    }
-
-    public static function updateSurveyQuestionAnswer(Request $request)
-    {
         try {
-            $validator = Validator::make($request->all(), [
-                'title' => 'string|max:255',
-            ]);
+            $validator = Validator::make($request->all(), []);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
-            $survey_user = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($request->answer_id);
-            if (!$survey_user) {
-                return ClientResponse::responseError('Không có bản ghi phù hợp');
-            }
-            $data = $request->all();
+            $input = $request->all();
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $data['updated_by'] = $user_id;
-            $update_survey = SurveyQuestionAnswer::updateSurvey($data, $request->answer_id);
-            if (!$update_survey) {
-                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            foreach ($input as $key => $value) {
+                $data['sequence'] = $value['sequence'];
+                $result = SurveyQuestion::updateSurveyQuestion($data,  $value['question_id']);
+                if (!$result) {
+                    return ClientResponse::responseError('Đã có lỗi xảy ra');
+                }
             }
             return ClientResponse::responseSuccess('Update thành công');
         } catch (\Exception $ex) {
