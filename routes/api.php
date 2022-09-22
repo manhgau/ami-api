@@ -6,6 +6,7 @@ use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
 use App\Http\Controllers\v1\client\ContactController;
 use App\Http\Controllers\v1\client\SettingController;
+use App\Http\Controllers\v1\client\SubscribesController;
 use App\Http\Controllers\v1\client\SurveyCategoryController;
 use App\Http\Controllers\v1\client\SurveyController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputAnynomousController;
@@ -72,6 +73,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/settings', [ClientConfigController::class, 'settings']);
         Route::get('/info', [SettingController::class, 'getInfo']);
         Route::post('contact', [ContactController::class, 'addContact']);
+        Route::post('subscribe', [SubscribesController::class, 'addSubscribes']);
         //auth
         Route::group([
             'prefix' => 'auth'

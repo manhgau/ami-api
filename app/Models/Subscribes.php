@@ -10,7 +10,7 @@ class Subscribes extends Model
         'name',
         'email',
         'phone',
-        'meesage',
+        'message',
         'status',
         'deleted',
         'created_by',

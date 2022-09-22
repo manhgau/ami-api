@@ -13,20 +13,20 @@ namespace App\Http\Controllers\v1\client;
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\Context;
-use App\Models\Contact;
 use App\Models\Subscribes;
+use App\Rules\Alphahypen;
 use Validator;
 
 
 class SubscribesController extends Controller
 {
-    public function addContact(Request $request)
+    public function addSubscribes(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|max:255',
-                'phone' => 'string|max:10',
+                'phone' => ['string', 'max:10', new Alphahypen],
                 'message' => 'string|max:255',
             ]);
             if ($validator->fails()) {
