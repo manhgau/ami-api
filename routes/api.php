@@ -37,6 +37,7 @@ use App\Http\Controllers\v1\partner\SurveyPartnerController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputLineController;
 use App\Http\Controllers\v1\partner\SurveyQuestionPartnerController;
+use App\Http\Controllers\v1\visitor\FeedbackController;
 use App\Http\Controllers\v1\visitor\PartnerContactsController;
 
 /*
@@ -225,6 +226,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group([
         'prefix' => 'visitor'
     ], function ($router) {
+        Route::get('feedback', [FeedbackController::class, 'getList']);
         Route::group([
             'prefix' => 'blog'
 

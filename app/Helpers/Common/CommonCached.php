@@ -44,6 +44,7 @@ class CommonCached
     //
     const cache_find_package_by_id                          = 'api_cached:cache_find_package_by_id:id';
     const cache_find_package                                = 'api_cached:cache_find_package';
+    const cache_find_feedback                               = 'api_cached:cache_find_feedback';
 
     //
     const cache_find_survey_category                         = 'api_cached:cache_find_survey_category';
