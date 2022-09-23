@@ -39,6 +39,16 @@ class SurveyPartnerInput extends Model
     {
         return self::where('survey_id', $survey_id)->count();
     }
+    public static  function getALLSurveyPartnerInput($survey_id,  $question_id, $partner_id)
+    {
+        return  DB::table('survey_partner_inputs')
+            ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
+            ->where('survey_partner_inputs.partner_id', $partner_id)
+            ->where('survey_partner_input_lines.survey_id', $survey_id)
+            ->where('survey_partner_input_lines.question_id', $question_id);
+    }
+
+
     public static  function getlistSurveyPartnerInput($perPage = 10,  $page = 1, $partner_id, $time_now)
     {
         return DB::table('survey_partner_inputs')

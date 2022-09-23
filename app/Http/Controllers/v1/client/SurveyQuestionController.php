@@ -117,42 +117,51 @@ class SurveyQuestionController extends Controller
             $ckey  = CommonCached::cache_find_survey_question_by_survey_id . "_" . $survey_id;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $list = SurveyQuestion::getListSurveyQuestion($survey_id);
-                if (!$list) {
+                $datas = SurveyQuestion::getListSurveyQuestion($survey_id);
+                if (!$datas) {
                     return ClientResponse::responseError('Không có bản ghi phù hợp');
-                }
-                $datas = [];
-                foreach ($list as $key => $value) {
-                    switch ($value['question_type']) { // question_id 
-                        case QuestionType::MULTI_FACTOR_MATRIX:
-                            $data_response = $value;
-                            $data_response['response'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($value['id'])->orWhere('matrix_question_id', $value['id'])->get();
-                            $datas[$key] = $data_response;
-                            break;
-                        case QuestionType::MULTI_CHOICE_CHECKBOX:
-                        case QuestionType::MULTI_CHOICE_RADIO:
-                        case QuestionType::MULTI_CHOICE_DROPDOWN:
-                        case QuestionType::RATING_STAR:
-                            $data_response = $value;
-                            $data_response['response'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($value['id'])->get();
-                            $datas[$key] = $data_response;
-                            break;
-                        case QuestionType::DATETIME_DATE:
-                        case QuestionType::DATETIME_DATE_RANGE:
-                        case QuestionType::QUESTION_ENDED_SHORT_TEXT:
-                        case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                            $data_response = $value;
-                            $datas[$key] = $data_response;
-                            break;
-                        default:
-                            return ClientResponse::responseError('question type không hợp lệ', $value['question_type']);
-                            break;
-                    }
                 }
                 CommonCached::storeData($ckey, $datas, true);
             }
-            return $datas;
             return ClientResponse::responseSuccess('OK', $datas);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getDetailSurveyQuestion(Request $request)
+    {
+        try {
+            $question_id = $request->question_id;
+            $ckey  = CommonCached::cache_find_survey_question_by_question_id . "_" . $question_id;
+            $detail = CommonCached::getData($ckey);
+            if (empty($detail)) {
+                $detail = SurveyQuestion::getDetailSurveyQuestion($question_id);
+                if (!$detail) {
+                    return ClientResponse::responseError('Không có bản ghi phù hợp');
+                }
+                switch ($detail['question_type']) { // question_id 
+                    case QuestionType::MULTI_FACTOR_MATRIX:
+                        $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'])->orWhere('matrix_question_id', $detail['id'])->get();
+                        break;
+                    case QuestionType::MULTI_CHOICE_CHECKBOX:
+                    case QuestionType::MULTI_CHOICE_RADIO:
+                    case QuestionType::MULTI_CHOICE_DROPDOWN:
+                    case QuestionType::RATING_STAR:
+                        $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'])->get();
+                        break;
+                    case QuestionType::DATETIME_DATE:
+                    case QuestionType::DATETIME_DATE_RANGE:
+                    case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+                    case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                        break;
+                    default:
+                        return ClientResponse::responseError('question type không hợp lệ', $value['question_type']);
+                        break;
+                }
+                CommonCached::storeData($ckey, $detail, true);
+            }
+            return ClientResponse::responseSuccess('OK', $detail);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
@@ -173,9 +182,19 @@ class SurveyQuestionController extends Controller
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $input = $request->all();
+            $input['title'] = $request->title;
             $input['updated_by'] = $user_id;
             $question_type = Str::lower($request->question_type);
+            if ($request->responde) {
+                $data['updated_by'] = $user_id;
+                foreach ($request->responde as $item) {
+                    $data['value'] = $item['value'];
+                    $result = SurveyQuestionAnswer::updateSurveyQuestionAnswer($data,  $item['question_answer_id']);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                }
+            }
             if ($question_type && $question_type !== $survey_user->question_type) {
                 if (QuestionType::checkQuestionTypeValid($question_type) === false) {
                     return ClientResponse::responseError('Lỗi ! Không có dạng câu hỏi khảo sát này.');
@@ -247,8 +266,6 @@ class SurveyQuestionController extends Controller
                         break;
                 }
             }
-            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $input['updated_by'] = $user_id;
             $update_survey = SurveyQuestion::updateSurveyQuestion($input, $request->question_id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -259,26 +276,23 @@ class SurveyQuestionController extends Controller
         }
     }
 
-    public static function updateSurveyQuestionAnswer(Request $request)
+    public static function updateManySurveyQuestion(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'title' => 'string|max:255',
-            ]);
+            $validator = Validator::make($request->all(), []);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
-            $survey_user = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($request->answer_id);
-            if (!$survey_user) {
-                return ClientResponse::responseError('Không có bản ghi phù hợp');
-            }
-            $data = $request->all();
+            $input = $request->all();
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $data['updated_by'] = $user_id;
-            $update_survey = SurveyQuestionAnswer::updateSurvey($data, $request->answer_id);
-            if (!$update_survey) {
-                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            foreach ($input as $key => $value) {
+                $data['sequence'] = $value['sequence'];
+                $result = SurveyQuestion::updateSurveyQuestion($data,  $value['question_id']);
+                if (!$result) {
+                    return ClientResponse::responseError('Đã có lỗi xảy ra');
+                }
             }
             return ClientResponse::responseSuccess('Update thành công');
         } catch (\Exception $ex) {

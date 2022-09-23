@@ -19,12 +19,15 @@ class SurveyPartner extends Model
             ->join('surveys', 'surveys.id', '=', 'survey_partners.survey_id')
             ->select(
                 'surveys.title',
+                'survey_partners.id',
+                'surveys.id as survey_id',
                 'surveys.category_id',
                 'surveys.description',
                 'surveys.start_time',
                 'surveys.end_time',
                 'surveys.real_end_time',
-                'surveys.count_questions'
+                'surveys.count_questions',
+                'surveys.view',
             )
             ->where('survey_partners.stattus', self::STATUS_ACTIVE)
             ->where('survey_partners.deleted', self::NOT_DELETED)
@@ -33,5 +36,27 @@ class SurveyPartner extends Model
             ->where('surveys.end_time', '>', $time_now)
             ->orderBy('surveys.created_at', 'desc')
             ->paginate($perPage, "*", "page", $page)->toArray();
+    }
+
+    public static  function getDetailSurveyPartner($survey_partner_id)
+    {
+        return DB::table('survey_partners')
+            ->join('surveys', 'surveys.id', '=', 'survey_partners.survey_id')
+            ->select(
+                'survey_partners.id',
+                'surveys.title',
+                'surveys.id as survey_id',
+                'surveys.category_id',
+                'surveys.description',
+                'surveys.start_time',
+                'surveys.end_time',
+                'surveys.real_end_time',
+                'surveys.count_questions',
+                'surveys.view',
+            )
+            ->where('survey_partners.stattus', self::STATUS_ACTIVE)
+            ->where('survey_partners.deleted', self::NOT_DELETED)
+            ->where('survey_partners.id', $survey_partner_id)
+            ->first();
     }
 }

@@ -55,7 +55,7 @@ class SurveyQuestion extends Model
 
     public static  function getListSurveyQuestion($survey_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')->get();
+        return self::select('id', 'title', 'description', 'is_page', 'page_id', 'sequence', 'question_type')->where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')->get();
     }
 
     public static  function getDetailSurveyQuestion($id)
@@ -68,6 +68,11 @@ class SurveyQuestion extends Model
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->update($data);
     }
 
+    public static  function updateManySurveyQuestion($data, $survey_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->update($data);
+    }
+
     public static function countQuestion($survey_id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->count();
@@ -76,5 +81,9 @@ class SurveyQuestion extends Model
     public static  function getSurveyQuestion($ids)
     {
         return self::where('deleted', self::NOT_DELETED)->whereIn('id', $ids)->get();
+    }
+    public static  function getQuestionOfSurvey($survey_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')->get();
     }
 }

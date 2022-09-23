@@ -37,6 +37,11 @@ class SurveyPartnerInputLine extends Model
     const NOT_DELETED  = 0;
     const DELETED  = 1;
 
+    public static  function getALLSurveyPartnerInputLine($survey_id = 10,  $question_id = 1)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('question_id', $question_id);
+    }
+
     public static  function getALL($perPage = 10,  $page = 1)
     {
         return self::where('deleted', self::NOT_DELETED)->orderBy('id', 'desc')->paginate($perPage, "*", "page", $page)->toArray();
@@ -50,20 +55,22 @@ class SurveyPartnerInputLine extends Model
     public static  function getSurveyStatistic($survey_id, $is_anynomous = null)
     {
         $result = DB::table('survey_partner_inputs')
-            ->join('surveys', 'surveys.id', '=', 'survey_partner_inputs.survey_id')
             ->join('partner_profiles', 'partner_profiles.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->join('provinces', 'provinces.code', '=', 'partner_profiles.province_code')
+            ->join('genders', 'genders.id', '=', 'partner_profiles.gender')
+            ->join('academic_levels', 'academic_levels.id', '=', 'partner_profiles.academic_level_id')
+            ->join('personal_income_levels', 'personal_income_levels.id', '=', 'partner_profiles.personal_income_level_id')
             ->select(
-                'survey_partner_inputs.*',
-                'surveys.*',
-                'partner_profiles.*',
-                'provinces.name as province_name'
+                'provinces.name as province_name',
+                'genders.name as gender_name',
+                'academic_levels.name as academic_level_name',
+                'personal_income_levels.name as personal_income_level_name'
             )
             ->where('survey_partner_inputs.survey_id', $survey_id);
         if ($is_anynomous != null) {
             $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
         };
-        $result = $result->get()->groupBy('province_name');
+        $result = $result->get();
         return $result;
     }
 
@@ -147,14 +154,17 @@ class SurveyPartnerInputLine extends Model
         foreach ($result['data'] as $key => $value) {
             switch ($question_type) {
                 case QuestionType::DATETIME_DATE:
-                    $data[$key] = $value->value_date;
+                    $input['value'] = $value->value_date;
+                    $data[$key] = $input;
                     break;
                 case QuestionType::DATETIME_DATE_RANGE:
-                    $data[$key] = $value->value_date_start . '-' . $value->value_date_end;
+                    $input['value'] = $value->value_date_start . '-' . $value->value_date_end;
+                    $data[$key] = $input;
                     break;
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                 case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                    $data[$key] = $value->value_text_box;
+                    $input['value'] = $value->value_text_box;
+                    $data[$key] = $input;
                     break;
                 default:
                     return false;
