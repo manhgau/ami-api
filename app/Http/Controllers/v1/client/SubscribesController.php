@@ -36,12 +36,12 @@ class SubscribesController extends Controller
             $input = $request->all();
             $input['status'] = Subscribes::STATUS_ACTIVE;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $user_id ? $input['user_id'] = $user_id : $input['user_id'] = null;
+            $input['created_by'] = $user_id;
             $result = Subscribes::create($input);
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            return ClientResponse::responseSuccess('Thêm mới thành công', $result);
+            return ClientResponse::responseSuccess('Ok', $result);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

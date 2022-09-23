@@ -206,6 +206,7 @@ Route::group(['prefix' => 'v1'], function () {
 
             ], function ($router) {
                 Route::get('/', [SurveyPartnerController::class, 'getlistSurveyPartner']);
+                Route::get('/{survey_partner_id}', [SurveyPartnerController::class, 'getDetailSurveyPartner']);
                 Route::get('/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
                 Route::get('/question/{survey_id}', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
                 Route::post('/input/{survey_id}', [SurveyPartnerInputController::class, 'answerSurvey']);
