@@ -11,6 +11,7 @@ use App\Http\Controllers\v1\client\SurveyCategoryController;
 use App\Http\Controllers\v1\client\SurveyController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputAnynomousController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputLineAnynomousController;
+use App\Http\Controllers\v1\client\SurveyQuestionAnswersController;
 use App\Http\Controllers\v1\client\SurveyQuestionController;
 use App\Http\Controllers\v1\client\SurveyStatisticCpntroller;
 use App\Http\Controllers\v1\client\SurveyTemplateController;
@@ -121,6 +122,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/template/update-logo/{template_id}', [SurveyTemplateController::class, 'updateLogoTemplate']);
                 Route::get('/template/get-detail/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
                 Route::post('/use-template/{survey_template_id}', [SurveyController::class, 'useSurveyTemplate']);
+                Route::get('/question/answer/{question_id}', [SurveyQuestionAnswersController::class, 'getListAnswers']);
                 //Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
                 //            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
                 Route::group([

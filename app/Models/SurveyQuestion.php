@@ -43,6 +43,8 @@ class SurveyQuestion extends Model
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+    const LOGIC = 1;
+    const UNLOGIC = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
 

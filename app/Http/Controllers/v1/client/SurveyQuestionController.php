@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\client;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
+use App\Models\LogicAnswers;
 use App\Models\Package;
 use App\Models\QuestionType;
 use App\Models\SurveyQuestion;
@@ -32,19 +33,21 @@ class SurveyQuestionController extends Controller
             if ((SurveyQuestion::countQuestion($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_questions)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
             }
+            $input['validation_required'] = $request->validation_required;
             $input['validation_required'] ? $input['validation_required'] = 1 : $input['validation_required'] = 0;
             $input['user_id'] = $user_id;
             $input['created_by'] = $user_id;
             $input['survey_id'] = $request->survey_id;
             $question_type = Str::lower($request->question_type);
-
             if (QuestionType::checkQuestionTypeValid($question_type) === false) {
                 return ClientResponse::responseError('Lỗi ! Không có dạng câu hỏi khảo sát này.');
             }
+
             switch ($question_type) {
                 case QuestionType::MULTI_CHOICE_CHECKBOX:
                 case QuestionType::MULTI_CHOICE_RADIO:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
+                case QuestionType::YES_NO:
                 case QuestionType::RATING_STAR:
                     $servey_question = SurveyQuestion::createSurveyQuestion($input);
                     if (!$servey_question) {
@@ -148,6 +151,7 @@ class SurveyQuestionController extends Controller
                     case QuestionType::MULTI_CHOICE_RADIO:
                     case QuestionType::MULTI_CHOICE_DROPDOWN:
                     case QuestionType::RATING_STAR:
+                    case QuestionType::YES_NO:
                         $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'])->get();
                         break;
                     case QuestionType::DATETIME_DATE:
@@ -211,6 +215,7 @@ class SurveyQuestionController extends Controller
                     case QuestionType::MULTI_CHOICE_RADIO:
                     case QuestionType::MULTI_CHOICE_DROPDOWN:
                     case QuestionType::RATING_STAR:
+                    case QuestionType::YES_NO:
                         $servey_question = SurveyQuestion::createSurveyQuestion($input);
                         if (!$servey_question) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -265,6 +270,19 @@ class SurveyQuestionController extends Controller
                         return ClientResponse::responseError('question type không hợp lệ', $question_type);
                         break;
                 }
+            }
+            if ($request->logic) {
+                $input['logic'] = SurveyQuestion::LOGIC;
+                $data_insert = $request->logic;
+                foreach ($data_insert as $key => $item) {
+                    $data = $item;
+                    $data['survey_id'] = $request->survey_id;
+                    $data['question_id'] = $request->question_id;
+                    $data['question_type'] = $question_type;
+                    $data_insert[$key] = $data;
+                }
+                $insert_logic = LogicAnswers::insertLogic($data_insert);
+                dd($insert_logic);
             }
             $update_survey = SurveyQuestion::updateSurveyQuestion($input, $request->question_id);
             if (!$update_survey) {

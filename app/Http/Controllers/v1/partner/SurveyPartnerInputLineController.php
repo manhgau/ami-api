@@ -39,6 +39,7 @@ class SurveyPartnerInputLineController extends Controller
                         case QuestionType::MULTI_CHOICE_CHECKBOX:
                         case QuestionType::MULTI_CHOICE_RADIO:
                         case QuestionType::MULTI_CHOICE_DROPDOWN:
+                        case QuestionType::YES_NO:
                             $target_ids = $request->suggested_answer_id;
                             if (is_array($target_ids)) {
                                 $data_input = [];

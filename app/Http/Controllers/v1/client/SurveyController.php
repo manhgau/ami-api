@@ -20,26 +20,27 @@ use Illuminate\Http\Request;
 
 class SurveyController extends Controller
 {
-    public function createSurvey(Request $request) {
+    public function createSurvey(Request $request)
+    {
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
             ]);
-            if($validator->fails()){
-                $errorString = implode(",",$validator->messages()->all());
+            if ($validator->fails()) {
+                $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
             $input = $request->all();
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            
-            if((Survey:: countSurvey($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_projects)){
+
+            if ((Survey::countSurvey($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_projects)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
             $input['user_id'] = $user_id;
             $input['id'] = CFunction::generateUuid();
             $input['created_by'] = $user_id;
-            $survey=Survey::create($input);
-            if(!$survey){
+            $survey = Survey::create($input);
+            if (!$survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
             return ClientResponse::responseSuccess('Thêm mới thành công', $survey);
@@ -48,12 +49,13 @@ class SurveyController extends Controller
         }
     }
 
-    public function getListSurvey( Request $request) {
+    public function getListSurvey(Request $request)
+    {
         try {
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $ckey  = CommonCached::cache_find_survey_user . "_" . $user_id."_" . $perPage . "_" . $page;
+            $ckey  = CommonCached::cache_find_survey_user . "_" . $user_id . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
                 $datas = Survey::getListSurvey($perPage,  $page, $user_id);
@@ -87,14 +89,15 @@ class SurveyController extends Controller
         }
     }
 
-    public function editSurvey(Request $request, $id) {
+    public function editSurvey(Request $request, $id)
+    {
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'category_id' => 'required|integer|max:20',
             ]);
-            if($validator->fails()){
-                $errorString = implode(",",$validator->messages()->all());
+            if ($validator->fails()) {
+                $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
             $survey_user = Survey::getDetailSurvey($id);
@@ -105,8 +108,8 @@ class SurveyController extends Controller
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;
-            $update_survey= Survey::updateSurvey($data, $id);
-            if(!$update_survey){
+            $update_survey = Survey::updateSurvey($data, $id);
+            if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
             return ClientResponse::responseSuccess('Update thành công');
@@ -115,14 +118,15 @@ class SurveyController extends Controller
         }
     }
 
-    public function deleteSurvey($id) {
+    public function deleteSurvey($id)
+    {
         try {
             $survey_user = Survey::getDetailSurvey($id);
             if (!$survey_user) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             $del_survey = Survey::updateSurvey(['deleted' => Survey::DELETED], $id);
-            if(!$del_survey){
+            if (!$del_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
             return ClientResponse::responseSuccess('Xóa thành công');
@@ -131,7 +135,8 @@ class SurveyController extends Controller
         }
     }
 
-    public function getQuestionType() {
+    public function getQuestionType()
+    {
         try {
             $result = QuestionType::getTypeQuestionList();
             if (!$result) {
@@ -143,100 +148,101 @@ class SurveyController extends Controller
         }
     }
 
-    public static function useSurveyTemplate(Request $request) {
+    public static function useSurveyTemplate(Request $request)
+    {
         try {
             $survey_template_id = $request->survey_template_id;
             $survey_template = SurveyTemplate::getDetailSurveyTemplate($survey_template_id);
-            if(!$survey_template){
+            if (!$survey_template) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            
-            if((Survey:: countSurvey($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_projects) || (Package::checkTheUserPackage($user_id)->limit_projects) === 0 ){
+
+            if ((Survey::countSurvey($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_projects) || (Package::checkTheUserPackage($user_id)->limit_projects) === 0) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
             $input['user_id'] = $user_id;
-            $input['title'] = $request->title??$survey_template->title.' copy';
+            $input['title'] = $request->title ?? $survey_template->title . ' copy';
             $input['category_id'] = $survey_template->category_id;
             $input['active'] = Survey::ACTIVE;
             $input['id'] = CFunction::generateUuid();
             $input['created_by'] = $user_id;
-            $survey=Survey::create($input);
-            if(!$survey){
+            $survey = Survey::create($input);
+            if (!$survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
             $survey_template_question = SurveyTemplateQuestion::getSurveyTemplateQuestion($survey_template_id);
             $ids = [];
-            foreach($survey_template_question   as $key=> $value){   
+            foreach ($survey_template_question   as $key => $value) {
                 $ids[$key] = $value['survey_question_id'];
             }
             $question = SurveyQuestion::getSurveyQuestion($ids);
-            foreach($question  as $key=> $value){
-                $question_type =$value['question_type'];
-                $input_question =[];
+            foreach ($question  as $key => $value) {
+                $question_type = $value['question_type'];
+                $input_question = [];
                 $input_question = ($value);
-                $input_question =json_encode($input_question);
-                $input_question =json_decode($input_question, true);
-                $input_question['survey_id']= $survey->id;
-                $input_question['created_by']= $user_id;
-                switch ($question_type)
-                {
+                $input_question = json_encode($input_question);
+                $input_question = json_decode($input_question, true);
+                $input_question['survey_id'] = $survey->id;
+                $input_question['created_by'] = $user_id;
+                switch ($question_type) {
                     case QuestionType::MULTI_CHOICE_CHECKBOX:
                     case QuestionType::MULTI_CHOICE_RADIO:
                     case QuestionType::MULTI_CHOICE_DROPDOWN:
-                    case QuestionType::RATING_STAR: 
+                    case QuestionType::RATING_STAR:
+                    case QuestionType::YES_NO:
                         $servey_question = SurveyQuestion::createSurveyQuestion($input_question);
-                        if(!$servey_question){
+                        if (!$servey_question) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
                         }
                         $data = [];
                         $survey_question_answer = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($value['id'])->get();
-                        foreach ($survey_question_answer as $key => $item){
-                                unset($item['id']);
-                                $data_insert = $item;
-                                $data_insert['question_id'] = $servey_question->id;
-                                $data[$key] = json_decode(json_encode($data_insert),true);
+                        foreach ($survey_question_answer as $key => $item) {
+                            unset($item['id']);
+                            $data_insert = $item;
+                            $data_insert['question_id'] = $servey_question->id;
+                            $data[$key] = json_decode(json_encode($data_insert), true);
                         }
                         $result = SurveyQuestionAnswer::insert($data);
-                        if(!$result){
+                        if (!$result) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
                         }
-                        $result_data[$key]=  $servey_question;
+                        $result_data[$key] =  $servey_question;
                         break;
                     case QuestionType::DATETIME_DATE:
                     case QuestionType::DATETIME_DATE_RANGE:
-                    case QuestionType::QUESTION_ENDED_SHORT_TEXT: 
+                    case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                     case QuestionType::QUESTION_ENDED_LONG_TEXT:
                         $servey_question = SurveyQuestion::createSurveyQuestion($input_question);
-                        if(!$servey_question){
+                        if (!$servey_question) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
                         }
-                        $result_data[$key]=  $servey_question;
+                        $result_data[$key] =  $servey_question;
                         break;
-                    case QuestionType::MULTI_FACTOR_MATRIX: 
+                    case QuestionType::MULTI_FACTOR_MATRIX:
                         $servey_question = SurveyQuestion::createSurveyQuestion($input_question);
-                        if(!$servey_question){
+                        if (!$servey_question) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
                         }
                         $data = [];
                         $survey_question_answer = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($value['id'])->orWhere('matrix_question_id', $value['id'])->get();
-                        foreach ($survey_question_answer as $key => $item){
-                                unset($item['id']);
-                                $data_insert = $item;
-                                if($item['matrix_question_id']){
-                                    $data_insert['matrix_question_id'] = $servey_question->id;
-                                    $data_insert['question_id'] = 0;
-                                }else{
-                                    $data_insert['question_id'] = $servey_question->id;
-                                    $data_insert['matrix_question_id'] = 0;
-                                }
-                                $data[$key] = json_decode(json_encode($data_insert),true);
+                        foreach ($survey_question_answer as $key => $item) {
+                            unset($item['id']);
+                            $data_insert = $item;
+                            if ($item['matrix_question_id']) {
+                                $data_insert['matrix_question_id'] = $servey_question->id;
+                                $data_insert['question_id'] = 0;
+                            } else {
+                                $data_insert['question_id'] = $servey_question->id;
+                                $data_insert['matrix_question_id'] = 0;
+                            }
+                            $data[$key] = json_decode(json_encode($data_insert), true);
                         }
                         $result = SurveyQuestionAnswer::insert($data);
-                        if(!$result){
+                        if (!$result) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
                         }
-                        $result_data[$key]=  $servey_question;
+                        $result_data[$key] =  $servey_question;
                         break;
                     default:
                         return ClientResponse::responseError('question type không hợp lệ', $question_type);
@@ -247,8 +253,5 @@ class SurveyController extends Controller
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
-
     }
 }
-
-
