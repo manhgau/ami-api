@@ -28,7 +28,7 @@ class SurveyPartnerInputController extends Controller
                         return ClientResponse::responseError($errorString);
                     }
                     $survey = Survey::getDetailSurvey($request->survey_id);
-                    if ($survey->state == Survey::STATUS_CLOSED) {
+                    if ($survey->state == Survey::STATUS_COMPLETED) {
                         return ClientResponse::responseError('Khảo sát đã đóng');
                     }
                     $partner_id = $partner->id ?? 0;
@@ -45,7 +45,7 @@ class SurveyPartnerInputController extends Controller
                     }
                     $count = SurveyPartnerInput::countSurveyPartnerInput($result->survey_id);
                     if ($count == $survey->number_of_response_required) {
-                        Survey::updateSurvey(['state' => Survey::STATUS_CLOSED], $request->survey_id);
+                        Survey::updateSurvey(['state' => Survey::STATUS_COMPLETED], $request->survey_id);
                     }
                     return ClientResponse::responseSuccess('Thêm mới thành công', $result);
                 } catch (\Exception $ex) {
@@ -75,7 +75,7 @@ class SurveyPartnerInputController extends Controller
                 $survey = Survey::getDetailSurvey($request->survey_id);
                 $input['number_of_response'] = $survey->number_of_response + 1;
                 if ($input['number_of_response']  == $survey->number_of_response_required) {
-                    $input['state'] = Survey::STATUS_CLOSED;
+                    $input['state'] = Survey::STATUS_COMPLETED;
                     Survey::updateSurvey($input, $request->survey_id);
                 }
                 Survey::updateSurvey($input, $request->survey_id);

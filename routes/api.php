@@ -104,7 +104,8 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
             Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
             Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
-            Route::get('/get-statistic/{survey_id}/target/{group_by}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
+            Route::get('/get-diagram/{survey_id}/target/{group_by}', [SurveyStatisticCpntroller::class, 'getDiagramSurvey']);
+            Route::get('/get-statistic/{survey_id}', [SurveyStatisticCpntroller::class, 'getStatisticSurvey']);
             Route::group([
                 'prefix' => 'anynomous'
             ], function ($router) {

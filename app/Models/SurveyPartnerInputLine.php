@@ -52,7 +52,7 @@ class SurveyPartnerInputLine extends Model
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('question_id', $question_id)->count();
     }
 
-    public static  function getSurveyStatistic($survey_id, $is_anynomous = null)
+    public static  function getDiagramSurvey($survey_id, $is_anynomous = null)
     {
         $result = DB::table('survey_partner_inputs')
             ->join('partner_profiles', 'partner_profiles.partner_id', '=', 'survey_partner_inputs.partner_id')
