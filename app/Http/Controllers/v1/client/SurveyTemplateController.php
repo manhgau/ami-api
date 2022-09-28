@@ -57,28 +57,4 @@ class SurveyTemplateController extends Controller
             return ClientResponse::responseError($ex->getMessage());
         }
     }
-
-    public function updateLogoTemplate(Request $request)
-    {
-        try {
-            $survey_template = SurveyTemplate::getDetailSurveyTemplate($request->template_id);
-            if (!$survey_template) {
-                return ClientResponse::responseError('Không có bản ghi phù hợp');
-            }
-            if ($file = $request->file('logo')) {
-                $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
-                $path = env('FTP_PATH') . "uploads/survey/logo";
-                $result = FtpSv::upload($file, $name, $path, $request->template_id);
-                $all_settings = AppSetting::getAllSetting();
-                //setting
-                $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
-                if (!$result) {
-                    return ClientResponse::responseError('Đã có lỗi xảy ra');
-                }
-                return ClientResponse::responseSuccess('OK', $image_domain .  $result);
-            }
-        } catch (\Exception $ex) {
-            return ClientResponse::responseError($ex->getMessage());
-        }
-    }
 }

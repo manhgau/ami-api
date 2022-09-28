@@ -29,6 +29,8 @@ class User extends Model
         'active_expire',
         'forgot_code',
         'forgot_expire',
+        'logo',
+        'avatar',
     ];
 
     /**
@@ -51,14 +53,16 @@ class User extends Model
     ];
 
 
-    public static function generatePasswordHash($plain_text){
+    public static function generatePasswordHash($plain_text)
+    {
         return  Hash::make($plain_text);
     }
 
-    public static function checkPasswordHash($plain_text, $hashed_password){
+    public static function checkPasswordHash($plain_text, $hashed_password)
+    {
         if (Hash::check($plain_text, $hashed_password)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -67,59 +71,91 @@ class User extends Model
      *
      * @return array
      */
-    public function getJWTCustomClaims() {
+    const LOGO                          = 'logo';
+    const AVATAR                        = 'avatar';
+
+
+    public static function getTypeImage()
+    {
+        return [
+            self::LOGO,
+            self::AVATAR,
+        ];
+    }
+    public static function checkImageValid($type)
+    {
+        $list = self::getTypeImage();
+        if (in_array($type, $list)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public static  function updateProfile($data, $id)
+    {
+        return self::where('id', $id)->update($data);
+    }
+
+    public function getJWTCustomClaims()
+    {
         return [];
     }
 
-    public static function findUserByEmail($email){
+    public static function findUserByEmail($email)
+    {
         return User::where('email', $email)->first();
     }
 
-    public static function findUserActiveEmail($user_id, $active_code){
-        return User::where('id', $user_id)->whereRaw("BINARY `active_code`= ?",[$active_code])->first();
+    public static function findUserActiveEmail($user_id, $active_code)
+    {
+        return User::where('id', $user_id)->whereRaw("BINARY `active_code`= ?", [$active_code])->first();
     }
 
-    public static function findUserForgotPassByEmail($user_id, $forgot_code){
-        return User::where('id', $user_id)->whereRaw("BINARY `forgot_code`= ?",[$forgot_code])->first();
+    public static function findUserForgotPassByEmail($user_id, $forgot_code)
+    {
+        return User::where('id', $user_id)->whereRaw("BINARY `forgot_code`= ?", [$forgot_code])->first();
     }
 
-    public static function checkUserByEmail($email){
+    public static function checkUserByEmail($email)
+    {
         $count = User::where('email', $email)->count();
-        if($count > 0){
+        if ($count > 0) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
-    public static function loginAttempByEmail($email, $password){
+    public static function loginAttempByEmail($email, $password)
+    {
         $rs = false;
         $user = self::findUserByEmail($email);
-        if($user){
-            if(self::checkPasswordHash($password, $user->password??'')){
+        if ($user) {
+            if (self::checkPasswordHash($password, $user->password ?? '')) {
                 $rs = $user;
             }
         }
         return $rs;
     }
 
-    public static function getUserFromAccessToken(){
+    public static function getUserFromAccessToken()
+    {
         $token = request()->header('Authorization');
         $access_token = JWTClient::checkAccessToken($token);
-        if($access_token){
-            $aid = $access_token->aid??0;
-            $tokenInfo = UserRefreshToken::where('aid',$aid)->select(['user_id'])->first();
-            if($tokenInfo){
+        if ($access_token) {
+            $aid = $access_token->aid ?? 0;
+            $tokenInfo = UserRefreshToken::where('aid', $aid)->select(['user_id'])->first();
+            if ($tokenInfo) {
                 $user = $tokenInfo->user;
-                if($user){
+                if ($user) {
                     return $user;
-                }else{
+                } else {
                     return false;
                 }
-            }else{
+            } else {
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
     }

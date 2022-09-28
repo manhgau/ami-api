@@ -5,6 +5,8 @@ namespace App\Http\Controllers\v1\client;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
+use App\Helpers\FtpSv;
+use App\Models\AppSetting;
 use App\Models\LogicAnswers;
 use App\Models\Package;
 use App\Models\QuestionType;
@@ -32,6 +34,13 @@ class SurveyQuestionController extends Controller
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             if ((SurveyQuestion::countQuestion($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_questions)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
+            }
+            if ($file = $request->file('background')) {
+                $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
+
+                $path = env('FTP_PATH') . FtpSv::BACKGROUND_QUESTION_FOLDER;
+                $image = FtpSv::upload($file, $name, $path, $request->template_id, FtpSv::BACKGROUND_QUESTION_FOLDER);
+                $input['background'] = $image;
             }
             $input['validation_required'] = $request->validation_required;
             $input['validation_required'] ? $input['validation_required'] = 1 : $input['validation_required'] = 0;
@@ -210,6 +219,13 @@ class SurveyQuestionController extends Controller
                 $input['survey_id'] = $request->survey_id;
                 $input['title'] = $request->title ?? $survey_user->title;
                 $input['sequence'] = $request->sequence ?? $survey_user->sequence;
+                if ($file = $request->file('background')) {
+                    $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
+
+                    $path = env('FTP_PATH') . FtpSv::BACKGROUND_QUESTION_FOLDER;
+                    $image = FtpSv::upload($file, $name, $path, $request->template_id, FtpSv::BACKGROUND_QUESTION_FOLDER);
+                    $input['background'] = $image;
+                }
                 switch ($question_type) {
                     case QuestionType::MULTI_CHOICE_CHECKBOX:
                     case QuestionType::MULTI_CHOICE_RADIO:
@@ -283,6 +299,13 @@ class SurveyQuestionController extends Controller
                 }
                 $insert_logic = LogicAnswers::insertLogic($data_insert);
                 dd($insert_logic);
+            }
+            if ($file = $request->file('background')) {
+                $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
+
+                $path = env('FTP_PATH') . FtpSv::BACKGROUND_QUESTION_FOLDER;
+                $image = FtpSv::upload($file, $name, $path, $request->template_id, FtpSv::BACKGROUND_QUESTION_FOLDER);
+                $input['background'] = $image;
             }
             $update_survey = SurveyQuestion::updateSurveyQuestion($input, $request->question_id);
             if (!$update_survey) {

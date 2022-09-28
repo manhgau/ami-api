@@ -11,6 +11,7 @@ class AppSetting extends Model
     const FRONTEND_WEB_URL                  = 'frontend_web_url';
     const IMAGE_DOMAIN                      = 'image_domain';
     const IS_MAINTAIN                       = 'is_maintain';
+    const LOGO                              = 'logo';
 
     protected $fillable = [
         'key',
@@ -44,10 +45,5 @@ class AppSetting extends Model
             }
         }
         return $val;
-    }
-
-    public static function getInfo()
-    {
-        return self::get();
     }
 }

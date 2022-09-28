@@ -43,6 +43,15 @@ class SurveyStatisticCpntroller extends Controller
             return ClientResponse::responseError($ex->getMessage());
         }
     }
+
+    public function getSurveyDetail(Request $request)
+    {
+        try {
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
     public function getSurveyStatisticDetail(Request $request)
     {
         try {
