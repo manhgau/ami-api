@@ -17,6 +17,7 @@ class CommonCached
     const api_list_province                                 = 'api_cached:api_list_province';
     const api_list_district                                 = 'api_cached:api_list_district';
     const api_list_ward                                     = 'api_cached:api_list_ward';
+    const api_template_image                                = 'api_cached:api_template_image';
     //
     const api_list_job_status                               = 'api_cached:api_list_job_status';
     const api_list_job_type                                 = 'api_cached:api_list_job_type';

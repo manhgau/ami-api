@@ -5,6 +5,7 @@ use App\Http\Controllers\v1\client\AuthController;
 use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
 use App\Http\Controllers\v1\client\ContactController;
+use App\Http\Controllers\v1\client\ImagesController;
 use App\Http\Controllers\v1\client\SettingController;
 use App\Http\Controllers\v1\client\SubscribesController;
 use App\Http\Controllers\v1\client\SurveyCategoryController;
@@ -119,6 +120,8 @@ Route::group(['prefix' => 'v1'], function () {
                 'middleware' => 'client_auth',
             ], function ($router) {
                 Route::post('/create', [SurveyController::class, 'createSurvey']);
+                Route::post('/question/upload-image', [ImagesController::class, 'uploadImage']);
+                Route::get('/question/template-image', [ImagesController::class, 'getTemplateImage']);
                 Route::get('/get-list', [SurveyController::class, 'getListSurvey']);
                 Route::get('/get-detail/{survey_id}', [SurveyController::class, 'getDetailSurvey']);
                 Route::get('/template/get-list', [SurveyTemplateController::class, 'getListSurveyTemplate']);

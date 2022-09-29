@@ -11,7 +11,7 @@ class FtpSv
     const AVATAR_FOLDER                        = 'uploads/user/avatar';
     const BACKGROUND_SURVEY_FOLDER             = 'uploads/survey/background';
     const BACKGROUND_QUESTION_FOLDER           = 'uploads/question/background';
-    public static function upload($file, $file_name, $ftpPath, $template_id, $temp_path)
+    public static function upload($file, $file_name, $ftpPath, $temp_path)
     {
         try {
             $folder = dirname(dirname(dirname(__FILE__))) . '/public/' . $temp_path;

@@ -12,6 +12,7 @@ class QuestionType
     const MULTI_CHOICE_RADIO                    = 'radio';
     const MULTI_CHOICE_DROPDOWN                 = 'dropdown';
     const YES_NO                                = 'yes_no';
+    const NUMBER                                = 'number';
 
     const DATETIME_DATE                         = 'date';
     const DATETIME_DATE_RANGE                   = 'date_range';
@@ -35,6 +36,7 @@ class QuestionType
             self::MULTI_CHOICE_RADIO,
             self::MULTI_CHOICE_DROPDOWN,
             self::YES_NO,
+            self::NUMBER,
             self::DATETIME_DATE,
             self::DATETIME_DATE_RANGE,
             self::QUESTION_ENDED_SHORT_TEXT,
