@@ -17,10 +17,16 @@ class BlogController extends Controller
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
             $category_id = $request->category_id;
-            $ckey  = CommonCached::cache_find_blog . "_" . $perPage . "_" . $page . "_" . $category_id;
+            $type = $request->type ?? $type = Blog::BLOG;
+
+            if (!Blog::checkTypeValid($type)) {
+                return ClientResponse::responseError('Không có loại bài viết này');
+            }
+
+            $ckey  = CommonCached::cache_find_blog . "_" . $perPage . "_" . $page . "_" . $category_id . "_" . $type;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = Blog::getAll($perPage, $page,  $category_id);
+                $datas = Blog::getAll($perPage, $page,  $category_id, $type);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }
@@ -57,15 +63,21 @@ class BlogController extends Controller
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
             $slug = $request->slug;
+            $type = $request->type ?? $type = Blog::BLOG;
+            if (!Blog::checkTypeValid($type)) {
+                return ClientResponse::responseError('Không có loại bài viết này');
+            }
+
             $detail = Blog::getDetail($slug);
             if (!$detail) {
                 return ClientResponse::responseSuccess('Không có bản ghi liên quan');
             }
+            $type = Blog::BLOG;
             $category_id = $detail->category_id;
-            $ckey  = CommonCached::cache_find_blog_relate . "_" . $perPage . "_" . $page . "_" . $category_id . "_" . $slug;
+            $ckey  = CommonCached::cache_find_blog_relate . "_" . $perPage . "_" . $page . "_" . $category_id . "_" . $slug . "_" . $type;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = Blog::getBlogRelate($perPage, $page,  $category_id, $slug);
+                $datas = Blog::getBlogRelate($perPage, $page,  $category_id, $slug, $type);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }

@@ -25,10 +25,14 @@ class BlogCategoryController extends Controller
         try {
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
-            $ckey  = CommonCached::cache_find_blog_category . "_" . $perPage . "_" . $page;
+            $type = $request->type ?? $type = BlogCategory::BLOG;
+            if (!BlogCategory::checkTypeValid($type)) {
+                return ClientResponse::responseError('Không có loại bài viết này');
+            }
+            $ckey  = CommonCached::cache_find_blog_category . "_" . $perPage . "_" . $page . "_" . $type;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = BlogCategory::getAll($perPage,  $page);
+                $datas = BlogCategory::getAll($perPage,  $page, $type);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }
