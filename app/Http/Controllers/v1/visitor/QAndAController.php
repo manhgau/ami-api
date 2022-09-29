@@ -20,7 +20,7 @@ class QAndAController extends Controller
             $ckey  = CommonCached::cache_find_qa . "_" . $perPage . "_" . $page . "_" . $category_id;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = QAndA::getAll($perPage, $page,  $category_id);
+                $datas = QAndA::getAll($perPage, $page, $category_id);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }

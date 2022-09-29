@@ -18,33 +18,50 @@ class Blog extends Model
         'created_at',
         'updated_at',
         'deleted',
-        'thumbnail'
+        'thumbnail',
+        'type'
     ];
-
-    // protected $fillGetList = [
-    //     'title',
-    //     'slug',
-    //     'description',
-    //     'category_id',
-    //     'status',
-    //     'created_by',
-    //     'updated_by',
-    //     'created_at',
-    //     'updated_at',
-    //     'deleted',
-    //     'thumbnail'
-    // ];
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+    const BLOG  = 'blog';
+    const SOLUTION  = 'solution';
 
-    public static  function getALL($perPage = 10, $page = 1,  $category_id = null)
+    public static function getType()
+    {
+        return [
+            self::BLOG,
+            self::SOLUTION,
+        ];
+    }
+
+    public static function checkTypeValid($type)
+    {
+        $list = self::getType();
+        if (in_array($type, $list)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public static  function getALL($perPage = 10, $page = 1,  $category_id = null, $type)
     {
         $blogs =  DB::table('blogs')
             ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
-            ->select('blogs.id', 'blogs.title', 'blogs.slug', 'blogs.description', 'blogs.category_id', 'blogs.thumbnail', 'blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)->where('blogs.status', self::STATUS_ACTIVE)->orderBy('blogs.id', 'desc');
+            ->select(
+                'blogs.id',
+                'blogs.title',
+                'blogs.slug',
+                'blogs.description',
+                'blogs.category_id',
+                'blogs.thumbnail',
+                'blog_categories.title as category_name',
+                'blogs.type'
+            )
+            ->where('blogs.deleted', self::NOT_DELETED)->where('blogs.status', self::STATUS_ACTIVE)
+            ->where('blogs.type', $type)->orderBy('blogs.id', 'desc');
         if ($category_id != null) {
             $blogs->where('blogs.category_id', $category_id);
         }
@@ -52,11 +69,21 @@ class Blog extends Model
         return $datas;
     }
 
-    public static  function getBlogRelate($perPage = 10, $page = 1,  $category_id, $slug)
+    public static  function getBlogRelate($perPage = 10, $page = 1,  $category_id, $slug, $type)
     {
         $blogs =  DB::table('blogs')
             ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
-            ->select('blogs.id', 'blogs.title', 'blogs.slug', 'blogs.description', 'blogs.category_id', 'blogs.thumbnail', 'blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)->where('blogs.status', self::STATUS_ACTIVE)->orderBy('blogs.id', 'desc')
+            ->select(
+                'blogs.id',
+                'blogs.title',
+                'blogs.slug',
+                'blogs.description',
+                'blogs.category_id',
+                'blogs.thumbnail',
+                'blog_categories.title as category_name',
+                'blogs.type'
+            )
+            ->where('blogs.deleted', self::NOT_DELETED)->where('blogs.status', self::STATUS_ACTIVE)->where('blogs.type', $type)->orderBy('blogs.id', 'desc')
             ->where('blogs.category_id', $category_id)->where('blogs.slug', '<>', $slug);
         $datas = $blogs->paginate($perPage, "*", "page", $page)->toArray();
         return $datas;
@@ -66,7 +93,7 @@ class Blog extends Model
     {
         $blog =  DB::table('blogs')
             ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
-            ->select('blogs.*','blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)
+            ->select('blogs.*', 'blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)
             ->where('blogs.status', self::STATUS_ACTIVE)
             ->where('blogs.slug', $slug)->first();
         return $blog;
