@@ -101,18 +101,21 @@ class SurveyController extends Controller
                 return ClientResponse::responseError($errorString);
             }
             $survey_user = Survey::getDetailSurvey($id);
-            if (!$survey_user) {
-                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            if ($survey_user->Survey::STATUS_DRAFT) {
+                if (!$survey_user) {
+                    return ClientResponse::responseError('Không có bản ghi phù hợp');
+                }
+                $data = $request->all();
+                $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+                $data['user_id'] = $user_id;
+                $data['updated_by'] = $user_id;
+                $update_survey = Survey::updateSurvey($data, $id);
+                if (!$update_survey) {
+                    return ClientResponse::responseError('Đã có lỗi xảy ra');
+                }
+                return ClientResponse::responseSuccess('Update thành công');
             }
-            $data = $request->all();
-            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $data['user_id'] = $user_id;
-            $data['updated_by'] = $user_id;
-            $update_survey = Survey::updateSurvey($data, $id);
-            if (!$update_survey) {
-                return ClientResponse::responseError('Đã có lỗi xảy ra');
-            }
-            return ClientResponse::responseSuccess('Update thành công');
+            return ClientResponse::responseError('Không được sửa khảo sát này');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
@@ -180,7 +183,7 @@ class SurveyController extends Controller
             foreach ($question  as $key => $value) {
                 $question_type = $value['question_type'];
                 $input_question = [];
-                $input_question = ($value);
+                $input_question = $value;
                 $input_question = json_encode($input_question);
                 $input_question = json_decode($input_question, true);
                 $input_question['survey_id'] = $survey->id;

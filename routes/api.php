@@ -122,7 +122,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/create', [SurveyController::class, 'createSurvey']);
                 Route::post('/question/upload-image', [ImagesController::class, 'uploadImage']);
                 Route::get('/question/template-image', [ImagesController::class, 'getTemplateImage']);
-                Route::get('/get-list', [SurveyController::class, 'getListSurvey']);
+                Route::get('/', [SurveyController::class, 'getListSurvey']);
                 Route::get('/get-detail/{survey_id}', [SurveyController::class, 'getDetailSurvey']);
                 Route::get('/template/get-list', [SurveyTemplateController::class, 'getListSurveyTemplate']);
                 Route::get('/template/get-detail/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
@@ -135,7 +135,7 @@ Route::group(['prefix' => 'v1'], function () {
 
                 ], function ($router) {
                     Route::put('/edit/{id}', [SurveyController::class, 'editSurvey']);
-                    Route::delete('/del/{id}', [SurveyController::class, 'deleteSurvey']);
+                    Route::delete('/delete/{id}', [SurveyController::class, 'deleteSurvey']);
                     Route::post('/question/{survey_id}', [SurveyQuestionController::class, 'createSurveyQuestion']);
                     Route::get('/question/{survey_id}', [SurveyQuestionController::class, 'getListSurveyQuestion']);
                     Route::get('/question/{survey_id}/detail/{question_id}', [SurveyQuestionController::class, 'getDetailSurveyQuestion']);
@@ -219,6 +219,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/input/{survey_id}', [SurveyPartnerInputController::class, 'answerSurvey']);
                 Route::put('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
                 Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
+                Route::get('/exit/{survey_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'exitSurvey']);
             });
         });
 

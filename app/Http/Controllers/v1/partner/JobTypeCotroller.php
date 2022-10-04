@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
+use App\Models\ConfigPrices;
 use App\Models\JobType;
 
 class JobTypeCotroller extends Controller

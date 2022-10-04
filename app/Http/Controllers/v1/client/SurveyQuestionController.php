@@ -50,7 +50,6 @@ class SurveyQuestionController extends Controller
                 case QuestionType::MULTI_CHOICE_RADIO:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
                 case QuestionType::YES_NO:
-                case QuestionType::RATING_STAR:
                     $servey_question = SurveyQuestion::createSurveyQuestion($input);
                     if (!$servey_question) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -77,6 +76,7 @@ class SurveyQuestionController extends Controller
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                 case QuestionType::QUESTION_ENDED_LONG_TEXT:
                 case QuestionType::NUMBER:
+                case QuestionType::RATING_STAR:
                     $servey_question = SurveyQuestion::createSurveyQuestion($input);
                     if (!$servey_question) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -146,16 +146,17 @@ class SurveyQuestionController extends Controller
                 if (!$detail) {
                     return ClientResponse::responseError('Không có bản ghi phù hợp');
                 }
+                $random =  $detail->validation_random;
                 switch ($detail['question_type']) { // question_id 
                     case QuestionType::MULTI_FACTOR_MATRIX:
-                        $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'])->orWhere('matrix_question_id', $detail['id'])->get();
+                        $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'],  $random)->orWhere('matrix_question_id', $detail['id'])->get();
                         break;
                     case QuestionType::MULTI_CHOICE_CHECKBOX:
                     case QuestionType::MULTI_CHOICE_RADIO:
                     case QuestionType::MULTI_CHOICE_DROPDOWN:
                     case QuestionType::RATING_STAR:
                     case QuestionType::YES_NO:
-                        $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'])->get();
+                        $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'],  $random)->get();
                         break;
                     case QuestionType::DATETIME_DATE:
                     case QuestionType::DATETIME_DATE_RANGE:

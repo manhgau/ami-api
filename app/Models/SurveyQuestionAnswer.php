@@ -31,9 +31,13 @@ class SurveyQuestionAnswer extends Model
         return self::create($data);
     }
 
-    public static  function getAllSurveyQuestionAnswer($id)
+    public static  function getAllSurveyQuestionAnswer($id,  $random = 0)
     {
-        return self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'value')->where('question_id', $id);
+        $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'value')->where('question_id', $id);
+        if ($random == 1) {
+            $query = $query->inRandomOrder();
+        }
+        return $query;
     }
 
 

@@ -17,6 +17,7 @@ class SurveyPartnerInputLine extends Model
         'skipped',
         'answer_type',
         'value_text_box',
+        'value_number',
         'value_date',
         'value_date_start',
         'value_date_end',

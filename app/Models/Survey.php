@@ -18,6 +18,7 @@ class Survey extends Model
         'description',
         'active',
         'state',
+        'skip_count',
         'start_time',
         'end_time',
         'real_end_time',
