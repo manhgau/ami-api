@@ -33,5 +33,8 @@ class PartnerProfile extends Model
     const NOT_DELETED  = 0;
     const DELETED  = 1;
 
+    public static  function updatePartnerProfile($data, $id)
+    {
+        return self::whre('delete', self::DELETED)->where('id', $id)->update($data);
+    }
 }
-

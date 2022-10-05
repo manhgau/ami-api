@@ -35,9 +35,14 @@ class SurveyPartnerInput extends Model
         return self::where('id', $id)->update($data);
     }
 
-    public static  function countSurveyPartnerInput($survey_id)
+    public static  function countSurveyInput($survey_id)
     {
-        return self::where('survey_id', $survey_id)->count();
+        return self::where('survey_id', $survey_id)->where('state', self::STATE_DONE)->count();
+    }
+
+    public static  function countSurveyPartnerInput($survey_id, $partner_id)
+    {
+        return self::where('survey_id', $survey_id)->where('partner_id', $partner_id)->where('state', self::STATE_DONE)->count();
     }
     public static  function getALLSurveyPartnerInput($survey_id,  $question_id, $partner_id)
     {
