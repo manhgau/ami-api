@@ -8,8 +8,11 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
 use App\Models\Partner;
+use App\Models\PartnerPointLog;
+use App\Models\PartnerProfile;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
+use App\Models\SurveyPartnerInputLine;
 use Carbon\Carbon;
 
 class SurveyPartnerInputController extends Controller
@@ -28,7 +31,7 @@ class SurveyPartnerInputController extends Controller
                         return ClientResponse::responseError($errorString);
                     }
                     $survey = Survey::getDetailSurvey($request->survey_id);
-                    if ($survey->state == Survey::STATUS_CLOSED) {
+                    if ($survey->state == Survey::STATUS_COMPLETED) {
                         return ClientResponse::responseError('Khảo sát đã đóng');
                     }
                     $partner_id = $partner->id ?? 0;
@@ -42,10 +45,6 @@ class SurveyPartnerInputController extends Controller
                     $result = SurveyPartnerInput::create($input);
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    }
-                    $count = SurveyPartnerInput::countSurveyPartnerInput($result->survey_id);
-                    if ($count == $survey->number_of_response_required) {
-                        Survey::updateSurvey(['state' => Survey::STATUS_CLOSED], $request->survey_id);
                     }
                     return ClientResponse::responseSuccess('Thêm mới thành công', $result);
                 } catch (\Exception $ex) {
@@ -61,27 +60,45 @@ class SurveyPartnerInputController extends Controller
     {
         $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
         if ($tokenInfo) {
-            try {
-                $validator = Validator::make($request->all(), []);
-                if ($validator->fails()) {
-                    $errorString = implode(",", $validator->messages()->all());
-                    return ClientResponse::responseError($errorString);
-                }
-                $partner_input_id = $request->partner_input_id;
-                $result = SurveyPartnerInput::updateSurveyPartnerInput(['state' => SurveyPartnerInput::STATE_DONE], $partner_input_id);
-                if (!$result) {
-                    return ClientResponse::responseError('Đã có lỗi xảy ra');
-                }
-                $survey = Survey::getDetailSurvey($request->survey_id);
-                $input['number_of_response'] = $survey->number_of_response + 1;
-                if ($input['number_of_response']  == $survey->number_of_response_required) {
-                    $input['state'] = Survey::STATUS_CLOSED;
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $partner_input_id = $request->partner_input_id;
+                    $partner_id = $partner->id ?? 0;
+                    $result = SurveyPartnerInput::updateSurveyPartnerInput(['state' => SurveyPartnerInput::STATE_DONE], $partner_input_id);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    $survey = Survey::getDetailSurvey($request->survey_id);
+                    $count_survey_input = SurveyPartnerInput::countSurveyInput($request->survey_id);
+                    $input['number_of_response'] = $survey->number_of_response + 1;
+                    if ($count_survey_input == $survey->number_of_response_required) {
+                        $input['state'] = Survey::STATUS_COMPLETED;
+                        $input['number_of_response'] = $survey->number_of_response;
+                    }
+                    $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($request->survey_id, $partner_id);
+                    if ($count_survey_partner_input <= $survey->attempts_limit_max && $count_survey_partner_input >= $survey->attempts_limit_min) {
+                        $number_input = SurveyPartnerInputLine::countSurveyPartnerInputLine($partner_input_id, $request->survey_id);
+                        $point = $number_input * $survey->point;
+                        $data['point'] = $point;
+                        $data['kpi_point'] = $point;
+                        PartnerProfile::updatePartnerProfile($data, $partner_id);
+                        $input_log['partner_id'] = $partner_id;
+                        $partner_profile = Partner::getPartnerById($partner_id);
+                        $input_log['phone'] = $partner_profile->phone;
+                        $input_log['partner_name'] = $partner_profile->name;
+                        $input_log['type'] = PartnerPointLog::CONG;
+                        $input_log['point'] =  $point;
+                        $input_log['action '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
+                        $input_log['object_type '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
+                        $input_log['object_id '] = $request->survey_id;
+                        PartnerPointLog::create($input_log);
+                    }
                     Survey::updateSurvey($input, $request->survey_id);
+                    return ClientResponse::responseSuccess('Cập nhập thành công', $result);
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
                 }
-                Survey::updateSurvey($input, $request->survey_id);
-                return ClientResponse::responseSuccess('Cập nhập thành công', $result);
-            } catch (\Exception $ex) {
-                return ClientResponse::responseError($ex->getMessage());
             }
         } else {
             return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');

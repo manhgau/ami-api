@@ -18,6 +18,7 @@ class Survey extends Model
         'description',
         'active',
         'state',
+        'skip_count',
         'start_time',
         'end_time',
         'real_end_time',
@@ -43,8 +44,9 @@ class Survey extends Model
     const INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
-    const STATUS_OPEN = 'open';
-    const STATUS_CLOSED = 'closed';
+    const STATUS_DRAFT = 'draft';
+    const STATUS_ON_PROGRESS = 'on_progress';
+    const STATUS_COMPLETED = 'completed';
 
     public static  function getListSurvey($perPage = 10,  $page = 1, $user_id)
     {

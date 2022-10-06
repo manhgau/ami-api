@@ -11,8 +11,10 @@ class SurveyQuestion extends Model
     protected $fillable = [
         'survey_id',
         'title',
+        'background',
         'description',
         'sequence',
+        'skip_count',
         'question_type',
         'is_scored_question',
         'matrix_subtype',
@@ -22,6 +24,7 @@ class SurveyQuestion extends Model
         'comment_message',
         'comment_count_as_answer',
         'validation_required',
+        'validation_random',
         'validation_length_min',
         'validation_length_max',
         'validation_min_float_value',
@@ -43,6 +46,8 @@ class SurveyQuestion extends Model
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+    const LOGIC = 1;
+    const UNLOGIC = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
 
@@ -61,6 +66,11 @@ class SurveyQuestion extends Model
     public static  function getDetailSurveyQuestion($id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->first();
+    }
+
+    public static  function checkQuestionOfSurvey($survey_id, $question_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('id', $question_id)->first();
     }
 
     public static  function updateSurveyQuestion($data, $id)

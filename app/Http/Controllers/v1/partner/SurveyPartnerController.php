@@ -25,7 +25,6 @@ class SurveyPartnerController extends Controller
             if ($partner) {
                 try {
                     $partner_id = $partner->id ?? 0;
-                    //dd($partner_id);
                     $perPage = $request->per_page ?? 5;
                     $page = $request->current_page ?? 1;
                     $time_now = Carbon::now();
