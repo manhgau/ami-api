@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 
 class SurveyController extends Controller
 {
+    
     public function createSurvey(Request $request) {
         try {
             $validator = Validator::make($request->all(), [
