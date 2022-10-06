@@ -135,6 +135,7 @@ class SurveyQuestionController extends Controller
         }
     }
 
+
     public function getDetailSurveyQuestion(Request $request)
     {
         try {
@@ -154,7 +155,6 @@ class SurveyQuestionController extends Controller
                     case QuestionType::MULTI_CHOICE_CHECKBOX:
                     case QuestionType::MULTI_CHOICE_RADIO:
                     case QuestionType::MULTI_CHOICE_DROPDOWN:
-                    case QuestionType::RATING_STAR:
                     case QuestionType::YES_NO:
                         $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'],  $random)->get();
                         break;
@@ -163,6 +163,7 @@ class SurveyQuestionController extends Controller
                     case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                     case QuestionType::QUESTION_ENDED_LONG_TEXT:
                     case QuestionType::NUMBER:
+                    case QuestionType::RATING_STAR:
                         break;
                     default:
                         return ClientResponse::responseError('question type không hợp lệ', $detail['question_type']);

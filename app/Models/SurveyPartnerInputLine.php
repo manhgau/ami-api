@@ -55,7 +55,7 @@ class SurveyPartnerInputLine extends Model
     public static  function countSurveyPartnerInputLine($partner_input_id, $survey_id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)
-            ->where('skipped', 1)->where('partner_input_id', $partner_input_id)->count();
+            ->where('skipped', 0)->where('partner_input_id', $partner_input_id)->count();
     }
 
     public static  function getDiagramSurvey($survey_id, $is_anynomous = null)
