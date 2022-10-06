@@ -44,6 +44,7 @@ class SurveyQuestionPartnerController extends Controller
                                 case QuestionType::MULTI_CHOICE_CHECKBOX:
                                 case QuestionType::MULTI_CHOICE_RADIO:
                                 case QuestionType::MULTI_CHOICE_DROPDOWN:
+                                case QuestionType::YES_NO:
                                     $data_response = $value;
                                     $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id)->get();
                                     $data_response['response'] = SurveyPartnerInput::getALLSurveyPartnerInput($survey_id, $question_id, $partner_id)

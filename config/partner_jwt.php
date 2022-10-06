@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by NguyenPV.
  * User: nguyenpv
@@ -6,6 +7,6 @@
  * Time: 14:09
  */
 return [
-    'ttl' => env('PARTNER_JWT_TTL', 15),    //15 phút
+    'ttl' => env('PARTNER_JWT_TTL', 15000),    //15 phút
     'refresh_ttl' => env('PARTNER_JWT_REFRESH_TTL', 43200), //30 ngày tính theo số phút
 ];

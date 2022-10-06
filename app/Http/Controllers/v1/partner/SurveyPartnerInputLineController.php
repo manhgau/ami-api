@@ -7,6 +7,7 @@ use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Context;
 use App\Models\QuestionType;
+use App\Models\Survey;
 use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
 
@@ -20,16 +21,39 @@ class SurveyPartnerInputLineController extends Controller
             $partner = $tokenInfo->partner;
             if ($partner) {
                 try {
-                    $validator = Validator::make($request->all(), []);
+                    $validator = Validator::make($request->all(), [
+                        'survey_id' => 'string|exists:App\Models\Survey,id',
+                        'partner_input_id' => 'integer|exists:App\Models\SurveyPartnerInput,id',
+                        'question_id' => 'integer|exists:App\Models\SurveyQuestion,id',
+                    ]);
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
+                        dd($errorString);
                         return ClientResponse::responseError($errorString);
                     }
                     $question_id = $request->question_id ?? 0;
                     $input['question_id']   = $question_id;
                     $input['survey_id']     = $request->survey_id;
                     $input['partner_input_id']   = $request->partner_input_id;
-                    $survey_question = SurveyQuestion::getDetailSurveyQuestion($question_id);
+                    $survey_question = SurveyQuestion::checkQuestionOfSurvey($input['survey_id'], $question_id);
+                    if (!$survey_question) {
+                        return ClientResponse::responseError('Khảo sát không có câu hỏi này');
+                    }
+                    $input['skipper']   = $request->skipper ?? 0;
+                    if ($input['skipper']) {
+                        $result = SurveyPartnerInputLine::create($input);
+                        if (!$result) {
+                            return ClientResponse::responseError('Đã có lỗi xảy ra');
+                        }
+                        SurveyQuestion::updateSurveyQuestion(
+                            [
+                                "skip_count" => $survey_question->skip_count + 1,
+                                "view" => $survey_question->view + 1,
+                            ],
+                            $question_id
+                        );
+                        return ClientResponse::responseSuccess('Trả lời thành công', $result);
+                    }
                     $input['question_sequence']     = $survey_question->sequence;
                     $input['answer_type']   = $survey_question->question_type;
                     $input['created_by']   = $partner->id ?? 0;
@@ -39,88 +63,151 @@ class SurveyPartnerInputLineController extends Controller
                         case QuestionType::MULTI_CHOICE_CHECKBOX:
                         case QuestionType::MULTI_CHOICE_RADIO:
                         case QuestionType::MULTI_CHOICE_DROPDOWN:
+                        case QuestionType::YES_NO:
+                            $validator = Validator::make($request->all(), [
+                                'suggested_answer_id' => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                ],
+                            ]);
+                            if ($validator->fails()) {
+                                $errorString = implode(",", $validator->messages()->all());
+                                return ClientResponse::responseError($errorString);
+                            }
                             $target_ids = $request->suggested_answer_id;
                             if (is_array($target_ids)) {
-                                $data_input = [];
-                                foreach ($target_ids  as $key => $value) {
+                                foreach ($target_ids  as  $value) {
                                     $input['suggested_answer_id'] = $value;
-                                    $data_input[$key] = $input;
                                 }
-                                $result = SurveyPartnerInputLine::insert($data_input);
-                                if (!$result) {
-                                    return ClientResponse::responseError('Đã có lỗi xảy ra');
-                                }
-                                return ClientResponse::responseSuccess('Thêm mới thành công', $result);
                             }
                             break;
                         case QuestionType::RATING_STAR:
-                            $data = $request->all();
-                            if (is_array($data)) {
-                                $data_input = [];
-                                foreach ($data  as $key => $value) {
-                                    $input['suggested_answer_id'] = $value['suggested_answer_id'];
-                                    $input['value_star_rating'] = $value['value_star_rating'];
-                                    $data_input[$key] = $input;
-                                }
-                                $result = SurveyPartnerInputLine::insert($data_input);
-                                if (!$result) {
-                                    return ClientResponse::responseError('Đã có lỗi xảy ra');
-                                }
-                                return ClientResponse::responseSuccess('Thêm mới thành công', $result);
+                            $validator = Validator::make($request->all(), [
+                                'suggested_answer_id' => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                ],
+                                'value_star_rating' => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                ],
+                            ]);
+                            if ($validator->fails()) {
+                                $errorString = implode(",", $validator->messages()->all());
+                                return ClientResponse::responseError($errorString);
                             }
+
+                            $input['suggested_answer_id'] = $request->suggested_answer_id;
+                            $input['value_star_rating'] = $request->value_star_rating;
+                            $result = SurveyPartnerInputLine::insert($input);
                             break;
                         case QuestionType::DATETIME_DATE_RANGE:
+                            $validator = Validator::make($request->all(), [
+                                'value_date_start' => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                    'date'
+                                ],
+                                'value_date_end' => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                    'date'
+                                ],
+                            ]);
+                            if ($validator->fails()) {
+                                $errorString = implode(",", $validator->messages()->all());
+                                return ClientResponse::responseError($errorString);
+                            }
                             $input['value_date_start'] = $request->value_date_start ?? '';
                             $input['value_date_end'] = $request->value_date_end ?? '';
-                            $result = SurveyPartnerInputLine::create($input);
-                            if (!$result) {
-                                return ClientResponse::responseError('Đã có lỗi xảy ra');
-                            }
-                            return ClientResponse::responseSuccess('Thêm mới thành công', $result);
                             break;
                         case QuestionType::DATETIME_DATE:
-                            $input['value_date'] = $request->value_date ?? '';
-                            $result = SurveyPartnerInputLine::create($input);
-                            if (!$result) {
-                                return ClientResponse::responseError('Đã có lỗi xảy ra');
+                            $validator = Validator::make($request->all(), [
+                                'value_date' => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                    'date'
+                                ],
+                            ]);
+                            if ($validator->fails()) {
+                                $errorString = implode(",", $validator->messages()->all());
+                                return ClientResponse::responseError($errorString);
                             }
-                            return ClientResponse::responseSuccess('Thêm mới thành công', $result);
+                            $input['value_date'] = $request->value_date ?? '';
                             break;
                         case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                         case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                            $input['value_text_box'] = $request->value_text_box ?? '';
-                            $result = SurveyPartnerInputLine::create($input);
-                            if (!$result) {
-                                return ClientResponse::responseError('Đã có lỗi xảy ra');
+                            $validator = Validator::make($request->all(), [
+                                'value_text_box' => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                    'string',
+                                    $survey_question->validation_required ? 'max:' . $survey_question->validation_length_max : '',
+                                    $survey_question->validation_required ? 'min:' . $survey_question->validation_length_min : ''
+                                ],
+                            ]);
+                            if ($validator->fails()) {
+                                $errorString = implode(",", $validator->messages()->all());
+                                return ClientResponse::responseError($errorString);
                             }
-                            return ClientResponse::responseSuccess('Thêm mới thành công', $result);
+                            $input['value_text_box'] = $request->value_text_box ?? '';
+                            break;
+                        case QuestionType::NUMBER:
+                            $validator = Validator::make($request->all(), [
+                                'value_number' => [
+                                    'integer',
+                                    $survey_question->validation_required ? 'required' : '',
+                                    'max:' . $survey_question->validation_length_max,
+                                    'min:' . $survey_question->validation_length_min
+                                ],
+                            ]);
+                            if ($validator->fails()) {
+                                $errorString = implode(",", $validator->messages()->all());
+                                return ClientResponse::responseError($errorString);
+                            }
+                            $input['value_number'] = (int)$request->value_number ?? '';
                             break;
                         case QuestionType::MULTI_FACTOR_MATRIX:
                             $data = $request->all();
                             if (is_array($data)) {
-                                $data_input = [];
-                                foreach ($data  as $key => $value) {
+                                foreach ($data  as  $value) {
                                     $input['matrix_row_id'] = $value['matrix_row_id'];
                                     $input['matrix_column_id'] = $value['matrix_column_id'];
-                                    $data_input[$key] = $input;
                                 }
-                                $result = SurveyPartnerInputLine::insert($data_input);
-                                if (!$result) {
-                                    return ClientResponse::responseError('Đã có lỗi xảy ra');
-                                }
-                                return ClientResponse::responseSuccess('Thêm mới thành công', $result);
                             }
                             break;
                         default:
                             return ClientResponse::responseError('question type không hợp lệ', $input['answer_type']);
                             break;
                     }
+                    $result = SurveyPartnerInputLine::create($input);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    SurveyQuestion::updateSurveyQuestion(
+                        [
+                            "number_of_response" => $survey_question->number_of_response + 1,
+                            "view" => $survey_question->view + 1,
+                        ],
+                        $question_id
+                    );
+                    return ClientResponse::responseSuccess('Trả lời thành công', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
                 }
             }
         } else {
             return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
+    }
+    public function exitSurvey(Request $request)
+    {
+        try {
+            $survey_id = $request->survey_id;
+            $question_id = $request->question_id;
+            $survey = Survey::getDetailSurvey($survey_id);
+            $question = SurveyQuestion::getDetailSurveyQuestion($question_id);
+            $skipped_survey = Survey::updateSurvey(['skip_count' => $survey->$survey + 1], $survey_id);
+            $skipped_question = SurveyQuestion::updateSurveyQuestion(['skip_count' => $question->$survey + 1], $question_id);
+            if (!$skipped_survey && !$skipped_question) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            return ClientResponse::responseSuccess('OK');
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
         }
     }
 }

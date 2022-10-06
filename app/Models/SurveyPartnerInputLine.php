@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Helpers\RemoveData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Query\JoinClause;
 
 class SurveyPartnerInputLine extends Model
 {
@@ -17,6 +16,7 @@ class SurveyPartnerInputLine extends Model
         'skipped',
         'answer_type',
         'value_text_box',
+        'value_number',
         'value_date',
         'value_date_start',
         'value_date_end',
@@ -52,7 +52,13 @@ class SurveyPartnerInputLine extends Model
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('question_id', $question_id)->count();
     }
 
-    public static  function getSurveyStatistic($survey_id, $is_anynomous = null)
+    public static  function countSurveyPartnerInputLine($partner_input_id, $survey_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)
+            ->where('skipped', 0)->where('partner_input_id', $partner_input_id)->count();
+    }
+
+    public static  function getDiagramSurvey($survey_id, $is_anynomous = null)
     {
         $result = DB::table('survey_partner_inputs')
             ->join('partner_profiles', 'partner_profiles.partner_id', '=', 'survey_partner_inputs.partner_id')

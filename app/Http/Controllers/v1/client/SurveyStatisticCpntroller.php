@@ -11,14 +11,14 @@ use Illuminate\Http\Request;
 
 class SurveyStatisticCpntroller extends Controller
 {
-    public function getSurveyStatistic(Request $request)
+    public function getDiagramSurvey(Request $request)
     {
         try {
             $survey_id = $request->survey_id;
             $group_by = $request->group_by;
             $limit = $request->limit;
             $is_anynomous = $request->is_anynomous ?? null;
-            $result = SurveyPartnerInputLine::getSurveyStatistic($survey_id,  $is_anynomous);
+            $result = SurveyPartnerInputLine::getDiagramSurvey($survey_id,  $is_anynomous);
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
@@ -30,7 +30,23 @@ class SurveyStatisticCpntroller extends Controller
                 $data[$key] = $array;
             }
             $data = $data->sortByDesc('total')->take($limit);
-            return ClientResponse::responseSuccess('Thêm mới thành công', $data);
+            return ClientResponse::responseSuccess('Ok', $data);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getStatisticSurvey(Request $request)
+    {
+        try {
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getSurveyDetail(Request $request)
+    {
+        try {
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
@@ -50,6 +66,7 @@ class SurveyStatisticCpntroller extends Controller
             $question_type = $survey_questions->question_type;
             switch ($question_type) {
                 case QuestionType::MULTI_CHOICE_CHECKBOX:
+                case QuestionType::YES_NO:
                 case QuestionType::MULTI_CHOICE_RADIO:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
                     $data =  SurveyPartnerInputLine::getSurveyStatisticCheckbox($question_id, $survey_id, $is_anynomous);

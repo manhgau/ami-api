@@ -5,12 +5,14 @@ use App\Http\Controllers\v1\client\AuthController;
 use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
 use App\Http\Controllers\v1\client\ContactController;
+use App\Http\Controllers\v1\client\ImagesController;
 use App\Http\Controllers\v1\client\SettingController;
 use App\Http\Controllers\v1\client\SubscribesController;
 use App\Http\Controllers\v1\client\SurveyCategoryController;
 use App\Http\Controllers\v1\client\SurveyController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputAnynomousController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputLineAnynomousController;
+use App\Http\Controllers\v1\client\SurveyQuestionAnswersController;
 use App\Http\Controllers\v1\client\SurveyQuestionController;
 use App\Http\Controllers\v1\client\SurveyStatisticCpntroller;
 use App\Http\Controllers\v1\client\SurveyTemplateController;
@@ -94,6 +96,7 @@ Route::group(['prefix' => 'v1'], function () {
             ], function ($router) {
                 Route::get('/profile', [AuthController::class, 'profile']);
                 Route::post('/change-pass', [AuthController::class, 'changePassWord']);
+                Route::post('/upload-image/{type_image}', [AuthController::class, 'updateImage']);
             });
         });
         Route::group([
@@ -103,7 +106,9 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
             Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
             Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
-            Route::get('/get-statistic/{survey_id}/target/{group_by}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
+            Route::get('/get-diagram/{survey_id}/target/{group_by}', [SurveyStatisticCpntroller::class, 'getDiagramSurvey']);
+            Route::get('/get-statistic/{survey_id}', [SurveyStatisticCpntroller::class, 'getStatisticSurvey']);
+            Route::get('/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
             Route::group([
                 'prefix' => 'anynomous'
             ], function ($router) {
@@ -115,12 +120,14 @@ Route::group(['prefix' => 'v1'], function () {
                 'middleware' => 'client_auth',
             ], function ($router) {
                 Route::post('/create', [SurveyController::class, 'createSurvey']);
-                Route::get('/get-list', [SurveyController::class, 'getListSurvey']);
+                Route::post('/question/upload-image', [ImagesController::class, 'uploadImage']);
+                Route::get('/question/template-image', [ImagesController::class, 'getTemplateImage']);
+                Route::get('/', [SurveyController::class, 'getListSurvey']);
                 Route::get('/get-detail/{survey_id}', [SurveyController::class, 'getDetailSurvey']);
                 Route::get('/template/get-list', [SurveyTemplateController::class, 'getListSurveyTemplate']);
-                Route::post('/template/update-logo/{template_id}', [SurveyTemplateController::class, 'updateLogoTemplate']);
                 Route::get('/template/get-detail/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
                 Route::post('/use-template/{survey_template_id}', [SurveyController::class, 'useSurveyTemplate']);
+                Route::get('/question/answer/{question_id}', [SurveyQuestionAnswersController::class, 'getListAnswers']);
                 //Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
                 //            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
                 Route::group([
@@ -128,7 +135,7 @@ Route::group(['prefix' => 'v1'], function () {
 
                 ], function ($router) {
                     Route::put('/edit/{id}', [SurveyController::class, 'editSurvey']);
-                    Route::delete('/del/{id}', [SurveyController::class, 'deleteSurvey']);
+                    Route::delete('/delete/{id}', [SurveyController::class, 'deleteSurvey']);
                     Route::post('/question/{survey_id}', [SurveyQuestionController::class, 'createSurveyQuestion']);
                     Route::get('/question/{survey_id}', [SurveyQuestionController::class, 'getListSurveyQuestion']);
                     Route::get('/question/{survey_id}/detail/{question_id}', [SurveyQuestionController::class, 'getDetailSurveyQuestion']);
@@ -212,6 +219,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/input/{survey_id}', [SurveyPartnerInputController::class, 'answerSurvey']);
                 Route::put('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
                 Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
+                Route::get('/exit/{survey_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'exitSurvey']);
             });
         });
 

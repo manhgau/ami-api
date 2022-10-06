@@ -24,6 +24,10 @@ class PartnerPointLog extends Model
     const STATUS_INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+    const TRU  = -1;
+    const CONG  = 1;
 
+    const ACTION_FINISHED_ANSWER_SURVEY = 'finished_answer_survey';
+    const ACTION_REDEEM_REWARD  = 'redeem_reward';
+    const TYPE_OBJ_SURVEY  = 'survey';
 }
-
