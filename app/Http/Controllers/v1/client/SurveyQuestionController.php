@@ -10,6 +10,7 @@ use App\Models\AppSetting;
 use App\Models\LogicAnswers;
 use App\Models\Package;
 use App\Models\QuestionType;
+use App\Models\Survey;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
 use Validator;
@@ -44,16 +45,17 @@ class SurveyQuestionController extends Controller
             if (QuestionType::checkQuestionTypeValid($question_type) === false) {
                 return ClientResponse::responseError('Lỗi ! Không có dạng câu hỏi khảo sát này.');
             }
-
+            $servey_question = SurveyQuestion::createSurveyQuestion($input);
+            if (!$servey_question) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            $count_questions = SurveyQuestion::countQuestion($request->survey_id);
+            Survey::updateSurvey(["question_count" => $count_questions], $request->survey_id);
             switch ($question_type) {
                 case QuestionType::MULTI_CHOICE_CHECKBOX:
                 case QuestionType::MULTI_CHOICE_RADIO:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
                 case QuestionType::YES_NO:
-                    $servey_question = SurveyQuestion::createSurveyQuestion($input);
-                    if (!$servey_question) {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    }
                     if (!$request->responde) {
                         $data['question_id'] = $servey_question->id;
                         $data['value'] = $request->title;
@@ -77,18 +79,10 @@ class SurveyQuestionController extends Controller
                 case QuestionType::QUESTION_ENDED_LONG_TEXT:
                 case QuestionType::NUMBER:
                 case QuestionType::RATING_STAR:
-                    $servey_question = SurveyQuestion::createSurveyQuestion($input);
-                    if (!$servey_question) {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    }
                     return ClientResponse::responseSuccess('Thêm mới thành công', $servey_question);
 
                     break;
                 case QuestionType::MULTI_FACTOR_MATRIX:
-                    $servey_question = SurveyQuestion::createSurveyQuestion($input);
-                    if (!$servey_question) {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    }
                     $data = [];
                     foreach ($request->responde as $key => $value) {
                         $data_insert = $value;
@@ -337,6 +331,8 @@ class SurveyQuestionController extends Controller
             if (!$del_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
+            $count_questions = SurveyQuestion::countQuestion($request->survey_id);
+            Survey::updateSurvey(["question_count" => $count_questions], $request->survey_id);
             return ClientResponse::responseSuccess('Xóa thành công');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
