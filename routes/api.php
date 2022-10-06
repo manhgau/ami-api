@@ -80,6 +80,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         ], function ($router) {
             Route::post('/login', [AuthController::class, 'login']);
+            Route::post('/logout', [AuthController::class, 'logout']);
             Route::post('/refresh', [AuthController::class, 'refresh']);
             Route::post('/register', [AuthController::class, 'register']);
             Route::post('/active-by-email', [AuthController::class, 'activeByEmail']);
@@ -91,7 +92,6 @@ Route::group(['prefix' => 'v1'], function () {
                 'middleware' => 'client_auth',
 
             ], function ($router) {
-                Route::post('/logout', [AuthController::class, 'logout']);
                 Route::get('/profile', [AuthController::class, 'profile']);
                 Route::post('/change-pass', [AuthController::class, 'changePassWord']);
             });
