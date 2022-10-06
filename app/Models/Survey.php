@@ -40,10 +40,6 @@ class Survey extends Model
         'note',
     ];
 
-    protected $appends = [
-        'question_count'
-    ];
-
     const ACTIVE = 1;
     const INACTIVE = 0;
     const NOT_DELETED  = 0;
