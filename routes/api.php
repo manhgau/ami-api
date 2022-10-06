@@ -82,6 +82,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         ], function ($router) {
             Route::post('/login', [AuthController::class, 'login']);
+            Route::post('/logout', [AuthController::class, 'logout']);
             Route::post('/refresh', [AuthController::class, 'refresh']);
             Route::post('/register', [AuthController::class, 'register']);
             Route::post('/active-by-email', [AuthController::class, 'activeByEmail']);
@@ -93,7 +94,6 @@ Route::group(['prefix' => 'v1'], function () {
                 'middleware' => 'client_auth',
 
             ], function ($router) {
-                Route::post('/logout', [AuthController::class, 'logout']);
                 Route::get('/profile', [AuthController::class, 'profile']);
                 Route::post('/change-pass', [AuthController::class, 'changePassWord']);
                 Route::post('/upload-image/{type_image}', [AuthController::class, 'updateImage']);
@@ -185,6 +185,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         ], function ($router) {
             Route::post('/login', [PartnerAuthController::class, 'login']);
+            Route::post('/logout', [PartnerAuthController::class, 'logout']);
             Route::post('/refresh', [PartnerAuthController::class, 'refresh']);
             Route::post('/check-register', [PartnerAuthController::class, 'checkRegister']);
             Route::post('/register', [PartnerAuthController::class, 'register']);
@@ -195,7 +196,6 @@ Route::group(['prefix' => 'v1'], function () {
                 'middleware' => 'partner_auth',
 
             ], function ($router) {
-                Route::post('/logout', [PartnerAuthController::class, 'logout']);
                 Route::get('/profile', [PartnerAuthController::class, 'profile']);
                 Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
                 Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
