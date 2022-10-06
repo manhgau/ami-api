@@ -20,8 +20,7 @@ use Illuminate\Http\Request;
 
 class SurveyController extends Controller
 {
-
-    public function createSurvey(Request $request) {
+    
     public function createSurvey(Request $request)
     {
         try {
