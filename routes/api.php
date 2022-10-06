@@ -108,7 +108,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
             Route::get('/get-diagram/{survey_id}/target/{group_by}', [SurveyStatisticCpntroller::class, 'getDiagramSurvey']);
             Route::get('/get-statistic/{survey_id}', [SurveyStatisticCpntroller::class, 'getStatisticSurvey']);
-            Route::get('/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
+            Route::get('/detail/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
             Route::group([
                 'prefix' => 'anynomous'
             ], function ($router) {
@@ -122,7 +122,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/create', [SurveyController::class, 'createSurvey']);
                 Route::post('/question/upload-image', [ImagesController::class, 'uploadImage']);
                 Route::get('/question/template-image', [ImagesController::class, 'getTemplateImage']);
-                Route::get('/', [SurveyController::class, 'getListSurvey']);
+                Route::get('/get-list', [SurveyController::class, 'getListSurvey']);
                 Route::get('/get-detail/{survey_id}', [SurveyController::class, 'getDetailSurvey']);
                 Route::get('/template/get-list', [SurveyTemplateController::class, 'getListSurveyTemplate']);
                 Route::get('/template/get-detail/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
@@ -212,7 +212,7 @@ Route::group(['prefix' => 'v1'], function () {
                 'middleware' => 'partner_auth',
 
             ], function ($router) {
-                Route::get('/', [SurveyPartnerController::class, 'getlistSurveyPartner']);
+                Route::get('/get-list', [SurveyPartnerController::class, 'getlistSurveyPartner']);
                 Route::get('/{survey_partner_id}', [SurveyPartnerController::class, 'getDetailSurveyPartner']);
                 Route::get('/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
                 Route::get('/question/{survey_id}', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
