@@ -62,9 +62,12 @@ class SurveyController extends Controller
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
                 $datas = Survey::getListSurvey($perPage,  $page, $user_id, $state);
-                foreach ($datas as $data) {
-                    dd($data->id);
-                    //$count_response = SurveyPartnerInput::countSurveyInput();
+                $arr = [];
+                foreach ($datas['data'] as $key => $value) {
+                    $count_response = SurveyPartnerInput::countSurveyInput($value['id'], $is_anynomous);
+                    $arr = $value;
+                    $arr['count_response'] = $count_response;
+                    $datas['data'][$key] = $arr;
                 }
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas, true);

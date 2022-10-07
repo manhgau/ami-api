@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class UserPackage extends Model
 {
@@ -21,6 +22,30 @@ class UserPackage extends Model
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 
+    public static  function getPackageUser($user_id, $time_now)
+    {
+
+        $result =  DB::table('user_packages')
+            ->join('packages', 'packages.id', '=', 'user_packages.package_id')
+            ->select(
+                'packages.name',
+                'packages.id',
+                'packages.response_limit',
+                'packages.level',
+                'packages.limit_projects',
+                'packages.limit_questions',
+                'packages.add_logo',
+            )
+            ->where('user_packages.user_id', $user_id)
+            ->where('user_packages.end_time', '>', $time_now)
+            ->where('user_packages.status', self::STATUS_ACTIVE)
+            ->orderBy('packages.level', 'desc')->first();
+        if (!$result) {
+            $result = Package::getPackageFree();
+        }
+        return $result;
+    }
+
     public static  function updatePackage($data, $id)
     {
         return self::where('id', $id)->update($data);
@@ -32,7 +57,7 @@ class UserPackage extends Model
 
     public function userPackage()
     {
-        return $this->belongsTo('App\Models\UserClient','user_id','id');
+        return $this->belongsTo('App\Models\UserClient', 'user_id', 'id');
     }
 
     public function Package()
@@ -44,5 +69,4 @@ class UserPackage extends Model
     {
         return $this->belongsTo('App\Models\User', 'updated_by', 'id');
     }
-
 }

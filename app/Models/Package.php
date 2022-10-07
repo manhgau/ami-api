@@ -34,33 +34,45 @@ class Package extends Model
 
     public static  function getListPackage($perPage = 10,  $page = 1)
     {
-        return self::where('deleted', self::NOT_DELETED)->orderBy('id', 'desc')->where('status',self::STATUS_ACTIVE)->paginate($perPage, "*", "page", $page)->toArray();
+        return self::where('deleted', self::NOT_DELETED)->orderBy('id', 'desc')->where('status', self::STATUS_ACTIVE)->paginate($perPage, "*", "page", $page)->toArray();
     }
 
-    public static  function getDetailPackage( $id)
+    public static  function getDetailPackage($id)
     {
 
-        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('status',self::STATUS_ACTIVE)->first();
+        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('status', self::STATUS_ACTIVE)->first();
     }
+
+    public static  function getPackageFree()
+    {
+
+        return self::where('deleted', self::NOT_DELETED)->select(
+            'name',
+            'id',
+            'response_limit',
+            'level',
+            'limit_projects',
+            'limit_questions',
+            'add_logo',
+        )->where('status', self::STATUS_ACTIVE)->where('level', 0)->first();
+    }
+
 
     public static  function checkTheUserPackage($user_id)
     {
         $survey_user_number =  DB::table('user_packages')
-        ->join('packages', 'packages.id', '=', 'user_packages.package_id')
-        ->select('packages.limit_projects', 'packages.limit_questions')
-        ->where('user_packages.user_id', $user_id)
-        ->where('user_packages.status', self::STATUS_ACTIVE)
-        ->orderBy('packages.level', 'DESC')->first();
-        if(!$survey_user_number){
-           $package_free =  Package::query()
-            ->where('status', self::STATUS_ACTIVE)
-            ->where('level', Package::FREE)
-            ->first();
+            ->join('packages', 'packages.id', '=', 'user_packages.package_id')
+            ->select('packages.limit_projects', 'packages.limit_questions')
+            ->where('user_packages.user_id', $user_id)
+            ->where('user_packages.status', self::STATUS_ACTIVE)
+            ->orderBy('packages.level', 'DESC')->first();
+        if (!$survey_user_number) {
+            $package_free =  Package::query()
+                ->where('status', self::STATUS_ACTIVE)
+                ->where('level', Package::FREE)
+                ->first();
             return $package_free;
         }
         return $survey_user_number;
-
     }
-
-
 }
