@@ -42,10 +42,20 @@ class SurveyPartnerInputController extends Controller
                     $input['survey_id'] = $request->survey_id;
                     $input['state'] = SurveyPartnerInput::STATE_NEW;
                     $input['start_datetime'] =  Carbon::now();
+                    $survey = Survey::getDetailSurvey($request->survey_id);
+                    if (!$survey) {
+                        return ClientResponse::responseError('Không có bản ghi phù hợp');
+                    }
                     $result = SurveyPartnerInput::create($input);
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
+                    Survey::updateSurvey(
+                        [
+                            "view" => $survey->view + 1,
+                        ],
+                        $request->survey_id
+                    );
                     return ClientResponse::responseSuccess('Thêm mới thành công', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
@@ -71,10 +81,8 @@ class SurveyPartnerInputController extends Controller
                     }
                     $survey = Survey::getDetailSurvey($request->survey_id);
                     $count_survey_input = SurveyPartnerInput::countSurveyInput($request->survey_id);
-                    $input['number_of_response'] = $survey->number_of_response + 1;
                     if ($count_survey_input == $survey->number_of_response_required) {
                         $input['state'] = Survey::STATUS_COMPLETED;
-                        $input['number_of_response'] = $survey->number_of_response;
                     }
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($request->survey_id, $partner_id);
                     if ($count_survey_partner_input <= $survey->attempts_limit_max && $count_survey_partner_input >= $survey->attempts_limit_min) {

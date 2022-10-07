@@ -72,7 +72,6 @@ class SurveyPartnerInput extends Model
                 'surveys.real_end_time',
                 'surveys.count_questions',
                 'surveys.number_of_response_required',
-                'surveys.number_of_response',
             )
             ->where('survey_partner_inputs.partner_id', $partner_id)
             ->where('surveys.start_time', '<', $time_now)
