@@ -10,6 +10,7 @@ use App\Helpers\RemoveData;
 use App\Models\Package;
 use App\Models\QuestionType;
 use App\Models\Survey;
+use App\Models\SurveyPartnerInput;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
 use App\Models\SurveyTemplate;
@@ -20,7 +21,6 @@ use Illuminate\Http\Request;
 
 class SurveyController extends Controller
 {
-    
     public function createSurvey(Request $request)
     {
         try {
@@ -55,11 +55,17 @@ class SurveyController extends Controller
         try {
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
+            $state = $request->state;
+            $is_anynomous = $request->is_anynomous;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $ckey  = CommonCached::cache_find_survey_user . "_" . $user_id . "_" . $perPage . "_" . $page;
+            $ckey  = CommonCached::cache_find_survey_user . "_" . $user_id . "_" . $perPage . "_" . $page . "_" . $state . "_" . $is_anynomous;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = Survey::getListSurvey($perPage,  $page, $user_id);
+                $datas = Survey::getListSurvey($perPage,  $page, $user_id, $state);
+                foreach ($datas as $data) {
+                    dd($data->id);
+                    //$count_response = SurveyPartnerInput::countSurveyInput();
+                }
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas, true);
             }
