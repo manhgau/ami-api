@@ -48,9 +48,15 @@ class Survey extends Model
     const STATUS_ON_PROGRESS = 'on_progress';
     const STATUS_COMPLETED = 'completed';
 
-    public static  function getListSurvey($perPage = 10,  $page = 1, $user_id)
+    public static  function getListSurvey($perPage = 10,  $page = 1, $user_id, $state = null)
     {
-        return self::where('deleted', self::NOT_DELETED)->orderBy('id', 'desc')->where('active', self::ACTIVE)->where('user_id', $user_id)->paginate($perPage, "*", "page", $page)->toArray();
+        $query =  self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)
+            ->where('user_id', $user_id)->orderBy('created_at', 'DESC');
+        if ($state != null) {
+            $query->where('state', $state);
+        }
+        $query = $query->paginate($perPage, "*", "page", $page)->toArray();
+        return $query;
     }
 
     public static  function getDetailSurvey($id)

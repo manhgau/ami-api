@@ -14,8 +14,11 @@ use App\Helpers\FtpSv;
 use App\Jobs\SendActiveAcountEmailJob;
 use App\Jobs\SendResetPasswordEmailJob;
 use App\Models\AppSetting;
+use App\Models\Package;
+use App\Models\UserPackage;
 use Illuminate\Support\Str;
 use App\Models\UserRefreshToken;
+use Carbon\Carbon;
 use DB;
 
 class AuthController extends Controller
@@ -201,7 +204,21 @@ class AuthController extends Controller
     {
         $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
         $user = User::find($user_id);
-        return ClientResponse::responseSuccess('Thông tin tài khoản', $user);
+        $all_settings = AppSetting::getAllSetting();
+        $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+        if (!$user['logo']) {
+            $logo  = AppSetting::getByKey(AppSetting::LOGO, $all_settings);
+            $user['logo'] = $logo;
+        }
+        $user['logo'] = $image_domain . $user['logo'];
+        $user['avatar'] = $image_domain . $user['avatar'];
+        $time_now = Carbon::now();
+        $user_package = UserPackage::getPackageUser($user_id, $time_now);
+        $data = [
+            'user_package' => $user_package,
+            'user_profile' => $user,
+        ];
+        return ClientResponse::responseSuccess('Thông tin tài khoản', $data);
     }
 
 
@@ -370,12 +387,17 @@ class AuthController extends Controller
             if ($file = $request->file('image')) {
                 $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
                 if ($type_image == User::LOGO) {
-                    $path = env('FTP_PATH') . FtpSv::LOGO_FOLDER;
-                    $image = FtpSv::upload($file, $name, $path, $request->template_id, FtpSv::LOGO_FOLDER);
-                    $update_image = User::updateProfile([User::LOGO => $image], $user_id);
-                    if (!$update_image) {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    $time_now = Carbon::now();
+                    $user_package = UserPackage::getPackageUser($user_id, $time_now);
+                    if ($user_package['add_logo']) {
+                        $path = env('FTP_PATH') . FtpSv::LOGO_FOLDER;
+                        $image = FtpSv::upload($file, $name, $path, $request->template_id, FtpSv::LOGO_FOLDER);
+                        $update_image = User::updateProfile([User::LOGO => $image], $user_id);
+                        if (!$update_image) {
+                            return ClientResponse::responseError('Đã có lỗi xảy ra');
+                        }
                     }
+                    return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
                 } else {
                     $path = env('FTP_PATH') . FtpSv::AVATAR_FOLDER;
                     $image = FtpSv::upload($file, $name, $path, $request->template_id, FtpSv::AVATAR_FOLDER);

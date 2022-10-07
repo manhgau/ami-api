@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Helpers;
-class ClientResponse{
+
+class ClientResponse
+{
 
     public static $error_code = 400;
     public static $success_code = 200;    //OK
@@ -10,10 +12,12 @@ class ClientResponse{
     public static $required_refresh_token = 403;     //user phải gọi refresh token
     public static $client_auth_owner_survey = 407;     //Khảo sát không phải của bạn
     public static $survey_user_number = 406;     //Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát
+    public static $add_logo = 408;     //Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này
     //
     public static $partner_required_fill_info = 421;     //Partner cập nhật hồ sơ cá nhân
 
-    public static function response($code, $message, $data = [],$headers=[], $options=[]){
+    public static function response($code, $message, $data = [], $headers = [], $options = [])
+    {
         return response()->json([
             'code'      =>  $code,
             'message'   =>  $message,
@@ -23,11 +27,13 @@ class ClientResponse{
         ], $code);
     }
 
-    public static function responseSuccess($message, $data = []){
+    public static function responseSuccess($message, $data = [])
+    {
         return self::response(self::$success_code, $message, $data);
     }
 
-    public static function responseError($message, $data = []){
+    public static function responseError($message, $data = [])
+    {
         return self::response(self::$error_code, $message, $data);
     }
 }
