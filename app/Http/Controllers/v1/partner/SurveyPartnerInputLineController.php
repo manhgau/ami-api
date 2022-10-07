@@ -28,7 +28,6 @@ class SurveyPartnerInputLineController extends Controller
                     ]);
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
-                        dd($errorString);
                         return ClientResponse::responseError($errorString);
                     }
                     $question_id = $request->question_id ?? 0;
@@ -96,7 +95,6 @@ class SurveyPartnerInputLineController extends Controller
 
                             $input['suggested_answer_id'] = $request->suggested_answer_id;
                             $input['value_star_rating'] = $request->value_star_rating;
-                            $result = SurveyPartnerInputLine::insert($input);
                             break;
                         case QuestionType::DATETIME_DATE_RANGE:
                             $validator = Validator::make($request->all(), [
@@ -179,7 +177,6 @@ class SurveyPartnerInputLineController extends Controller
                     }
                     SurveyQuestion::updateSurveyQuestion(
                         [
-                            "number_of_response" => $survey_question->number_of_response + 1,
                             "view" => $survey_question->view + 1,
                         ],
                         $question_id
