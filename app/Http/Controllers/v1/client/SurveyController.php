@@ -146,7 +146,7 @@ class SurveyController extends Controller
     public function getQuestionType()
     {
         try {
-            $result = QuestionType::getTypeQuestionList();
+            $result = QuestionType::getTypeQuestionBygroup();
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
