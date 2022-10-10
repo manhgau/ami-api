@@ -43,8 +43,8 @@ class SurveyPartnerInputController extends Controller
                     $input['state'] = SurveyPartnerInput::STATE_NEW;
                     $input['start_datetime'] =  Carbon::now();
                     $survey = Survey::getDetailSurvey($request->survey_id);
-                    if (!$survey) {
-                        return ClientResponse::responseError('Không có bản ghi phù hợp');
+                    if (!$survey || $survey->state != Survey::STATUS_ON_PROGRESS) {
+                        return ClientResponse::responseError('Khảo sát không tồn tại hoặc đã đóng');
                     }
                     $result = SurveyPartnerInput::create($input);
                     if (!$result) {
