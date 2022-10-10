@@ -58,20 +58,15 @@ class SurveyController extends Controller
             $state = $request->state;
             $is_anynomous = $request->is_anynomous;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $ckey  = CommonCached::cache_find_survey_user . "_" . $user_id . "_" . $perPage . "_" . $page . "_" . $state . "_" . $is_anynomous;
-            $datas = CommonCached::getData($ckey);
-            if (empty($datas)) {
-                $datas = Survey::getListSurvey($perPage,  $page, $user_id, $state);
-                $arr = [];
-                foreach ($datas['data'] as $key => $value) {
-                    $count_response = SurveyPartnerInput::countSurveyInput($value['id'], $is_anynomous);
-                    $arr = $value;
-                    $arr['count_response'] = $count_response;
-                    $datas['data'][$key] = $arr;
-                }
-                $datas = RemoveData::removeUnusedData($datas);
-                CommonCached::storeData($ckey, $datas, true);
+            $datas = Survey::getListSurvey($perPage,  $page, $user_id, $state);
+            $arr = [];
+            foreach ($datas['data'] as $key => $value) {
+                $count_response = SurveyPartnerInput::countSurveyInput($value['id'], $is_anynomous);
+                $arr = $value;
+                $arr['count_response'] = $count_response;
+                $datas['data'][$key] = $arr;
             }
+            $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
