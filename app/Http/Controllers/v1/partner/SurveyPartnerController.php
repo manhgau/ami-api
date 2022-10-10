@@ -60,7 +60,8 @@ class SurveyPartnerController extends Controller
             if ($partner) {
                 try {
                     $survey_partner_id = $request->survey_partner_id;
-                    $result = SurveyPartner::getDetailSurveyPartner($survey_partner_id);
+                    $time_now = Carbon::now();
+                    $result = SurveyPartner::getDetailSurveyPartner($survey_partner_id, $time_now);
                     if (!$result) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }

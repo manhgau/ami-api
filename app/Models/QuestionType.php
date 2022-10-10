@@ -46,6 +46,38 @@ class QuestionType
         ];
     }
 
+    public static function getTypeQuestionBygroup()
+    {
+        return [
+            'select_group' => [
+                'name' => 'Nhóm lựa chọn',
+                'data' => [
+                    self::MULTI_CHOICE_CHECKBOX => 'Choice checkbox',
+                    self::MULTI_CHOICE_RADIO => 'Choice radio',
+                    self::MULTI_CHOICE_DROPDOWN => 'Dropdown',
+                    self::YES_NO => 'Yes/No',
+                    self::MULTI_FACTOR_MATRIX => 'Matrix'
+                ]
+            ],
+            'text_group' => [
+                'name' => 'Nhóm text',
+                'data' => [
+                    self::QUESTION_ENDED_SHORT_TEXT => 'Short text',
+                    self::QUESTION_ENDED_LONG_TEXT => 'Long text',
+                ]
+            ],
+            'other_group' => [
+                'name' => 'Nhóm text',
+                'data' => [
+                    self::NUMBER => 'Number',
+                    self::DATETIME_DATE => 'Date',
+                    self::DATETIME_DATE_RANGE => 'Date range',
+                    self::RATING_STAR => 'Rating',
+                ]
+            ]
+        ];
+    }
+
     public static function checkQuestionTypeValid($type)
     {
         $list = self::getTypeQuestionList();
