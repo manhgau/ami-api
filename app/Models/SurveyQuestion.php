@@ -60,7 +60,13 @@ class SurveyQuestion extends Model
 
     public static  function getListSurveyQuestion($survey_id)
     {
-        return self::select('id', 'title', 'description', 'is_page', 'page_id', 'sequence', 'question_type')->where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')->get();
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')->get();
+    }
+
+    public static  function getListQuestion($survey_id, $perPage, $page)
+    {
+        return self::select('id', 'survey_id', 'sequence', 'title', 'question_type', 'skip_count', 'view', 'number_of_response')->where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')
+            ->paginate($perPage, "*", "page", $page)->toArray();
     }
 
     public static  function getDetailSurveyQuestion($id)

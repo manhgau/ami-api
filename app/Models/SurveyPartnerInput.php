@@ -64,19 +64,52 @@ class SurveyPartnerInput extends Model
         return DB::table('survey_partner_inputs')
             ->join('surveys', 'surveys.id', '=', 'survey_partner_inputs.survey_id')
             ->select(
+                'survey_partner_inputs.id',
                 'surveys.title',
+                'surveys.id as survey_id',
                 'surveys.category_id',
-                'surveys.description',
+                'surveys.state',
+                'surveys.point',
                 'surveys.start_time',
                 'surveys.end_time',
-                'surveys.real_end_time',
-                'surveys.count_questions',
                 'surveys.number_of_response_required',
+                'surveys.count_questions',
+                'surveys.view',
             )
             ->where('survey_partner_inputs.partner_id', $partner_id)
             ->where('surveys.start_time', '<', $time_now)
             ->where('surveys.end_time', '>', $time_now)
             ->orderBy('surveys.created_at', 'desc')
             ->paginate($perPage, "*", "page", $page)->toArray();
+    }
+
+    public static  function getDetailSurveyPartnerInput($survey_partner_input_id, $partner_id, $time_now)
+    {
+        return DB::table('survey_partner_inputs')
+            ->join('surveys', 'surveys.id', '=', 'survey_partner_inputs.survey_id')
+            ->select(
+                'survey_partner_inputs.id',
+                'surveys.title',
+                'surveys.id as survey_id',
+                'surveys.category_id',
+                'surveys.state',
+                'surveys.point',
+                'surveys.start_time',
+                'surveys.end_time',
+                'surveys.number_of_response_required',
+                'surveys.count_questions',
+                'surveys.view',
+            )
+            ->where('survey_partner_inputs.id', $survey_partner_input_id)
+            ->where('survey_partner_inputs.partner_id', $partner_id)
+            ->where('surveys.start_time', '<', $time_now)
+            ->where('surveys.end_time', '>', $time_now)
+            ->orderBy('surveys.created_at', 'desc')
+            ->first();
+    }
+
+    public static  function checkPartnerInput($partner_id)
+    {
+        return self::where('partner_id', $partner_id)->where('state', self::STATE_DONE)->count();
     }
 }

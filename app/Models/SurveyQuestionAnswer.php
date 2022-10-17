@@ -11,12 +11,14 @@ class SurveyQuestionAnswer extends Model
         'matrix_question_id',
         'sequence',
         'value',
+        'value_type',
         'is_correct',
         'answer_score',
         'created_at',
         'updated_at',
         'created_by',
         'updated_by',
+        'deleted',
     ];
 
     const STATUS_ACTIVE = 1;
@@ -33,7 +35,7 @@ class SurveyQuestionAnswer extends Model
 
     public static  function getAllSurveyQuestionAnswer($id,  $random = 0)
     {
-        $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'value')->where('question_id', $id);
+        $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'value')->where('question_id', $id)->where('deleted', self::NOT_DELETED);
         if ($random == 1) {
             $query = $query->inRandomOrder();
         }
@@ -44,16 +46,16 @@ class SurveyQuestionAnswer extends Model
 
     public static  function getDetailSurveyQuestionAnswer($id)
     {
-        return self::where('id', $id)->first();
+        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->first();
     }
 
     public static  function updateSurveyQuestionAnswer($data, $id)
     {
-        return self::where('id', $id)->update($data);
+        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->update($data);
     }
 
     public static  function deleteSurveyQuestionAnswer($id)
     {
-        return self::where('question_id', $id)->orWhere('matrix_question_id', $id)->delete();
+        return self::where('deleted', self::NOT_DELETED)->where('question_id', $id)->orWhere('matrix_question_id', $id)->delete();
     }
 }

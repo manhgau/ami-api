@@ -17,8 +17,29 @@ class SurveyStatisticCpntroller extends Controller
             $survey_id = $request->survey_id;
             $group_by = $request->group_by;
             $limit = $request->limit;
-            $is_anynomous = $request->is_anynomous ?? null;
-            $result = SurveyPartnerInputLine::getDiagramSurvey($survey_id,  $is_anynomous);
+            $start_time = $request->start_time;
+            $end_time = $request->end_time;
+            $gender = $request->gender;
+            $province_codes = $request->province_codes;
+            $academic_level_ids = $request->academic_level_ids;
+            $job_type_ids = $request->job_type_ids;
+            $marital_status_ids = $request->marital_status_ids;
+            $family_peoples = $request->family_peoples;
+            $has_children = $request->has_children;
+            $is_key_shopper = $request->is_key_shopper;
+            $result = SurveyPartnerInputLine::getDiagramSurvey(
+                $survey_id,
+                $start_time,
+                $end_time,
+                $academic_level_ids,
+                $province_codes,
+                $gender,
+                $job_type_ids,
+                $marital_status_ids,
+                $family_peoples,
+                $has_children,
+                $is_key_shopper
+            );
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
@@ -39,6 +60,15 @@ class SurveyStatisticCpntroller extends Controller
     public function getStatisticSurvey(Request $request)
     {
         try {
+            $perPage = $request->per_page ?? 5;
+            $page = $request->current_page ?? 1;
+            $survey_id = $request->survey_id;
+            $datas = SurveyQuestion::getListQuestion($survey_id, $perPage,  $page);
+            $datas = RemoveData::removeUnusedData($datas);
+            if (!$datas) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            return ClientResponse::responseSuccess('Ok', $datas);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

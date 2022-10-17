@@ -54,13 +54,11 @@ class SurveyPartnerInputAnynomousController extends Controller
     public function updateAnswerSurveyAnynomous(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), []);
-            if ($validator->fails()) {
-                $errorString = implode(",", $validator->messages()->all());
-                return ClientResponse::responseError($errorString);
-            }
+
             $partner_input_id = $request->partner_input_id;
-            $result = SurveyPartnerInput::updateSurveyPartnerInput(['state' => SurveyPartnerInput::STATE_DONE], $partner_input_id);
+            $input_update['start_datetime'] =  Carbon::now();
+            $input_update['state'] =  SurveyPartnerInput::STATE_DONE;
+            $result = SurveyPartnerInput::updateSurveyPartnerInput($input_update, $partner_input_id);
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }

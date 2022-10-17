@@ -25,6 +25,7 @@ class SurveyPartnerController extends Controller
             if ($partner) {
                 try {
                     $partner_id = $partner->id ?? 0;
+                    //dd($partner_id);
                     $perPage = $request->per_page ?? 5;
                     $page = $request->current_page ?? 1;
                     $time_now = Carbon::now();
@@ -66,6 +67,10 @@ class SurveyPartnerController extends Controller
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
                     Survey::updateSurvey(['view' => $result->view + 1], $result->survey_id);
+                    $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $result->end_time)->timestamp;
+                    $time_remaining = $timestamp - Carbon::now()->timestamp;
+                    $result = json_decode(json_encode($result), true);
+                    $result['time_remaining'] = $time_remaining;
                     return ClientResponse::responseSuccess('OK', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
