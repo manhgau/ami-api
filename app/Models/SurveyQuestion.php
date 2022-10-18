@@ -19,6 +19,8 @@ class SurveyQuestion extends Model
         'is_scored_question',
         'matrix_subtype',
         'is_time_limited',
+        'is_page',
+        'page_id',
         'time_limit',
         'comments_allowed',
         'comment_message',
@@ -50,6 +52,7 @@ class SurveyQuestion extends Model
     const UNLOGIC = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+    const NO_PAGE  = 0;
 
     protected $hidden = ['deleted', 'created_at', 'updated_at', 'updated_by', 'created_by'];
 
@@ -60,7 +63,22 @@ class SurveyQuestion extends Model
 
     public static  function getListSurveyQuestion($survey_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')->get();
+        return self::select('id', 'survey_id', 'title', 'is_page', 'page_id', 'sequence', 'question_type')
+            ->where('deleted', self::NOT_DELETED)
+            ->where('survey_id', $survey_id)
+            ->where('page_id', self::NO_PAGE)
+            ->orderBy('sequence', 'asc')
+            ->get();
+    }
+
+    public static  function listGroupQuestions($survey_id, $page_id)
+    {
+        return self::select('id', 'survey_id', 'title', 'is_page', 'page_id', 'sequence', 'question_type')
+            ->where('deleted', self::NOT_DELETED)
+            ->where('survey_id', $survey_id)
+            ->where('page_id', $page_id)
+            ->orderBy('sequence', 'asc')
+            ->get();
     }
 
     public static  function getListQuestion($survey_id, $perPage, $page)

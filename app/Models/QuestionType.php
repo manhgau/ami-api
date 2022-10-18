@@ -45,7 +45,8 @@ class QuestionType
             self::QUESTION_ENDED_SHORT_TEXT,
             self::QUESTION_ENDED_LONG_TEXT,
             self::RATING_STAR,
-            self::MULTI_FACTOR_MATRIX
+            self::MULTI_FACTOR_MATRIX,
+            self::GROUP
         ];
     }
 
@@ -70,7 +71,7 @@ class QuestionType
                 ]
             ],
             'other_group' => [
-                'name' => 'Nhóm text',
+                'name' => 'Nhóm khác',
                 'data' => [
                     self::NUMBER => 'Number',
                     self::DATETIME_DATE => 'Date',
