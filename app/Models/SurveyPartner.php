@@ -22,10 +22,11 @@ class SurveyPartner extends Model
                 'survey_partners.id',
                 'surveys.id as survey_id',
                 'surveys.category_id',
-                'surveys.description',
+                'surveys.point',
+                'surveys.state',
                 'surveys.start_time',
                 'surveys.end_time',
-                'surveys.real_end_time',
+                'surveys.number_of_response_required',
                 'surveys.count_questions',
                 'surveys.view',
             )
@@ -33,8 +34,8 @@ class SurveyPartner extends Model
             ->where('survey_partners.deleted', self::NOT_DELETED)
             ->where('survey_partners.partner_id', $partner_id)
             ->where('surveys.start_time', '<', $time_now)
-            ->where('surveys.state', '<', $time_now)
-            ->where('surveys.end_time', Survey::STATUS_ON_PROGRESS)
+            ->where('surveys.end_time', '>', $time_now)
+            ->where('surveys.state', Survey::STATUS_ON_PROGRESS)
             ->orderBy('surveys.created_at', 'desc')
             ->paginate($perPage, "*", "page", $page)->toArray();
     }
@@ -46,21 +47,23 @@ class SurveyPartner extends Model
             ->select(
                 'survey_partners.id',
                 'surveys.title',
+                'surveys.description',
                 'surveys.id as survey_id',
                 'surveys.category_id',
-                'surveys.description',
+                'surveys.state',
+                'surveys.point',
                 'surveys.start_time',
                 'surveys.end_time',
-                'surveys.real_end_time',
+                'surveys.number_of_response_required',
                 'surveys.count_questions',
                 'surveys.view',
             )
             ->where('survey_partners.stattus', self::STATUS_ACTIVE)
             ->where('survey_partners.deleted', self::NOT_DELETED)
-            ->where('surveys.end_time', Survey::STATUS_ON_PROGRESS)
+            ->where('surveys.state', Survey::STATUS_ON_PROGRESS)
             ->where('survey_partners.id', $survey_partner_id)
             ->where('surveys.start_time', '<', $time_now)
-            ->where('surveys.state', '<', $time_now)
+            ->where('surveys.end_time', '>', $time_now)
             ->first();
     }
 }

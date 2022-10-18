@@ -14,7 +14,10 @@ class ClientResponse
     public static $survey_user_number = 406;     //Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát
     public static $add_logo = 408;     //Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này
     //
-    public static $partner_required_fill_info = 421;     //Partner cập nhật hồ sơ cá nhân
+    public static $partner_required_fill_info = 421;
+    //Partner cập nhật hồ sơ cá nhân
+    public static $partner_input = 600;     //Partner đã trả lời khảo sát
+    public static $un_partner_input = 601;     //Partner chưa trả lời khảo sát
 
     public static function response($code, $message, $data = [], $headers = [], $options = [])
     {

@@ -75,7 +75,10 @@ class SurveyPartnerInputController extends Controller
                 try {
                     $partner_input_id = $request->partner_input_id;
                     $partner_id = $partner->id ?? 0;
-                    $result = SurveyPartnerInput::updateSurveyPartnerInput(['state' => SurveyPartnerInput::STATE_DONE], $partner_input_id);
+                    $input_update['start_datetime'] =  Carbon::now();
+                    $input_update['state'] =  SurveyPartnerInput::STATE_DONE;
+                    $result = SurveyPartnerInput::updateSurveyPartnerInput($input_update, $partner_input_id);
+
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
@@ -83,6 +86,7 @@ class SurveyPartnerInputController extends Controller
                     $count_survey_input = SurveyPartnerInput::countSurveyInput($request->survey_id);
                     if ($count_survey_input == $survey->number_of_response_required) {
                         $input['state'] = Survey::STATUS_COMPLETED;
+                        Survey::updateSurvey($input, $request->survey_id);
                     }
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($request->survey_id, $partner_id);
                     if ($count_survey_partner_input <= $survey->attempts_limit_max && $count_survey_partner_input >= $survey->attempts_limit_min) {
@@ -102,7 +106,6 @@ class SurveyPartnerInputController extends Controller
                         $input_log['object_id '] = $request->survey_id;
                         PartnerPointLog::create($input_log);
                     }
-                    Survey::updateSurvey($input, $request->survey_id);
                     return ClientResponse::responseSuccess('Cập nhập thành công', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
@@ -139,6 +142,57 @@ class SurveyPartnerInputController extends Controller
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
                     return ClientResponse::responseSuccess('OK', $datas);
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
+    }
+
+    public function getDetailSurveyPartnerInput(Request $request)
+    {
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $partner_id = $partner->id ?? 0;
+                    $survey_partner_input_id = $request->survey_partner_input_id;
+                    $time_now = Carbon::now();
+                    $result = SurveyPartnerInput::getDetailSurveyPartnerInput($survey_partner_input_id, $partner_id, $time_now);
+                    if (!$result) {
+                        return ClientResponse::responseError('Không có bản ghi phù hợp');
+                    }
+                    Survey::updateSurvey(['view' => $result->view + 1], $result->survey_id);
+                    $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $result->end_time)->timestamp;
+                    $time_remaining = $timestamp - Carbon::now()->timestamp;
+                    $result = json_decode(json_encode($result), true);
+                    $result['time_remaining'] = $time_remaining;
+                    return ClientResponse::responseSuccess('OK', $result);
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
+    }
+
+    public function checkPartnerInput(Request $request)
+    {
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $partner_id = $partner->id ?? 0;
+                    $result = SurveyPartnerInput::checkPartnerInput($partner_id);
+                    if (!$result) {
+                        return ClientResponse::responseError('Tài khoản chưa trả lời khảo sát');
+                    }
+                    return ClientResponse::responseSuccess('Tài khoản đã trả lời khảo sát');
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
                 }

@@ -28,11 +28,12 @@ class SurveyPartnerInputLineAnynomousController extends Controller
             $question_id = $request->question_id ?? 0;
             $input['question_id']   = $question_id;
             $input['survey_id']     = $request->survey_id;
-            $input['partner_input_id']   = $request->partner_input_id;
+            $input['partner_input_id']   = (int)$request->partner_input_id;
             $survey_question = SurveyQuestion::getDetailSurveyQuestion($question_id);
             $input['question_sequence']     = $survey_question->sequence;
             $input['answer_type']   = $survey_question->question_type;
             $input['answer_score']   = $request->answer_score ?? 0;
+            $data_input = [];
             switch ($input['answer_type']) {
                 case QuestionType::MULTI_CHOICE_CHECKBOX:
                 case QuestionType::MULTI_CHOICE_RADIO:
@@ -49,8 +50,9 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     }
                     $target_ids = $request->suggested_answer_id;
                     if (is_array($target_ids)) {
-                        foreach ($target_ids  as  $value) {
+                        foreach ($target_ids  as $key =>  $value) {
                             $input['suggested_answer_id'] = $value;
+                            $data_input[$key] = $input;
                         }
                     }
                     break;
@@ -70,6 +72,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
 
                     $input['suggested_answer_id'] = $request->suggested_answer_id;
                     $input['value_star_rating'] = $request->value_star_rating;
+                    $data_input = $input;
                     break;
                 case QuestionType::DATETIME_DATE_RANGE:
                     $validator = Validator::make($request->all(), [
@@ -88,6 +91,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     }
                     $input['value_date_start'] = $request->value_date_start ?? '';
                     $input['value_date_end'] = $request->value_date_end ?? '';
+                    $data_input = $input;
                     break;
                 case QuestionType::DATETIME_DATE:
                     $validator = Validator::make($request->all(), [
@@ -101,6 +105,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                         return ClientResponse::responseError($errorString);
                     }
                     $input['value_date'] = $request->value_date ?? '';
+                    $data_input = $input;
                     break;
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                 case QuestionType::QUESTION_ENDED_LONG_TEXT:
@@ -132,13 +137,15 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                         return ClientResponse::responseError($errorString);
                     }
                     $input['value_number'] = (int)$request->value_number ?? '';
+                    $data_input = $input;
                     break;
                 case QuestionType::MULTI_FACTOR_MATRIX:
                     $data = $request->all();
                     if (is_array($data)) {
-                        foreach ($data  as  $value) {
+                        foreach ($data  as  $key => $value) {
                             $input['matrix_row_id'] = $value['matrix_row_id'];
                             $input['matrix_column_id'] = $value['matrix_column_id'];
+                            $data_input[$key] = $input;
                         }
                     }
                     break;
@@ -146,7 +153,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     return ClientResponse::responseError('question type không hợp lệ', $input['answer_type']);
                     break;
             }
-            $result = SurveyPartnerInputLine::create($input);
+            $result = SurveyPartnerInputLine::insert($data_input);
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }

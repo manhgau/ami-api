@@ -36,6 +36,7 @@ class SurveyPartnerInputLine extends Model
     const STATUS_INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+    const IS_ANYNOMOUS  = 0;
 
     public static  function getALLSurveyPartnerInputLine($survey_id = 10,  $question_id = 1)
     {
@@ -58,8 +59,19 @@ class SurveyPartnerInputLine extends Model
             ->where('skipped', 0)->where('partner_input_id', $partner_input_id)->count();
     }
 
-    public static  function getDiagramSurvey($survey_id, $is_anynomous = null)
-    {
+    public static  function getDiagramSurvey(
+        $survey_id,
+        $start_time = null,
+        $end_time = null,
+        $academic_level_ids = null,
+        $province_codes = null,
+        $gender = null,
+        $job_type_ids = null,
+        $marital_status_ids = null,
+        $family_peoples = null,
+        $has_children = null,
+        $is_key_shopper = null
+    ) {
         $result = DB::table('survey_partner_inputs')
             ->join('partner_profiles', 'partner_profiles.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->join('provinces', 'provinces.code', '=', 'partner_profiles.province_code')
@@ -72,9 +84,38 @@ class SurveyPartnerInputLine extends Model
                 'academic_levels.name as academic_level_name',
                 'personal_income_levels.name as personal_income_level_name'
             )
-            ->where('survey_partner_inputs.survey_id', $survey_id);
-        if ($is_anynomous != null) {
-            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
+            ->where('survey_partner_inputs.survey_id', $survey_id)
+            ->where('survey_partner_inputs.is_anynomous', self::IS_ANYNOMOUS);
+        if ($start_time != null && $end_time != null) {
+            $result->where('survey_partner_inputs.created_at', '>', $start_time)
+                ->where('survey_partner_inputs.created_at', '<', $end_time);
+        };
+        if ($gender != null) {
+            $result->whereIn('partner_profiles.gender', $gender);
+        };
+        if ($academic_level_ids != null) {
+            $result->whereIn('partner_profiles.academic_level_id', $academic_level_ids);
+        };
+        if ($province_codes != null) {
+            $result->whereIn('partner_profiles.province_code', $province_codes);
+        };
+        if ($job_type_ids != null) {
+            $result->whereIn('partner_profiles.job_type_id', $job_type_ids);
+        };
+        if ($marital_status_ids != null) {
+            $result->whereIn('partner_profiles.marital_status_id', $marital_status_ids);
+        };
+        if ($family_peoples != null) {
+            $result->whereIn('partner_profiles.family_people', $family_peoples);
+        };
+        if ($marital_status_ids != null) {
+            $result->whereIn('partner_profiles.marital_status_id', $marital_status_ids);
+        };
+        if ($is_key_shopper != null) {
+            $result->whereIn('partner_profiles.is_key_shopper', $is_key_shopper);
+        };
+        if ($has_children != null) {
+            $result->whereIn('partner_profiles.has_children', $has_children);
         };
         $result = $result->get();
         return $result;

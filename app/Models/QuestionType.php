@@ -21,12 +21,15 @@ class QuestionType
     const QUESTION_ENDED_LONG_TEXT              = 'char_box';
 
     const RATING_STAR                           = 'star_rating';
+    const RANKING                               = 'ranking';
 
 
     const MULTI_FACTOR_MATRIX                  = 'matrix';
 
     const MATRIX_VALUE_COLUMN                  = 'column';
     const MATRIX_VALUE_ROW                     = 'row';
+
+    const GROUP                                = 'group';
 
 
     public static function getTypeQuestionList()
@@ -72,7 +75,14 @@ class QuestionType
                     self::NUMBER => 'Number',
                     self::DATETIME_DATE => 'Date',
                     self::DATETIME_DATE_RANGE => 'Date range',
-                    self::RATING_STAR => 'Rating',
+                    self::RATING_STAR => 'Rating (đánh giá)',
+                    self::RANKING => 'Ranking (Xếp hạng thứ tự)',
+                ]
+            ],
+            'structural_group' => [
+                'name' => 'Nhóm cấu trúc bảng hỏi',
+                'data' => [
+                    self::GROUP => 'Tạo nhóm câu hỏi (question group)',
                 ]
             ]
         ];

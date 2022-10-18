@@ -98,15 +98,15 @@ class SurveyController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
-                'category_id' => 'required|integer|max:20',
+                'title' => 'string|max:255',
+                'category_id' => 'integer|max:20',
             ]);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
             $survey_user = Survey::getDetailSurvey($id);
-            if ($survey_user->Survey::STATUS_DRAFT) {
+            if ($survey_user->state == Survey::STATUS_DRAFT) {
                 if (!$survey_user) {
                     return ClientResponse::responseError('Không có bản ghi phù hợp');
                 }

@@ -99,51 +99,71 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/upload-image/{type_image}', [AuthController::class, 'updateImage']);
             });
         });
+
         Route::group([
             'prefix' => 'survey'
 
         ], function ($router) {
             Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
             Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
-            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
-            Route::get('/get-diagram/{survey_id}/target/{group_by}', [SurveyStatisticCpntroller::class, 'getDiagramSurvey']);
-            Route::get('/get-statistic/{survey_id}', [SurveyStatisticCpntroller::class, 'getStatisticSurvey']);
-            Route::get('/detail/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
-            Route::group([
-                'prefix' => 'anynomous'
-            ], function ($router) {
-                Route::post('/input/{survey_id}', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
-                Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
-                Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
-            });
+            Route::post('/detail/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
             Route::group([
                 'middleware' => 'client_auth',
             ], function ($router) {
                 Route::post('/create', [SurveyController::class, 'createSurvey']);
-                Route::post('/question/upload-image', [ImagesController::class, 'uploadImage']);
-                Route::get('/question/template-image', [ImagesController::class, 'getTemplateImage']);
                 Route::get('/get-list', [SurveyController::class, 'getListSurvey']);
                 Route::get('/get-detail/{survey_id}', [SurveyController::class, 'getDetailSurvey']);
-                Route::get('/template/get-list', [SurveyTemplateController::class, 'getListSurveyTemplate']);
-                Route::get('/template/get-detail/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
-                Route::post('/use-template/{survey_template_id}', [SurveyController::class, 'useSurveyTemplate']);
-                Route::get('/question/answer/{question_id}', [SurveyQuestionAnswersController::class, 'getListAnswers']);
-                //Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
-                //            Route::get('/get-statistic/{survey_id}/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatistic']);
+                Route::post('/question/upload-image', [ImagesController::class, 'uploadImage']);
+                Route::get('/question/template-image', [ImagesController::class, 'getTemplateImage']);
+                Route::group([
+                    'prefix' => '/template'
+                ], function ($router) {
+                    Route::get('/', [SurveyTemplateController::class, 'getListSurveyTemplate']);
+                    Route::get('/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
+                    Route::post('/{survey_template_id}/use-template', [SurveyController::class, 'useSurveyTemplate']);
+                });
                 Route::group([
                     'middleware' => 'client_owner_survey',
 
                 ], function ($router) {
-                    Route::post('/edit/{id}', [SurveyController::class, 'editSurvey']);
-                    Route::post('/delete/{id}', [SurveyController::class, 'deleteSurvey']);
-                    Route::post('/question/{survey_id}', [SurveyQuestionController::class, 'createSurveyQuestion']);
-                    Route::get('/question/{survey_id}', [SurveyQuestionController::class, 'getListSurveyQuestion']);
-                    Route::get('/question/{survey_id}/detail/{question_id}', [SurveyQuestionController::class, 'getDetailSurveyQuestion']);
-                    Route::post('/question/{survey_id}', [SurveyQuestionController::class, 'updateManySurveyQuestion']);
-                    Route::post('/question/{survey_id}/edit/{question_id}', [SurveyQuestionController::class, 'updateSurveyQuestion']);
-                    Route::post('/question-answer/{survey_id}/edit/{answer_id}', [SurveyQuestionController::class, 'updateSurveyQuestionAnswer']);
-                    Route::post('/question/{survey_id}/del/{question_id}', [SurveyQuestionController::class, 'delSurveyQuestion']);
+                    Route::post('/edit/{survey_id}', [SurveyController::class, 'editSurvey']);
+                    Route::post('/delete/{survey_id}', [SurveyController::class, 'deleteSurvey']);
+                    Route::group([
+                        'prefix' => '/{survey_id}/question'
+
+                    ], function ($router) {
+                        Route::post('/', [SurveyQuestionController::class, 'createSurveyQuestion']);
+                        Route::get('/', [SurveyQuestionController::class, 'getListSurveyQuestion']);
+                        Route::get('/{question_id}/detail', [SurveyQuestionController::class, 'getDetailSurveyQuestion']);
+                        Route::post('/update-many', [SurveyQuestionController::class, 'updateManySurveyQuestion']);
+                        Route::post('/{question_id}/update', [SurveyQuestionController::class, 'updateSurveyQuestion']);
+                        Route::post('/{question_id}/delete', [SurveyQuestionController::class, 'delSurveyQuestion']);
+                        Route::group([
+                            'prefix' => '/{question_id}/answers'
+
+                        ], function ($router) {
+                            Route::post('/', [SurveyQuestionAnswersController::class, 'creatQuestionAnswers']);
+                            Route::post('/dropdown', [SurveyQuestionAnswersController::class, 'creatQuestionAnswersDropdown']);
+                            Route::post('/{answer_id}/update', [SurveyQuestionAnswersController::class, 'updateQuestionAnswers']);
+                        });
+                    });
                 });
+            });
+            Route::group([
+                'prefix' => '/{survey_id}/statistic'
+            ], function ($router) {
+                Route::post('/', [SurveyStatisticCpntroller::class, 'getStatisticSurvey']);
+                Route::post('/diagram/target/{group_by}', [SurveyStatisticCpntroller::class, 'getDiagramSurvey']);
+                Route::post('/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
+            });
+            Route::group([
+                'prefix' => '/{survey_id}/anynomous'
+            ], function ($router) {
+                Route::post('/', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
+                Route::post('/{partner_input_id}/update', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
+                Route::post('line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
+                Route::get('/detail/{survey_partner_id}', [SurveyPartnerInputAnynomousController::class, 'getDetailSurveyPartner']);
+                Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
             });
         });
         Route::get('province', [PartnerProvinceController::class, 'getProvince']);
@@ -205,21 +225,25 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::group([
             'prefix' => 'survey'
-
-
         ], function ($router) {
             Route::group([
                 'middleware' => 'partner_auth',
 
             ], function ($router) {
                 Route::get('/get-list', [SurveyPartnerController::class, 'getlistSurveyPartner']);
-                Route::get('/detail/{survey_partner_id}', [SurveyPartnerController::class, 'getDetailSurveyPartner']);
+                Route::get('/get-detail/{survey_partner_id}', [SurveyPartnerController::class, 'getDetailSurveyPartner']);
                 Route::get('/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
-                Route::get('/question/{survey_id}', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
-                Route::post('/input/{survey_id}', [SurveyPartnerInputController::class, 'answerSurvey']);
-                Route::post('/input/{survey_id}/edit/{partner_input_id}', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
-                Route::post('/input/{survey_id}/line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
-                Route::get('/exit/{survey_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'exitSurvey']);
+                Route::get('/input/{survey_partner_input_id}', [SurveyPartnerInputController::class, 'getDetailSurveyPartnerInput']);
+                Route::get('/input/check', [SurveyPartnerInputController::class, 'checkPartnerInput']);
+                Route::group([
+                    'prefix' => '/{survey_id}/input'
+                ], function ($router) {
+                    Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
+                    Route::post('/', [SurveyPartnerInputController::class, 'answerSurvey']);
+                    Route::post('/{partner_input_id}/update', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
+                    Route::post('/question/{question_id}/line/{partner_input_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
+                    Route::get('/question/{question_id}/exit', [SurveyPartnerInputLineController::class, 'exitSurvey']);
+                });
             });
         });
 
