@@ -54,6 +54,11 @@ class SurveyQuestionController extends Controller
         try {
             $survey_id = $request->survey_id;
             $datas = SurveyQuestion::getListSurveyQuestion($survey_id);
+            foreach ($datas as $key => $value) {
+                $group_question = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
+                $value['group_question'] = $group_question;
+                $datas[$key]  = $value;
+            }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
