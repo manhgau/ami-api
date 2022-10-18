@@ -74,7 +74,7 @@ class QuestionType
             ],
             [
                 'name' => 'Nhóm khác',
-                'key' => 'text_group',
+                'key' => 'other_group',
                 'data' => [
                     ['question_type' => self::NUMBER, 'name' => 'Number'],
                     ['question_type' => self::DATETIME_DATE, 'name' => 'Date'],
