@@ -53,39 +53,44 @@ class QuestionType
     public static function getTypeQuestionBygroup()
     {
         return [
-            'select_group' => [
+            [
+                'key' => 'select_group',
                 'name' => 'Nhóm lựa chọn',
                 'data' => [
-                    self::MULTI_CHOICE_CHECKBOX => 'Choice checkbox',
-                    self::MULTI_CHOICE_RADIO => 'Choice radio',
-                    self::MULTI_CHOICE_DROPDOWN => 'Dropdown',
-                    self::YES_NO => 'Yes/No',
-                    self::MULTI_FACTOR_MATRIX => 'Matrix'
+                    ['question_type' => self::MULTI_CHOICE_CHECKBOX, 'name' => 'Choice checkbox'],
+                    ['question_type' => self::MULTI_CHOICE_RADIO, 'name' => 'Choice radio'],
+                    ['question_type' => self::MULTI_CHOICE_DROPDOWN, 'name' => 'Dropdown'],
+                    ['question_type' => self::YES_NO, 'name' => 'Yes/No'],
+                    ['question_type' => self::MULTI_FACTOR_MATRIX, 'name' => 'Matrix'],
                 ]
             ],
-            'text_group' => [
+            [
+                'key' => 'text_group',
                 'name' => 'Nhóm text',
                 'data' => [
-                    self::QUESTION_ENDED_SHORT_TEXT => 'Short text',
-                    self::QUESTION_ENDED_LONG_TEXT => 'Long text',
+                    ['question_type' => self::QUESTION_ENDED_SHORT_TEXT, 'name' => 'Short text'],
+                    ['question_type' => self::QUESTION_ENDED_LONG_TEXT, 'name' => 'Long text'],
                 ]
             ],
-            'other_group' => [
+            [
                 'name' => 'Nhóm khác',
+                'key' => 'text_group',
                 'data' => [
-                    self::NUMBER => 'Number',
-                    self::DATETIME_DATE => 'Date',
-                    self::DATETIME_DATE_RANGE => 'Date range',
-                    self::RATING_STAR => 'Rating (đánh giá)',
-                    self::RANKING => 'Ranking (Xếp hạng thứ tự)',
+                    ['question_type' => self::NUMBER, 'name' => 'Number'],
+                    ['question_type' => self::DATETIME_DATE, 'name' => 'Date'],
+                    ['question_type' => self::DATETIME_DATE_RANGE, 'name' => 'Date range'],
+                    ['question_type' => self::RATING_STAR, 'name' => 'Rating (đánh giá)'],
+                    ['question_type' => self::RANKING, 'name' => 'Ranking (Xếp hạng thứ tự)'],
                 ]
             ],
-            'structural_group' => [
+            [
                 'name' => 'Nhóm cấu trúc bảng hỏi',
+                'key' => 'structural_group',
                 'data' => [
-                    self::GROUP => 'Tạo nhóm câu hỏi (question group)',
+                    ['question_type' => self::GROUP, 'name' => 'Tạo nhóm câu hỏi (question group)'],
                 ]
             ]
+
         ];
     }
 
