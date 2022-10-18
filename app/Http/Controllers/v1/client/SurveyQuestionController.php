@@ -34,7 +34,7 @@ class SurveyQuestionController extends Controller
             }
             $input['created_by'] = $user_id;
             $input['survey_id'] = $request->survey_id;
-            $$input['count_questions'] =  SurveyQuestion::countQuestion($input['survey_id']) + 1;
+            $input['count_questions'] =  SurveyQuestion::countQuestion($input['survey_id']) + 1;
             $question_type = Str::lower($request->question_type);
             if (QuestionType::checkQuestionTypeValid($question_type) === false) {
                 return ClientResponse::responseError('Lỗi ! Không có dạng câu hỏi khảo sát này.');
