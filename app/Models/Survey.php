@@ -71,6 +71,6 @@ class Survey extends Model
 
     public static  function countSurvey($user_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)->where('user_id', $user_id)->get();
+        return self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)->where('user_id', $user_id)->count();
     }
 }

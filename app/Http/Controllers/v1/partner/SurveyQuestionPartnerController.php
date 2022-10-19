@@ -33,8 +33,7 @@ class SurveyQuestionPartnerController extends Controller
                         $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id)->orWhere('matrix_question_id', $value['id'])->get();
                         $datas[$key] = $data_response;
                         break;
-                    case QuestionType::MULTI_CHOICE_CHECKBOX:
-                    case QuestionType::MULTI_CHOICE_RADIO:
+                    case QuestionType::MULTI_CHOICE:
                     case QuestionType::MULTI_CHOICE_DROPDOWN:
                     case QuestionType::YES_NO:
                         $data_response = $value;

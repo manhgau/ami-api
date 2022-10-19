@@ -95,9 +95,8 @@ class SurveyStatisticCpntroller extends Controller
             $survey_questions = SurveyQuestion::getDetailSurveyQuestion($question_id);
             $question_type = $survey_questions->question_type;
             switch ($question_type) {
-                case QuestionType::MULTI_CHOICE_CHECKBOX:
                 case QuestionType::YES_NO:
-                case QuestionType::MULTI_CHOICE_RADIO:
+                case QuestionType::MULTI_CHOICE:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
                     $data =  SurveyPartnerInputLine::getSurveyStatisticCheckbox($question_id, $survey_id, $is_anynomous);
                     $chart = $data;

@@ -85,8 +85,7 @@ class SurveyQuestionController extends Controller
                     case QuestionType::MULTI_FACTOR_MATRIX:
                         $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'],  $random)->orWhere('matrix_question_id', $detail['id'])->get();
                         break;
-                    case QuestionType::MULTI_CHOICE_CHECKBOX:
-                    case QuestionType::MULTI_CHOICE_RADIO:
+                    case QuestionType::MULTI_CHOICE:
                     case QuestionType::MULTI_CHOICE_DROPDOWN:
                     case QuestionType::YES_NO:
                         $detail['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail['id'],  $random)->get();
