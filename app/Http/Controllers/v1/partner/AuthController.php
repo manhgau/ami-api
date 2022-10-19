@@ -60,11 +60,8 @@ class AuthController extends Controller
                         'refresh_token' => $token['refresh_token']??'',
                     ];
                     DB::commit();
-                    if (Partner::isCompletedProfile($partner??null)) {
-                        return ClientResponse::responseSuccess('Đăng nhập thành công', $data);
-                    }else{
-                        return ClientResponse::response(ClientResponse::$partner_required_fill_info, 'Tài khoản chưa hoàn thiện hồ sơ', $data);
-                    }
+                    //TODO,..
+                    return ClientResponse::responseSuccess('Đăng nhập thành công', $data);
                 } else {
                     return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
                 }
