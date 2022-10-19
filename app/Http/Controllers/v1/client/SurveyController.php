@@ -33,7 +33,6 @@ class SurveyController extends Controller
             }
             $input = $request->all();
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-
             if ((Survey::countSurvey($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_projects)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
@@ -194,8 +193,7 @@ class SurveyController extends Controller
                 $input_question['survey_id'] = $survey->id;
                 $input_question['created_by'] = $user_id;
                 switch ($question_type) {
-                    case QuestionType::MULTI_CHOICE_CHECKBOX:
-                    case QuestionType::MULTI_CHOICE_RADIO:
+                    case QuestionType::MULTI_CHOICE:
                     case QuestionType::MULTI_CHOICE_DROPDOWN:
                     case QuestionType::RATING_STAR:
                     case QuestionType::YES_NO:

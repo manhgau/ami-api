@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\DB;*/
 class QuestionType
 {
 
-    const MULTI_CHOICE_CHECKBOX                 = 'checkbox';
-    const MULTI_CHOICE_RADIO                    = 'radio';
+    const MULTI_CHOICE                          = 'choice';
     const MULTI_CHOICE_DROPDOWN                 = 'dropdown';
     const YES_NO                                = 'yes_no';
     const NUMBER                                = 'number';
@@ -35,8 +34,7 @@ class QuestionType
     public static function getTypeQuestionList()
     {
         return [
-            self::MULTI_CHOICE_CHECKBOX,
-            self::MULTI_CHOICE_RADIO,
+            self::MULTI_CHOICE,
             self::MULTI_CHOICE_DROPDOWN,
             self::YES_NO,
             self::NUMBER,
@@ -57,8 +55,7 @@ class QuestionType
                 'key' => 'select_group',
                 'name' => 'Nhóm lựa chọn',
                 'data' => [
-                    ['question_type' => self::MULTI_CHOICE_CHECKBOX, 'name' => 'Choice checkbox'],
-                    ['question_type' => self::MULTI_CHOICE_RADIO, 'name' => 'Choice radio'],
+                    ['question_type' => self::MULTI_CHOICE, 'name' => 'Choice'],
                     ['question_type' => self::MULTI_CHOICE_DROPDOWN, 'name' => 'Dropdown'],
                     ['question_type' => self::YES_NO, 'name' => 'Yes/No'],
                     ['question_type' => self::MULTI_FACTOR_MATRIX, 'name' => 'Matrix'],

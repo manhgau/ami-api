@@ -60,8 +60,7 @@ class SurveyPartnerInputLineController extends Controller
                     // to do ....   
                     $data_input = [];
                     switch ($input['answer_type']) {
-                        case QuestionType::MULTI_CHOICE_CHECKBOX:
-                        case QuestionType::MULTI_CHOICE_RADIO:
+                        case QuestionType::MULTI_CHOICE:
                         case QuestionType::MULTI_CHOICE_DROPDOWN:
                         case QuestionType::YES_NO:
                             $validator = Validator::make($request->all(), [

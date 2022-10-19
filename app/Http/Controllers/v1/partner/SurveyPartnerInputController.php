@@ -127,7 +127,8 @@ class SurveyPartnerInputController extends Controller
                     $perPage = $request->per_page ?? 5;
                     $page = $request->current_page ?? 1;
                     $time_now = Carbon::now();
-                    $datas = SurveyPartnerInput::getlistSurveyPartnerInput($perPage,  $page, $partner_id, $time_now);
+                    $time_end = date('Y-m-d H:i:s', time() - (30 * 86400));
+                    $datas = SurveyPartnerInput::getlistSurveyPartnerInput($perPage,  $page, $partner_id, $time_now, $time_end);
                     $datas = RemoveData::removeUnusedData($datas);
                     $array = array();
                     foreach ($datas['data'] as $key => $value) {
@@ -160,8 +161,7 @@ class SurveyPartnerInputController extends Controller
                 try {
                     $partner_id = $partner->id ?? 0;
                     $survey_partner_input_id = $request->survey_partner_input_id;
-                    $time_now = Carbon::now();
-                    $result = SurveyPartnerInput::getDetailSurveyPartnerInput($survey_partner_input_id, $partner_id, $time_now);
+                    $result = SurveyPartnerInput::getDetailSurveyPartnerInput($survey_partner_input_id, $partner_id);
                     if (!$result) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
