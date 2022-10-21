@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\partner;
 use App\Helpers\ClientResponse;
 use App\Helpers\RemoveData;
 use App\Models\QuestionType;
+use App\Models\Survey;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ class SurveyQuestionPartnerController extends Controller
 
         try {
             $survey_id = $request->survey_id;
+            //$survey_detail = Survey::
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
             $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page);

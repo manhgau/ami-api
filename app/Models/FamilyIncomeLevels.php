@@ -19,8 +19,10 @@ class FamilyIncomeLevels extends Model
 
     public static  function getFamilyIncomeLevels($perPage = 100,  $page = 1)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('status',self::STATUS_ACTIVE)->paginate($perPage, "*", "page", $page)->toArray();
+        return self::where('deleted', self::NOT_DELETED)->where('status', self::STATUS_ACTIVE)->paginate($perPage, "*", "page", $page)->toArray();
     }
-
+    public static  function getAllFamilyIncomeLevels()
+    {
+        return self::select('id as value', 'name')->where('deleted', self::NOT_DELETED)->get();
+    }
 }
-
