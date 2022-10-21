@@ -7,7 +7,9 @@ namespace App\Http\Middleware;
 use App\Helpers\JWT;
 use App\Helpers\Context;
 use App\Helpers\ClientResponse;
+use App\Models\AppSetting;
 use App\Models\PartnerAccessToken;
+use App\Models\PartnerProfile;
 use Closure;
 
 class PartnerAuth

@@ -33,6 +33,11 @@ class PartnerProfile extends Model
 
     public static  function updatePartnerProfile($data, $id)
     {
-        return $model = self::where('partner_id', $id)->update($data);
+        return  self::where('partner_id', $id)->update($data);
+    }
+
+    public static  function getDetailPartnerProfile($partner_id)
+    {
+        return self::where('partner_id', $partner_id)->first();
     }
 }

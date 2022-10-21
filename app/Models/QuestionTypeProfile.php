@@ -10,16 +10,16 @@ class QuestionTypeProfile
 
     const FULLNAME                                      = 'fullname';
     const YEAR_OF_BIRTH                                 = 'year_of_birth';
-    const PROVINCE                                      = 'province';
+    const PROVINCE                                      = 'province_code';
     const GENDER                                        = 'gender';
-    const MARITAL_STATUS                                = 'marital_status';
-    const JOB_TYPE                                      = 'job_type';
-    const PERSONAL_INCOME_LEVEL                         = 'personal_income_level';
-    const FAMILY_INCOME_LEVEL                           = 'family_income_level';
+    const MARITAL_STATUS                                = 'marital_status_id';
+    const JOB_TYPE                                      = 'job_type_id';
+    const PERSONAL_INCOME_LEVEL                         = 'personal_income_level_id';
+    const FAMILY_INCOME_LEVEL                           = 'family_income_level_id';
     const FAMILY_PEOPLE                                 = 'family_people';
     const IS_KEY_SHOPPER                                = 'is_key_shopper';
     const HAS_CHILDREN                                  = 'has_children';
-    const ACADEMIC_LEVEL                                = 'academic_level';
+    const ACADEMIC_LEVEL                                = 'academic_level_id';
 
     // public static function getQuestionTypeProfile()
     // {
