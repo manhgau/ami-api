@@ -17,9 +17,11 @@ class JobType extends Model
 
     public static  function getJobType($perPage = 100,  $page = 1)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('status',self::STATUS_ACTIVE)->paginate($perPage, "*", "page", $page)->toArray();
+        return self::where('deleted', self::NOT_DELETED)->where('status', self::STATUS_ACTIVE)->paginate($perPage, "*", "page", $page)->toArray();
     }
 
-
+    public static  function getAllJobType()
+    {
+        return self::select('id as value', 'name')->where('deleted', self::NOT_DELETED)->get();
+    }
 }
-

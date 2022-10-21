@@ -18,5 +18,8 @@ class Gender extends Model
         return self::where('deleted', self::NOT_DELETED)->paginate($perPage, "*", "page", $page)->toArray();
     }
 
+    public static  function getAllGender()
+    {
+        return self::select('id as value', 'name')->where('deleted', self::NOT_DELETED)->get();
+    }
 }
-

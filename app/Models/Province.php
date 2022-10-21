@@ -26,4 +26,9 @@ class Province extends Model
         $data =  $provinces->paginate($perPage, "*", "page", $page)->toArray();
         return $data;
     }
+
+    public static  function getAllProvince()
+    {
+        return self::select('code as value', 'name')->where('deleted', self::NOT_DELETED)->get();
+    }
 }

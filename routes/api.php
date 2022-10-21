@@ -40,6 +40,7 @@ use App\Http\Controllers\v1\partner\SurveyPartnerController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputLineController;
 use App\Http\Controllers\v1\partner\SurveyQuestionPartnerController;
+use App\Http\Controllers\v1\partner\SurveyQuestionProfileController;
 use App\Http\Controllers\v1\visitor\FeedbackController;
 use App\Http\Controllers\v1\visitor\PartnerContactsController;
 
@@ -236,6 +237,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
                 Route::get('/input/{survey_partner_input_id}', [SurveyPartnerInputController::class, 'getDetailSurveyPartnerInput']);
                 Route::get('/input/check', [SurveyPartnerInputController::class, 'checkPartnerInput']);
+                Route::get('/{survey_profile_id}/profile/question', [SurveyQuestionProfileController::class, 'getSurveyQuestionProfile']);
                 Route::group([
                     'prefix' => '/{survey_id}/input'
                 ], function ($router) {

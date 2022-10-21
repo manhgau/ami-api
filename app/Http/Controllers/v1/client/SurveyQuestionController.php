@@ -73,8 +73,6 @@ class SurveyQuestionController extends Controller
     {
         try {
             $question_id = $request->question_id;
-            $ckey  = CommonCached::cache_find_survey_question_by_question_id . "_" . $question_id;
-            $detail = CommonCached::getData($ckey);
             if (empty($detail)) {
                 $detail = SurveyQuestion::getDetailSurveyQuestion($question_id);
                 if (!$detail) {
@@ -102,7 +100,6 @@ class SurveyQuestionController extends Controller
                         return ClientResponse::responseError('question type không hợp lệ', $detail['question_type']);
                         break;
                 }
-                CommonCached::storeData($ckey, $detail, true);
             }
             return ClientResponse::responseSuccess('OK', $detail);
         } catch (\Exception $ex) {
