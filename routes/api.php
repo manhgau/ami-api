@@ -231,21 +231,29 @@ Route::group(['prefix' => 'v1'], function () {
                 'middleware' => 'partner_auth',
 
             ], function ($router) {
-                Route::get('/get-list', [SurveyPartnerController::class, 'getlistSurveyPartner']);
-                Route::get('/get-detail/{survey_partner_id}', [SurveyPartnerController::class, 'getDetailSurveyPartner']);
-                Route::get('/save/{survey_partner_id}', [SurveyPartnerController::class, 'saveSurveyPartner']);
-                Route::get('/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
-                Route::get('/input/{survey_partner_input_id}', [SurveyPartnerInputController::class, 'getDetailSurveyPartnerInput']);
-                Route::get('/input/check', [SurveyPartnerInputController::class, 'checkPartnerInput']);
                 Route::get('/{survey_profile_id}/profile/question', [SurveyQuestionProfileController::class, 'getSurveyQuestionProfile']);
+                Route::post('/{survey_profile_id}/profile/question/{question_id}', [SurveyQuestionProfileController::class, 'answerSurveyQuestionProfile']);
                 Route::group([
-                    'prefix' => '/{survey_id}/input'
+                    'middleware' => 'partner_profile',
+
                 ], function ($router) {
-                    Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
-                    Route::post('/', [SurveyPartnerInputController::class, 'answerSurvey']);
-                    Route::post('/{partner_input_id}/update', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
-                    Route::post('/question/{question_id}/line/{partner_input_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
-                    Route::get('/question/{question_id}/exit', [SurveyPartnerInputLineController::class, 'exitSurvey']);
+                    Route::get('/get-list', [SurveyPartnerController::class, 'getlistSurveyPartner']);
+                    Route::get('/get-detail/{survey_partner_id}', [SurveyPartnerController::class, 'getDetailSurveyPartner']);
+                    Route::get('/save/{survey_partner_id}', [SurveyPartnerController::class, 'saveSurveyPartner']);
+                    Route::get('/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
+                    Route::get('/input/{survey_partner_input_id}', [SurveyPartnerInputController::class, 'getDetailSurveyPartnerInput']);
+                    Route::get('/input/check', [SurveyPartnerInputController::class, 'checkPartnerInput']);
+                    Route::group([
+                        'prefix' => '/{survey_id}/input'
+                    ], function ($router) {
+                        Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
+                        Route::get('/question/profile', [SurveyQuestionProfileController::class, 'getQuestionProfileBySurvey']);
+                        Route::post('/question/profile/{question_id}', [SurveyQuestionProfileController::class, 'answerQuestionProfileBySurvey']);
+                        Route::post('/', [SurveyPartnerInputController::class, 'answerSurvey']);
+                        Route::post('/{partner_input_id}/update', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
+                        Route::post('/question/{question_id}/line/{partner_input_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
+                        Route::get('/question/{question_id}/exit', [SurveyPartnerInputLineController::class, 'exitSurvey']);
+                    });
                 });
             });
         });

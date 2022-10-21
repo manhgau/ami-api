@@ -35,6 +35,11 @@ class SurveyProfileQuestions extends Model
     {
         return self::where('deleted', self::NOT_DELETED)->where('survey_profile_id', $survey_profile_id)->paginate($perPage, "*", "page", $page)->toArray();
     }
+
+    public static  function getSurveyQuestionProfileDetail($survey_profile_id, $id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_profile_id', $survey_profile_id)->where('id', $id)->first();
+    }
     public function scopeGetSurveyProfileQuestions()
     {
         return $this->where('deleted', self::NOT_DELETED);

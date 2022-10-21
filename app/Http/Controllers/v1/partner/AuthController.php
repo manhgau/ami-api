@@ -56,11 +56,10 @@ class AuthController extends Controller
                             'name' => $partner->name ?? '',
                             'phone' => $partner->phone,
                         ],
-                        'access_token'  => $token['access_token']??'',
-                        'refresh_token' => $token['refresh_token']??'',
+                        'access_token'  => $token['access_token'] ?? '',
+                        'refresh_token' => $token['refresh_token'] ?? '',
                     ];
                     DB::commit();
-                    //TODO,..
                     return ClientResponse::responseSuccess('Đăng nhập thành công', $data);
                 } else {
                     return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
@@ -118,24 +117,24 @@ class AuthController extends Controller
             return ClientResponse::responseError('Số điện thoại không đúng định dạng');
         }
         $validate_otp = Otp::validateOtpByPhone($otp, $phone);
-        if(isset($validate_otp['status']) && $validate_otp['status']==1){
+        if (isset($validate_otp['status']) && $validate_otp['status'] == 1) {
             $partner = new Partner();
             $partner->phone = $phone;
             $partner->password = Partner::generatePasswordHash($password);
             $partner->is_active = Partner::IS_ACTIVE;
-            if($partner->save()){
+            if ($partner->save()) {
                 //vô hiệu hóa otp
                 $otpInfo = Otp::getOtpByPhone($otp, $phone);
-                if($otpInfo){
+                if ($otpInfo) {
                     $otpInfo->expire_at = time();
                     $otpInfo->save();
                 }
                 return ClientResponse::responseSuccess('Tạo tài khoản thành công');
-            }else{
+            } else {
                 return ClientResponse::responseError('Không thể tạo tài khoản, vui lòng thử lại sau');
             }
-        }else{
-            return ClientResponse::responseError($validate_otp['message']??'OTP không hợp lệ');
+        } else {
+            return ClientResponse::responseError($validate_otp['message'] ?? 'OTP không hợp lệ');
         }
     }
 
@@ -149,7 +148,7 @@ class AuthController extends Controller
         }
         $phone = $request->phone;
         $partner = Partner::getPartnerByPhone($phone);
-        if($partner){
+        if ($partner) {
             //Tạo, gửi OTP
             $otp = Otp::genOtp($phone);
             $otp_send = Otp::sendOtpToPhone($otp, $phone, Sms::generateForgotPasswordSms($otp));
@@ -158,7 +157,7 @@ class AuthController extends Controller
             } else {
                 return ClientResponse::responseError($otp_send['message'] ?? 'Không thể gửi OTP, vui lòng thử lại sau');
             }
-        }else{
+        } else {
             return ClientResponse::responseError('Tài khoản không tồn tại');
         }
     }
@@ -182,74 +181,75 @@ class AuthController extends Controller
             return ClientResponse::responseError('Số điện thoại không đúng định dạng');
         }
         $validate_otp = Otp::validateOtpByPhone($otp, $phone);
-        if(isset($validate_otp['status']) && $validate_otp['status']==1){
+        if (isset($validate_otp['status']) && $validate_otp['status'] == 1) {
             $partner = Partner::getPartnerByPhone($phone);
-            if($partner){
+            if ($partner) {
                 $partner->password = Partner::generatePasswordHash($password);
-                if($partner->save()){
+                if ($partner->save()) {
                     //vô hiệu hóa otp
                     $otpInfo = Otp::getOtpByPhone($otp, $phone);
-                    if($otpInfo){
+                    if ($otpInfo) {
                         $otpInfo->expire_at = time();
                         $otpInfo->save();
                     }
                     return ClientResponse::responseSuccess('Cập nhật mật khẩu thành công');
-                }else{
+                } else {
                     return ClientResponse::responseError('Không thể cập nhật mật khẩu, vui lòng thử lại sau');
                 }
-            }else{
+            } else {
                 return ClientResponse::responseError('Tài khoản không tồn tại');
             }
-        }else{
-            return ClientResponse::responseError($validate_otp['message']??'OTP không hợp lệ');
+        } else {
+            return ClientResponse::responseError($validate_otp['message'] ?? 'OTP không hợp lệ');
         }
     }
 
-    public function changePassword(Request $request){
-        try{
+    public function changePassword(Request $request)
+    {
+        try {
             $validator = Validator::make($request->all(), [
                 'new_password' => 'required|string|confirmed|min:6',
             ]);
 
-            if($validator->fails()){
-                $errorString = implode(",",$validator->messages()->all());
+            if ($validator->fails()) {
+                $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
             $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
             if ($tokenInfo) {
                 $partner = $tokenInfo->partner;
-                if($partner){
+                if ($partner) {
                     $partner->password = Partner::generatePasswordHash($request->new_password);
-                    if($partner->save()){
+                    if ($partner->save()) {
                         //xóa token cũ
                         $tokenInfo->delete();
                         return ClientResponse::responseSuccess('Đổi mật khẩu thành công');
-                    }else{
+                    } else {
                         return ClientResponse::responseError('Không thể đổi mật khẩu');
                     }
-                }else{
+                } else {
                     return ClientResponse::responseError('Tài khoản không tồn tại');
                 }
             } else {
                 return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
             }
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
-
     }
 
 
-    public function refresh(Request $request){
-        $token = $request->header('Authorization')??$request->refresh_token;
+    public function refresh(Request $request)
+    {
+        $token = $request->header('Authorization') ?? $request->refresh_token;
         $refresh_token = JWT::checkAccessToken($token);
-        if($refresh_token){
-            $access_token_id = $refresh_token->aid??0;
-            $type = $refresh_token->type??'';
-            $tokenInfo = PartnerAccessToken::where('aid',$access_token_id)->first();
-            if ($tokenInfo && $type==PartnerAccessToken::TYPE_REFRESH_TOKEN) {
+        if ($refresh_token) {
+            $access_token_id = $refresh_token->aid ?? 0;
+            $type = $refresh_token->type ?? '';
+            $tokenInfo = PartnerAccessToken::where('aid', $access_token_id)->first();
+            if ($tokenInfo && $type == PartnerAccessToken::TYPE_REFRESH_TOKEN) {
                 $partner = $tokenInfo->partner;
-                if($partner){
+                if ($partner) {
                     $time = time();
 
                     $refresh_token_expire = $tokenInfo->refresh_expire ?? 0;
@@ -268,8 +268,8 @@ class AuthController extends Controller
                                         'name' => $partner->name ?? '',
                                         'phone' => $partner->phone,
                                     ],*/
-                                    'access_token'  => $token['access_token']??'',
-                                    'refresh_token' => $token['refresh_token']??'',
+                                    'access_token'  => $token['access_token'] ?? '',
+                                    'refresh_token' => $token['refresh_token'] ?? '',
                                 ];
                                 DB::commit();
                                 return ClientResponse::responseSuccess('Refresh token thành công', $data);
@@ -280,16 +280,16 @@ class AuthController extends Controller
                             DB::rollBack();
                             return ClientResponse::responseError($e->getMessage());
                         }
-                    }else{
+                    } else {
                         return ClientResponse::response(ClientResponse::$required_login_code, 'Refresh token đã hết hạn');
                     }
-                }else{
+                } else {
                     return ClientResponse::responseError('Tài khoản không tồn tại');
                 }
             } else {
                 return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
             }
-        }else{
+        } else {
             return ClientResponse::response(ClientResponse::$required_login_code, 'Yêu cầu truy cập bị từ chối');
         }
     }
@@ -327,16 +327,17 @@ class AuthController extends Controller
         }
     }
 
-    public function updateProfile(Request $request){
+    public function updateProfile(Request $request)
+    {
         $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
         if ($tokenInfo) {
             $partner = $tokenInfo->partner;
             if ($partner) {
-                try{
-                    $partner_id = $partner->id??0;
+                try {
+                    $partner_id = $partner->id ?? 0;
                     $validator = Validator::make($request->all(), [
                         //required
-                        'year_of_birth' => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
+                        'year_of_birth' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
                         'gender'        => 'required|digits:1|integer|exists:App\Models\Gender,id',
                         'province_code' => 'required|string|exists:App\Models\Province,code',
                         'district_code' => 'required|string|exists:App\Models\District,code',
@@ -364,7 +365,7 @@ class AuthController extends Controller
                     //$input = $validator->valid();
 
                     $profile = $partner->profile;
-                    if(!$profile) {
+                    if (!$profile) {
                         $profile = new PartnerProfile();
                         $profile->partner_id = $partner_id;
                     }
@@ -389,7 +390,7 @@ class AuthController extends Controller
                     $profile->save();
                     //update children_age_ranges
                     $children_age_ranges = $request->children_age_ranges;
-                    if(is_array($children_age_ranges) && count($children_age_ranges) > 0){
+                    if (is_array($children_age_ranges) && count($children_age_ranges) > 0) {
                         PartnerChildrenAgeRange::where('partner_id', $partner_id)->delete();
                         foreach ($children_age_ranges as $cr) {
                             $m = new PartnerChildrenAgeRange();
@@ -400,12 +401,11 @@ class AuthController extends Controller
                     }
 
                     return ClientResponse::responseSuccess('Cập nhật thông tin tài khoản thành công');
-
-                }catch (\Exception $ex){
+                } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
                 }
             }
-        }else{
+        } else {
             return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
         }
     }

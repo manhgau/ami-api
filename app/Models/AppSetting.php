@@ -12,6 +12,7 @@ class AppSetting extends Model
     const IMAGE_DOMAIN                      = 'image_domain';
     const IS_MAINTAIN                       = 'is_maintain';
     const LOGO                              = 'logo';
+    const SURVEY_PROFILE_ID                 = 'survey_profile_id';
 
     protected $fillable = [
         'key',

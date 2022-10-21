@@ -3,21 +3,88 @@
 namespace App\Http\Controllers\v1\partner;
 
 use App\Helpers\ClientResponse;
+use App\Helpers\Context;
 use App\Helpers\RemoveData;
 use App\Models\AcademicLevel;
+use App\Models\AppSetting;
 use App\Models\FamilyIncomeLevels;
 use App\Models\Gender;
 use App\Models\JobType;
 use App\Models\MaritalStatus;
+use App\Models\PartnerProfile;
 use App\Models\PersonalIncomeLevels;
 use App\Models\Province;
 use App\Models\QuestionTypeProfile;
+use App\Models\Survey;
+use App\Models\SurveyProfileInputs;
 use App\Models\SurveyProfileQuestions;
 use Illuminate\Http\Request;
+use Validator;
 
 class SurveyQuestionProfileController extends Controller
 {
 
+    private function __questionProfile($survey_profile_id, $perPage, $page)
+    {
+        $lists = SurveyProfileQuestions::getSurveyQuestionProfile($survey_profile_id, $perPage, $page);
+        $lists = RemoveData::removeUnusedData($lists);
+        if (!$lists) {
+            return ClientResponse::responseError('Không có bản ghi phù hợp');
+        }
+        $datas = [];
+        foreach ($lists['data'] as  $value) {
+            switch ($value['profile_type']) {
+                case QuestionTypeProfile::FULLNAME:
+                case QuestionTypeProfile::FAMILY_PEOPLE:
+                case QuestionTypeProfile::YEAR_OF_BIRTH:
+                case QuestionTypeProfile::IS_KEY_SHOPPER:
+                case QuestionTypeProfile::HAS_CHILDREN:
+                    $data_response = $value;
+                    $datas[] = $data_response;
+                    break;
+                case QuestionTypeProfile::PROVINCE:
+                    $data_response = $value;
+                    $data_response['answers'] = Province::getAllProvince();
+                    $datas[] = $data_response;
+                    break;
+                case QuestionTypeProfile::GENDER:
+                    $data_response = $value;
+                    $data_response['answers'] = Gender::getAllGender();
+                    $datas[] = $data_response;
+                    break;
+                case QuestionTypeProfile::MARITAL_STATUS:
+                    $data_response = $value;
+                    $data_response['answers'] = MaritalStatus::getAllMaritalStatus();
+                    $datas[] = $data_response;
+                    break;
+                case QuestionTypeProfile::JOB_TYPE:
+                    $data_response = $value;
+                    $data_response['answers'] = JobType::getAllJobType();
+                    $datas[] = $data_response;
+                    break;
+                case QuestionTypeProfile::PERSONAL_INCOME_LEVEL:
+                    $data_response = $value;
+                    $data_response['answers'] = PersonalIncomeLevels::getAllPersonalIncomeLevels();
+                    $datas[] = $data_response;
+                    break;
+                case QuestionTypeProfile::FAMILY_INCOME_LEVEL:
+                    $data_response = $value;
+                    $data_response['answers'] = FamilyIncomeLevels::getAllFamilyIncomeLevels();
+                    $datas[] = $data_response;
+                    break;
+                case QuestionTypeProfile::ACADEMIC_LEVEL:
+                    $data_response = $value;
+                    $data_response['answers'] = AcademicLevel::getAllAcademicLevel();
+                    $datas[] = $data_response;
+                    break;
+                default:
+                    return ClientResponse::responseError('profile type không hợp lệ', $value['profile_type']);
+                    break;
+            }
+        }
+        $lists['data'] = $datas;
+        return  $lists;
+    }
     public function getSurveyQuestionProfile(Request $request)
     {
 
@@ -25,66 +92,188 @@ class SurveyQuestionProfileController extends Controller
             $survey_profile_id = $request->survey_profile_id;
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
-            $lists = SurveyProfileQuestions::getSurveyQuestionProfile($survey_profile_id, $perPage, $page);
-            $lists = RemoveData::removeUnusedData($lists);
-            if (!$lists) {
-                return ClientResponse::responseError('Không có bản ghi phù hợp');
-            }
-            $datas = [];
-            foreach ($lists['data'] as  $value) {
-                switch ($value['profile_type']) {
-                    case QuestionTypeProfile::FULLNAME:
-                    case QuestionTypeProfile::FAMILY_PEOPLE:
-                    case QuestionTypeProfile::YEAR_OF_BIRTH:
-                    case QuestionTypeProfile::IS_KEY_SHOPPER:
-                    case QuestionTypeProfile::HAS_CHILDREN:
-                        $data_response = $value;
-                        $datas[] = $data_response;
-                        break;
-                    case QuestionTypeProfile::PROVINCE:
-                        $data_response = $value;
-                        $data_response['answers'] = Province::getAllProvince();
-                        $datas[] = $data_response;
-                        break;
-                    case QuestionTypeProfile::GENDER:
-                        $data_response = $value;
-                        $data_response['answers'] = Gender::getAllGender();
-                        $datas[] = $data_response;
-                        break;
-                    case QuestionTypeProfile::MARITAL_STATUS:
-                        $data_response = $value;
-                        $data_response['answers'] = MaritalStatus::getAllMaritalStatus();
-                        $datas[] = $data_response;
-                        break;
-                    case QuestionTypeProfile::JOB_TYPE:
-                        $data_response = $value;
-                        $data_response['answers'] = JobType::getAllJobType();
-                        $datas[] = $data_response;
-                        break;
-                    case QuestionTypeProfile::PERSONAL_INCOME_LEVEL:
-                        $data_response = $value;
-                        $data_response['answers'] = PersonalIncomeLevels::getAllPersonalIncomeLevels();
-                        $datas[] = $data_response;
-                        break;
-                    case QuestionTypeProfile::FAMILY_INCOME_LEVEL:
-                        $data_response = $value;
-                        $data_response['answers'] = FamilyIncomeLevels::getAllFamilyIncomeLevels();
-                        $datas[] = $data_response;
-                        break;
-                    case QuestionTypeProfile::ACADEMIC_LEVEL:
-                        $data_response = $value;
-                        $data_response['answers'] = AcademicLevel::getAllAcademicLevel();
-                        $datas[] = $data_response;
-                        break;
-                    default:
-                        return ClientResponse::responseError('profile type không hợp lệ', $value['profile_type']);
-                        break;
-                }
-            }
-            $lists['data'] = $datas;
+            $lists = $this->__questionProfile($survey_profile_id, $perPage, $page);
             return ClientResponse::responseSuccess('OK', $lists);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getQuestionProfileBySurvey(Request $request)
+    {
+
+        try {
+            $survey_id = $request->survey_id;
+            $survey_detail = Survey::getDetailSurvey($survey_id);
+            if (!$survey_detail) {
+                return ClientResponse::responseError('Không có Khảo sát phù hợp');
+            }
+            $survey_profile_id = $survey_detail->survey_profile_id;
+            $perPage = $request->per_page ?? 10;
+            $page = $request->current_page ?? 1;
+            $lists = $this->__questionProfile($survey_profile_id, $perPage, $page);
+            return ClientResponse::responseSuccess('OK', $lists);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    private function __answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id = null, $survey_id = null, $is_partner_profile)
+    {
+        //$is_partner_profile kiểm tra xem có update profile ko
+        try {
+            $question_detail = SurveyProfileQuestions::getSurveyQuestionProfileDetail($survey_profile_id, $question_id);
+            if (!$question_detail) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            switch ($question_detail->profile_type) {
+                case QuestionTypeProfile::FULLNAME:
+                    $validator = Validator::make([
+                        'value_answer' => $value_answer,
+                        'profile_type' => $profile_type
+                    ], [
+                        'value_answer' => [
+                            $question_detail->validation_required ? 'required' : '',
+                            'string',
+                        ],
+                    ]);
+                    if ($validator->fails()) {
+                        $errorString = implode(",", $validator->messages()->all());
+                        return ClientResponse::responseError($errorString);
+                    }
+                    break;
+                case QuestionTypeProfile::FAMILY_PEOPLE:
+                    $validator = Validator::make([
+                        'value_answer' => $value_answer,
+                        'profile_type' => $profile_type
+                    ], [
+                        'value_answer' => [
+                            $question_detail->validation_required ? 'required' : '',
+                            'integer',
+                        ],
+                    ]);
+                    if ($validator->fails()) {
+                        $errorString = implode(",", $validator->messages()->all());
+                        return ClientResponse::responseError($errorString);
+                    }
+                    break;
+                case QuestionTypeProfile::YEAR_OF_BIRTH:
+                    $validator = Validator::make([
+                        'value_answer' => $value_answer,
+                        'profile_type' => $profile_type
+                    ], [
+                        'value_answer' => [
+                            $question_detail->validation_required ? 'required' : '',
+                            'date',
+                        ],
+                    ]);
+                    if ($validator->fails()) {
+                        $errorString = implode(",", $validator->messages()->all());
+                        return ClientResponse::responseError($errorString);
+                    }
+                    break;
+                case QuestionTypeProfile::IS_KEY_SHOPPER:
+                case QuestionTypeProfile::HAS_CHILDREN:
+                case QuestionTypeProfile::PROVINCE:
+                case QuestionTypeProfile::GENDER:
+                case QuestionTypeProfile::MARITAL_STATUS:
+                case QuestionTypeProfile::JOB_TYPE:
+                case QuestionTypeProfile::PERSONAL_INCOME_LEVEL:
+                case QuestionTypeProfile::FAMILY_INCOME_LEVEL:
+                case QuestionTypeProfile::ACADEMIC_LEVEL:
+                    $validator = Validator::make([
+                        'value_answer' => $value_answer,
+                        'profile_type' => $profile_type
+                    ], [
+                        'value_answer' => [
+                            $question_detail->validation_required ? 'required' : '',
+                        ],
+                    ]);
+                    if ($validator->fails()) {
+                        $errorString = implode(",", $validator->messages()->all());
+                        return ClientResponse::responseError($errorString);
+                    }
+
+                    break;
+                default:
+                    return ClientResponse::responseError('profile type không hợp lệ', $question_detail->profile_type);
+                    break;
+            }
+            $input[$profile_type] = $value_answer;
+            $input['survey_profile_id'] = $survey_profile_id;
+            $input['partner_id'] = $partner_id;
+            $input['survey_id'] = $survey_id;
+            $model = SurveyProfileInputs::getSurveyProfileInputDetail($survey_profile_id, $survey_id, $partner_id);
+            $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
+            if ($model && $model_profile) {
+                if ($is_partner_profile == 1) {
+                    $model_profile->update($input);
+                }
+                $result = $model->update($input);
+            } else {
+                if ($is_partner_profile == 1) {
+                    PartnerProfile::create($input);
+                }
+                $result = SurveyProfileInputs::create($input);
+            }
+            return $result;
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function answerSurveyQuestionProfile(Request $request)
+    {
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $partner_id = $partner->id ?? 0;
+                    $survey_profile_id = $request->survey_profile_id;
+                    $question_id = $request->question_id;
+                    $profile_type = $request->profile_type;
+                    $value_answer = $request->value_answer;
+                    $is_partner_profile = 1;
+                    $result = $this->__answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id = null, $is_partner_profile);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    return ClientResponse::responseSuccess('OK', $result);
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            }
+        }
+    }
+
+    public function answerQuestionProfileBySurvey(Request $request)
+    {
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $partner_id = $partner->id ?? 0;
+                    $survey_id = $request->survey_id;
+                    $survey_detail = Survey::getDetailSurvey($survey_id);
+                    if (!$survey_detail) {
+                        return ClientResponse::responseError('Không có Khảo sát phù hợp');
+                    }
+                    $survey_profile_id = $survey_detail->survey_profile_id;
+                    $question_id = $request->question_id;
+                    $profile_type = $request->profile_type;
+                    $value_answer = $request->value_answer;
+                    $is_partner_profile = 0;
+                    $result = $this->__answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id = null, $is_partner_profile);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    return ClientResponse::responseSuccess('OK', $result);
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            }
         }
     }
 }
