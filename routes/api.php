@@ -227,6 +227,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::group([
             'prefix' => 'survey'
         ], function ($router) {
+            Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
             Route::group([
                 'middleware' => 'partner_auth',
 
@@ -251,7 +252,7 @@ Route::group(['prefix' => 'v1'], function () {
                         Route::post('/question/profile/{question_id}', [SurveyQuestionProfileController::class, 'answerQuestionProfileBySurvey']);
                         Route::post('/', [SurveyPartnerInputController::class, 'answerSurvey']);
                         Route::post('/{partner_input_id}/update', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
-                        Route::post('/question/{question_id}/line/{partner_input_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
+                        Route::post('/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
                         Route::get('/question/{question_id}/exit', [SurveyPartnerInputLineController::class, 'exitSurvey']);
                     });
                 });

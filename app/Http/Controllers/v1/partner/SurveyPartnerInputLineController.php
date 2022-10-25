@@ -38,8 +38,12 @@ class SurveyPartnerInputLineController extends Controller
                     if (!$survey_question) {
                         return ClientResponse::responseError('Khảo sát không có câu hỏi này');
                     }
-                    $input['skipper']   = $request->skipper ?? 0;
-                    if ($input['skipper']) {
+                    $input['question_sequence']     = $survey_question->sequence;
+                    $input['answer_type']   = $survey_question->question_type;
+                    $input['created_by']   = $partner->id ?? 0;
+                    $input['answer_score']   = $request->answer_score ?? 0;
+                    $input['skipped']   = $request->skipped ?? 0;
+                    if ($input['skipped']) {
                         $result = SurveyPartnerInputLine::create($input);
                         if (!$result) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -53,10 +57,6 @@ class SurveyPartnerInputLineController extends Controller
                         );
                         return ClientResponse::responseSuccess('Trả lời thành công', $result);
                     }
-                    $input['question_sequence']     = $survey_question->sequence;
-                    $input['answer_type']   = $survey_question->question_type;
-                    $input['created_by']   = $partner->id ?? 0;
-                    $input['answer_score']   = $request->answer_score ?? 0;
                     // to do ....   
                     $data_input = [];
                     switch ($input['answer_type']) {
@@ -132,13 +132,10 @@ class SurveyPartnerInputLineController extends Controller
                             $data_input = $input;
                             break;
                         case QuestionType::QUESTION_ENDED_SHORT_TEXT:
-                        case QuestionType::QUESTION_ENDED_LONG_TEXT:
                             $validator = Validator::make($request->all(), [
                                 'value_text_box' => [
                                     $survey_question->validation_required ? 'required' : '',
                                     'string',
-                                    $survey_question->validation_required ? 'max:' . $survey_question->validation_length_max : '',
-                                    $survey_question->validation_required ? 'min:' . $survey_question->validation_length_min : ''
                                 ],
                             ]);
                             if ($validator->fails()) {
@@ -148,13 +145,25 @@ class SurveyPartnerInputLineController extends Controller
                             $input['value_text_box'] = $request->value_text_box ?? '';
                             $data_input = $input;
                             break;
+                        case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                            $validator = Validator::make($request->all(), [
+                                'value_char_box' => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                    'string',
+                                ],
+                            ]);
+                            if ($validator->fails()) {
+                                $errorString = implode(",", $validator->messages()->all());
+                                return ClientResponse::responseError($errorString);
+                            }
+                            $input['value_char_box'] = $request->value_char_box ?? '';
+                            $data_input = $input;
+                            break;
                         case QuestionType::NUMBER:
                             $validator = Validator::make($request->all(), [
                                 'value_number' => [
                                     'integer',
                                     $survey_question->validation_required ? 'required' : '',
-                                    'max:' . $survey_question->validation_length_max,
-                                    'min:' . $survey_question->validation_length_min
                                 ],
                             ]);
                             if ($validator->fails()) {

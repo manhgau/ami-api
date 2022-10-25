@@ -16,6 +16,7 @@ use App\Models\SurveyQuestionAnswer;
 use App\Models\SurveyTemplate;
 use App\Models\SurveyTemplateQuestion;
 use App\Models\SurveyUser;
+use Carbon\Carbon;
 use Validator;
 use Illuminate\Http\Request;
 
@@ -39,6 +40,7 @@ class SurveyController extends Controller
             $input['user_id'] = $user_id;
             $input['id'] = CFunction::generateUuid();
             $input['created_by'] = $user_id;
+            $input['start_time'] = Carbon::now();
             $survey = Survey::create($input);
             if (!$survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -105,21 +107,21 @@ class SurveyController extends Controller
                 return ClientResponse::responseError($errorString);
             }
             $survey_user = Survey::getDetailSurvey($id);
-            if ($survey_user->state == Survey::STATUS_DRAFT) {
-                if (!$survey_user) {
-                    return ClientResponse::responseError('Không có bản ghi phù hợp');
-                }
-                $data = $request->all();
-                $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-                $data['user_id'] = $user_id;
-                $data['updated_by'] = $user_id;
-                $update_survey = Survey::updateSurvey($data, $id);
-                if (!$update_survey) {
-                    return ClientResponse::responseError('Đã có lỗi xảy ra');
-                }
-                return ClientResponse::responseSuccess('Update thành công');
+            if ($survey_user->state == Survey::STATUS_COMPLETED) {
+                return ClientResponse::responseError('Không được sửa khảo sát này');
             }
-            return ClientResponse::responseError('Không được sửa khảo sát này');
+            if (!$survey_user) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            $data = $request->all();
+            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+            $data['user_id'] = $user_id;
+            $data['updated_by'] = $user_id;
+            $update_survey = Survey::updateSurvey($data, $id);
+            if (!$update_survey) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            return ClientResponse::responseSuccess('Update thành công');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
