@@ -283,39 +283,44 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group([
         'prefix' => 'visitor'
     ], function ($router) {
-        Route::get('feedback', [FeedbackController::class, 'getList']);
         Route::group([
-            'prefix' => 'blog'
+            'middleware' => 'client_log_request',
 
         ], function ($router) {
-            Route::get('blog-category', [BlogCategoryController::class, 'getAll']);
-            Route::get('blog-category/{id}', [BlogCategoryController::class, 'getDetail']);
-            Route::get('get-list', [BlogController::class, 'getAll']);
-            Route::get('blog-relate/{slug}', [BlogController::class, 'getBlogRelate']);
-            Route::get('get-detail/{slug}', [BlogController::class, 'getDetail']);
-        });
-        Route::group([
-            'prefix' => 'qa'
+            Route::get('feedback', [FeedbackController::class, 'getList']);
+            Route::group([
+                'prefix' => 'blog'
 
-        ], function ($router) {
-            Route::get('qa-category', [QAndACategoryController::class, 'getAll']);
-            Route::get('qa-category/{id}', [QAndACategoryController::class, 'getDetail']);
-            Route::get('get-list', [QAndAController::class, 'getAll']);
-            Route::get('qa-relate/{slug}', [QAndAController::class, 'getQAndARelate']);
-            Route::get('get-detail/{slug}', [QAndAController::class, 'getDetail']);
-        });
-        Route::group([
-            'prefix' => 'page'
+            ], function ($router) {
+                Route::get('blog-category', [BlogCategoryController::class, 'getAll']);
+                Route::get('blog-category/{id}', [BlogCategoryController::class, 'getDetail']);
+                Route::get('get-list', [BlogController::class, 'getAll']);
+                Route::get('blog-relate/{slug}', [BlogController::class, 'getBlogRelate']);
+                Route::get('get-detail/{slug}', [BlogController::class, 'getDetail']);
+            });
+            Route::group([
+                'prefix' => 'qa'
 
-        ], function ($router) {
-            Route::get('get-list', [PageController::class, 'getAll']);
-            Route::get('get-detail/{slug}', [PageController::class, 'getDetail']);
-        });
-        Route::group([
-            'prefix' => 'partner-contact'
+            ], function ($router) {
+                Route::get('qa-category', [QAndACategoryController::class, 'getAll']);
+                Route::get('qa-category/{id}', [QAndACategoryController::class, 'getDetail']);
+                Route::get('get-list', [QAndAController::class, 'getAll']);
+                Route::get('qa-relate/{slug}', [QAndAController::class, 'getQAndARelate']);
+                Route::get('get-detail/{slug}', [QAndAController::class, 'getDetail']);
+            });
+            Route::group([
+                'prefix' => 'page'
 
-        ], function ($router) {
-            Route::post('create', [PartnerContactsController::class, 'createPartnerContact']);
+            ], function ($router) {
+                Route::get('get-list', [PageController::class, 'getAll']);
+                Route::get('get-detail/{slug}', [PageController::class, 'getDetail']);
+            });
+            Route::group([
+                'prefix' => 'partner-contact'
+
+            ], function ($router) {
+                Route::post('create', [PartnerContactsController::class, 'createPartnerContact']);
+            });
         });
     });
     //END visitor (web)
@@ -324,6 +329,12 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group([
         'prefix' => 'client-app'
     ], function ($router) {
+        Route::group([
+            'middleware' => 'partner_log_request',
+
+        ], function ($router) {
+
+        });
     });
     //END client (app)
 });
