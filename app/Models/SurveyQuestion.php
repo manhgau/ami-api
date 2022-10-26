@@ -71,6 +71,16 @@ class SurveyQuestion extends Model
             ->get();
     }
 
+    public static  function getAllQuestion($survey_id, $page_id)
+    {
+        return self::select('id', 'sequence')
+            ->where('deleted', self::NOT_DELETED)
+            ->where('survey_id', $survey_id)
+            ->where('page_id', $page_id)
+            ->orderBy('sequence', 'asc')
+            ->get();
+    }
+
     public static  function listGroupQuestions($survey_id, $page_id)
     {
         return self::select('id', 'survey_id', 'title', 'is_page', 'page_id', 'sequence', 'question_type')

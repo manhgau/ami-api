@@ -101,24 +101,49 @@ class SurveyQuestionProfileController extends Controller
 
     public function getQuestionProfileBySurvey(Request $request)
     {
-
-        try {
-            $survey_id = $request->survey_id;
-            $survey_detail = Survey::getDetailSurvey($survey_id);
-            if (!$survey_detail) {
-                return ClientResponse::responseError('Không có Khảo sát phù hợp');
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $survey_id = $request->survey_id;
+                    $option = $request->option ?? 0;
+                    $partner_id = $partner->id ?? 0;
+                    $survey_detail = Survey::getDetailSurvey($survey_id);
+                    if (!$survey_detail) {
+                        return ClientResponse::responseError('Không có Khảo sát phù hợp');
+                    }
+                    $survey_profile_id = $survey_detail->survey_profile_id;
+                    if ($option == 1) {
+                        $input = PartnerProfile::getPartnerProfileDetail($partner_id);
+                        $input['partner_id'] = $partner_id;
+                        $input['survey_id'] = $survey_id;
+                        $input['survey_profile_id'] = $survey_profile_id;
+                        $model = SurveyProfileInputs::getSurveyProfileInputDetail($survey_profile_id, $survey_id, $partner_id);
+                        if ($model) {
+                            $result = $model->update($input);
+                        } else {
+                            $result = SurveyProfileInputs::create($input);
+                        }
+                        if (!$result) {
+                            return ClientResponse::responseError('Đã có lỗi xảy ra');
+                        }
+                        return ClientResponse::responseSuccess('OK', $result);
+                    }
+                    $perPage = $request->per_page ?? 10;
+                    $page = $request->current_page ?? 1;
+                    $lists = $this->__questionProfile($survey_profile_id, $perPage, $page);
+                    return ClientResponse::responseSuccess('OK', $lists);
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            } else {
+                return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
             }
-            $survey_profile_id = $survey_detail->survey_profile_id;
-            $perPage = $request->per_page ?? 10;
-            $page = $request->current_page ?? 1;
-            $lists = $this->__questionProfile($survey_profile_id, $perPage, $page);
-            return ClientResponse::responseSuccess('OK', $lists);
-        } catch (\Exception $ex) {
-            return ClientResponse::responseError($ex->getMessage());
         }
     }
 
-    private function __answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id = null, $survey_id = null, $is_partner_profile)
+    private function __answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id, $is_partner_profile)
     {
         //$is_partner_profile kiểm tra xem có update profile ko
         try {
@@ -205,16 +230,18 @@ class SurveyQuestionProfileController extends Controller
             $input['survey_id'] = $survey_id;
             $model = SurveyProfileInputs::getSurveyProfileInputDetail($survey_profile_id, $survey_id, $partner_id);
             $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
-            if ($model && $model_profile) {
-                if ($is_partner_profile == 1) {
-                    $model_profile->update($input);
+            if ($is_partner_profile == 1) {
+                if ($model_profile) {
+                    $result = $model_profile->update($input);
+                } else {
+                    $result =  PartnerProfile::create($input);
                 }
-                $result = $model->update($input);
             } else {
-                if ($is_partner_profile == 1) {
-                    PartnerProfile::create($input);
+                if ($model) {
+                    $result = $model->update($input);
+                } else {
+                    $result = SurveyProfileInputs::create($input);
                 }
-                $result = SurveyProfileInputs::create($input);
             }
             return $result;
         } catch (\Exception $ex) {
@@ -244,6 +271,8 @@ class SurveyQuestionProfileController extends Controller
                     return ClientResponse::responseError($ex->getMessage());
                 }
             }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
         }
     }
 
@@ -254,7 +283,6 @@ class SurveyQuestionProfileController extends Controller
             $partner = $tokenInfo->partner;
             if ($partner) {
                 try {
-                    $partner_id = $partner->id ?? 0;
                     $survey_id = $request->survey_id;
                     $survey_detail = Survey::getDetailSurvey($survey_id);
                     if (!$survey_detail) {
@@ -265,7 +293,7 @@ class SurveyQuestionProfileController extends Controller
                     $profile_type = $request->profile_type;
                     $value_answer = $request->value_answer;
                     $is_partner_profile = 0;
-                    $result = $this->__answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id = null, $is_partner_profile);
+                    $result = $this->__answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id = null, $survey_id, $is_partner_profile);
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
@@ -274,6 +302,8 @@ class SurveyQuestionProfileController extends Controller
                     return ClientResponse::responseError($ex->getMessage());
                 }
             }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
         }
     }
 }

@@ -91,20 +91,21 @@ class SurveyPartnerInputController extends Controller
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($request->survey_id, $partner_id);
                     if ($count_survey_partner_input <= $survey->attempts_limit_max && $count_survey_partner_input >= $survey->attempts_limit_min) {
                         $number_input = SurveyPartnerInputLine::countSurveyPartnerInputLine($partner_input_id, $request->survey_id);
+                        $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
                         $point = $number_input * $survey->point;
-                        $data['point'] = $point;
-                        $data['kpi_point'] = $point;
+                        $data['point_tpr'] =  $model_profile->point_tpr + $point;
+                        $data['kpi_point'] = $model_profile->kpi_point + $point;
                         PartnerProfile::updatePartnerProfile($data, $partner_id);
-                        $input_log['partner_id'] = $partner_id;
-                        $partner_profile = Partner::getPartnerById($partner_id);
-                        $input_log['phone'] = $partner_profile->phone;
-                        $input_log['partner_name'] = $partner_profile->name;
-                        $input_log['type'] = PartnerPointLog::CONG;
-                        $input_log['point'] =  $point;
-                        $input_log['action '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
-                        $input_log['object_type '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
-                        $input_log['object_id '] = $request->survey_id;
-                        PartnerPointLog::create($input_log);
+                        // $input_log['partner_id'] = $partner_id;
+                        // $partner_profile = Partner::getPartnerById($partner_id);
+                        // $input_log['phone'] = $partner_profile->phone;
+                        // $input_log['partner_name'] = $partner_profile->name;
+                        // $input_log['type'] = PartnerPointLog::CONG;
+                        // $input_log['point'] =  $point;
+                        // $input_log['action '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
+                        // $input_log['object_type '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
+                        // $input_log['object_id '] = $request->survey_id;
+                        // PartnerPointLog::create($input_log);
                     }
                     return ClientResponse::responseSuccess('Cập nhập thành công', $result);
                 } catch (\Exception $ex) {
@@ -124,12 +125,13 @@ class SurveyPartnerInputController extends Controller
             if ($partner) {
                 try {
                     $partner_id = $partner->id ?? 0;
-                    $perPage = $request->per_page ?? 5;
+                    $perPage = $request->per_page ?? 10;
                     $page = $request->current_page ?? 1;
                     $time_now = Carbon::now();
                     $time_end = date('Y-m-d H:i:s', time() - (30 * 86400));
                     $datas = SurveyPartnerInput::getlistSurveyPartnerInput($perPage,  $page, $partner_id, $time_now, $time_end);
                     $datas = RemoveData::removeUnusedData($datas);
+                    return $datas;
                     $array = array();
                     foreach ($datas['data'] as $key => $value) {
                         $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $value->end_time)->timestamp;

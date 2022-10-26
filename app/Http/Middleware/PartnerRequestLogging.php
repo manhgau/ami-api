@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: nguyenpv
@@ -9,6 +10,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\Context;
 use App\Helpers\RedisLogRequestResponse;
 use Closure;
 use Illuminate\Http\Request;
@@ -22,7 +24,7 @@ class PartnerRequestLogging
         $is_debug = env('LOG_DEBUG');
         if ($is_debug) {
             $request_id = Str::uuid();
-            $request->hooksLogger = $request_id;
+            Context::getInstance()->set(Context::REQUEST_ID, $request_id);
 
             $dateString = now()->format('Y-m-d H:i:s');
             $req = [
@@ -34,7 +36,6 @@ class PartnerRequestLogging
             ];
 
             RedisLogRequestResponse::store($request_id, $req, RedisLogRequestResponse::APP_KEY, RedisLogRequestResponse::LOG_REQUEST_KEY);
-
         }
         return $next($request);
     }

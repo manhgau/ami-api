@@ -143,14 +143,9 @@ class SurveyQuestionController extends Controller
                 return ClientResponse::responseError($errorString);
             }
             $input = $request->all();
-            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $data['updated_by'] = $user_id;
-            foreach ($input as $key => $value) {
-                $data['sequence'] = $value['sequence'];
-                $result = SurveyQuestion::updateSurveyQuestion($data,  $value['question_id']);
-                if (!$result) {
-                    return ClientResponse::responseError('Đã có lỗi xảy ra');
-                }
+            $result = self::__arrangeQuestion($input);
+            if (!$result) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
             return ClientResponse::responseSuccess('Update thành công');
         } catch (\Exception $ex) {
@@ -158,11 +153,31 @@ class SurveyQuestionController extends Controller
         }
     }
 
+    private function __arrangeQuestion($input)
+    {
+        try {
+            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+            $data['updated_by'] = $user_id;
+            foreach ($input as $key => $value) {
+                $data['sequence'] = $value['sequence'];
+                $result = SurveyQuestion::updateSurveyQuestion($data,  $value['question_id']);
+                if (!$result) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+
+
     public static function delSurveyQuestion(Request $request)
     {
         try {
-            $survey_user = SurveyQuestion::getDetailSurveyQuestion($request->question_id);
-            if (!$survey_user) {
+            $survey_question = SurveyQuestion::getDetailSurveyQuestion($request->question_id);
+            if (!$survey_question) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             $del_survey = SurveyQuestion::updateSurveyQuestion(['deleted' => SurveyQuestion::DELETED], $request->question_id);
@@ -171,6 +186,14 @@ class SurveyQuestionController extends Controller
             }
             $count_questions = SurveyQuestion::countQuestion($request->survey_id);
             Survey::updateSurvey(["question_count" => $count_questions], $request->survey_id);
+            $list = SurveyQuestion::getAllQuestion($request->survey_id, $survey_question->page_id);
+            $data = [];
+            foreach ($list as $key => $value) {
+                $input['question_id'] = $value->id;
+                $input['sequence'] = $key + 1;
+                $data[] = $input;
+            }
+            self::__arrangeQuestion($data);
             return ClientResponse::responseSuccess('Xóa thành công');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());

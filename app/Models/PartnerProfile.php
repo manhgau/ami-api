@@ -10,6 +10,7 @@ class PartnerProfile extends Model
         'partner_id',
         'point',
         'kpi_point',
+        'fullname',
         'year_of_birth',
         'gender',
         'province_code',
@@ -39,5 +40,24 @@ class PartnerProfile extends Model
     public static  function getDetailPartnerProfile($partner_id)
     {
         return self::where('partner_id', $partner_id)->first();
+    }
+
+    public static  function getPartnerProfileDetail($partner_id)
+    {
+        return self::select(
+            'fullname',
+            'year_of_birth',
+            'gender',
+            'province_code',
+            'job_type_id',
+            'academic_level_id',
+            'marital_status_id',
+            'personal_income_level_id',
+            'family_income_level_id',
+            'family_people',
+            'has_children',
+            'is_key_shopper',
+        )
+            ->where('partner_id', $partner_id)->first()->toArray();
     }
 }
