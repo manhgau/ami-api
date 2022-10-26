@@ -62,13 +62,13 @@ class SurveyPartnerInput extends Model
     public static  function getlistSurveyPartnerInput($perPage = 10,  $page = 1, $partner_id, $time_now, $time_end)
     {
         return DB::table('survey_partner_inputs as a')
-            //->join('survey_partners', 'survey_partners.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->join('surveys as b', 'b.id', '=', 'a.survey_id')
+            ->join('survey_partners as c', 'c.survey_id', '=', 'b.id')
             ->select(
                 'a.id',
                 'b.title',
-                // 'survey_partners.is_save',
-                // 'survey_partners.id as survey_partner_id',
+                'c.is_save',
+                'c.id as survey_partner_id',
                 'b.id as survey_id',
                 'b.category_id',
                 'b.state',

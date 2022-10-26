@@ -15,6 +15,9 @@ class Context
     CONST CLIENT_USER_ID = 'client_user_id';
     CONST SURVEY_USER_ID = 'survey_user_id';
 
+
+    CONST REQUEST_ID = 'request_id';
+
     protected $data = [];
 
     protected static $_instance = null;

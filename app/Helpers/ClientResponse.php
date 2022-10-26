@@ -2,6 +2,10 @@
 
 namespace App\Helpers;
 
+use App\Helpers\RedisLogRequestResponse;
+use Illuminate\Support\Str;
+use App\Helpers\Context;
+
 class ClientResponse
 {
 
@@ -21,13 +25,17 @@ class ClientResponse
 
     public static function response($code, $message, $data = [], $headers = [], $options = [])
     {
-        return response()->json([
+        $is_debug = env('LOG_DEBUG');
+        $data = [
             'code'      =>  $code,
             'message'   =>  $message,
             'data'      =>  $data,
             /*'headers'   =>  $headers,
             'options'   =>  $options*/
-        ], $code);
+        ];
+
+        self::__log_response_data($data, $code);
+        return response()->json($data, $code);
     }
 
     public static function responseSuccess($message, $data = [])
@@ -38,5 +46,17 @@ class ClientResponse
     public static function responseError($message, $data = [])
     {
         return self::response(self::$error_code, $message, $data);
+    }
+
+    private function __log_response_data($data=[], $code=''){
+        $is_debug = env('LOG_DEBUG');
+        if($is_debug) {
+            $resquest_id = Context::getInstance()->get(Context::REQUEST_ID)??Str::uuid();
+            $dateString = now()->format('Y-m-d H:i:s');
+            $req = $data;
+            $req['dateString'] = $dateString;
+            $req['code'] = $code;
+            RedisLogRequestResponse::store($resquest_id, $req, RedisLogRequestResponse::API_KEY, RedisLogRequestResponse::LOG_RESPONSE_KEY);
+        }
     }
 }
