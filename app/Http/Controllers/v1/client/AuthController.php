@@ -363,7 +363,7 @@ class AuthController extends Controller
         }
         $user = User::findUserForgotPassByEmail($user_id, $forgot_code);
         if (!$user) {
-            return ClientResponse::responseError('Dữ liệu không hợp lệ');
+            return ClientResponse::responseError('Link thay đổi mật khẩu đã hết hạn');
         }
         if ($user->forgot_expire < time()) {
             return ClientResponse::responseError('Link thay đổi mật khẩu đã hết hạn');
