@@ -21,23 +21,23 @@ class QuestionTypeProfile
     const HAS_CHILDREN                                  = 'has_children';
     const ACADEMIC_LEVEL                                = 'academic_level_id';
 
-    // public static function getQuestionTypeProfile()
-    // {
-    //     return [
-    //         self::FULLNAME,
-    //         self::YEAR_OF_BIRTH,
-    //         self::PROVINCE,
-    //         self::GENDER,
-    //         self::MARITAL_STATUS,
-    //         self::JOB_TYPE,
-    //         self::PERSONAL_INCOME_LEVEL,
-    //         self::FAMILY_INCOME_LEVEL,
-    //         self::FAMILY_PEOPLE,
-    //         self::IS_KEY_SHOPPER,
-    //         self::HAS_CHILDREN,
-    //         self::ACADEMIC_LEVEL,
-    //     ];
-    // }
+    public static function getTypeProfile()
+    {
+        return [
+            self::FULLNAME              => 'Họ tên',
+            self::YEAR_OF_BIRTH         => 'Độ tuổi',
+            self::PROVINCE              => 'Địa chỉ',
+            self::GENDER                => 'Giới tính',
+            self::MARITAL_STATUS        => 'Hôn nhân',
+            self::JOB_TYPE              => 'Nghề nghiệp',
+            self::PERSONAL_INCOME_LEVEL => 'Mức thu nhập cá nhân',
+            self::FAMILY_INCOME_LEVEL   => 'Mức thu nhâp cả hộ',
+            self::FAMILY_PEOPLE         => 'Số người trong gia đình',
+            self::IS_KEY_SHOPPER        => 'Có chịu trách nhiệm mua sắm chính không',
+            self::HAS_CHILDREN          => 'Gia đình có trẻ con không',
+            self::ACADEMIC_LEVEL        => 'Trình độ học vấn',
+        ];
+    }
 
     public static function getQuestionTypeProfile()
     {

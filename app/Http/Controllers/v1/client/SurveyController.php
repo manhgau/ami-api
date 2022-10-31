@@ -9,6 +9,7 @@ use App\Helpers\Context;
 use App\Helpers\RemoveData;
 use App\Models\Package;
 use App\Models\QuestionType;
+use App\Models\QuestionTypeProfile;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
 use App\Models\SurveyQuestion;
@@ -117,6 +118,15 @@ class SurveyController extends Controller
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;
+            $texts = '';
+            if ($data['note']) {
+                foreach ($data['note'] as $key => $value) {
+                    $typeProfile = QuestionTypeProfile::getTypeProfile();
+                    $string = '<span><strong>' . $typeProfile[$value['key']] . ': </strong>' . json_encode($value['value'], JSON_UNESCAPED_UNICODE) . '</span><br>';
+                    $texts = $texts . $string;
+                }
+                $data['note'] = $texts;
+            }
             $update_survey = Survey::updateSurvey($data, $id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
