@@ -30,11 +30,11 @@ class PartnerRequestLogging
             $req = [
                 'date' => $dateString,
                 'ip' => $request->ip(),
+                'request_method' => $request->method(),
                 'request_uri' => $request->path(),
                 'request_params' => $request->all(),
                 'request_header' => $request->headers->all(),
             ];
-
             RedisLogRequestResponse::store($request_id, $req, RedisLogRequestResponse::APP_KEY, RedisLogRequestResponse::LOG_REQUEST_KEY);
         }
         return $next($request);
