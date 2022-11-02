@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\v1\client;
 
+use App\Helpers\CheckPackageUser;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
 use App\Helpers\Common\CommonCached;
@@ -35,7 +36,7 @@ class SurveyController extends Controller
             }
             $input = $request->all();
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            if ((Survey::countSurvey($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_projects)) {
+            if (CheckPackageUser::checkSurveykPackageUser($user_id)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
             $input['user_id'] = $user_id;

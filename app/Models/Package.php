@@ -58,14 +58,14 @@ class Package extends Model
     }
 
 
-    public static  function checkTheUserPackage($user_id)
+    public static  function userPackage($user_id)
     {
-        $survey_user_number =  DB::table('user_packages')
-            ->join('packages', 'packages.id', '=', 'user_packages.package_id')
-            ->select('packages.limit_projects', 'packages.limit_questions')
-            ->where('user_packages.user_id', $user_id)
-            ->where('user_packages.status', self::STATUS_ACTIVE)
-            ->orderBy('packages.level', 'DESC')->first();
+        $survey_user_number =  DB::table('user_packages as a')
+            ->join('packages as b', 'b.id', '=', 'a.package_id')
+            ->select('b.limit_projects', 'b.limit_questions')
+            ->where('a.user_id', $user_id)
+            ->where('a.status', self::STATUS_ACTIVE)
+            ->orderBy('b.level', 'DESC')->first();
         if (!$survey_user_number) {
             $package_free =  Package::query()
                 ->where('status', self::STATUS_ACTIVE)
