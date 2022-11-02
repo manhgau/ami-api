@@ -82,12 +82,7 @@ class SurveyController extends Controller
     public function getDetailSurvey($id)
     {
         try {
-            $ckey  = CommonCached::cache_find_survey_user_by_id . "_" . $id;
-            $detail = CommonCached::getData($ckey);
-            if (empty($detail)) {
-                $detail = Survey::getDetailSurvey($id);
-                CommonCached::storeData($ckey, $detail);
-            }
+            $detail = Survey::getDetailSurvey($id);
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

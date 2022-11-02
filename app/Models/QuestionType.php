@@ -39,7 +39,6 @@ class QuestionType
             self::YES_NO,
             self::NUMBER,
             self::DATETIME_DATE,
-            self::DATETIME_DATE_RANGE,
             self::QUESTION_ENDED_SHORT_TEXT,
             self::QUESTION_ENDED_LONG_TEXT,
             self::RATING_STAR,
@@ -75,7 +74,6 @@ class QuestionType
                 'data' => [
                     ['question_type' => self::NUMBER, 'name' => 'Number'],
                     ['question_type' => self::DATETIME_DATE, 'name' => 'Date'],
-                    ['question_type' => self::DATETIME_DATE_RANGE, 'name' => 'Date range'],
                     ['question_type' => self::RATING_STAR, 'name' => 'Rating (đánh giá)'],
                     ['question_type' => self::RANKING, 'name' => 'Ranking (Xếp hạng thứ tự)'],
                 ]
