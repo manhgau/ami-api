@@ -43,7 +43,8 @@ class QuestionType
             self::QUESTION_ENDED_LONG_TEXT,
             self::RATING_STAR,
             self::MULTI_FACTOR_MATRIX,
-            self::GROUP
+            self::GROUP,
+            self::RANKING,
         ];
     }
 

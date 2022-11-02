@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Context;
+use App\Helpers\FormatDate;
 use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInputLine;
@@ -128,7 +129,7 @@ class SurveyPartnerInputLineController extends Controller
                                 $errorString = implode(",", $validator->messages()->all());
                                 return ClientResponse::responseError($errorString);
                             }
-                            $input['value_date'] = $request->value_date ?? '';
+                            $input['value_date'] = FormatDate::formatDate($request->value_date) ?? '';
                             $data_input = $input;
                             break;
                         case QuestionType::QUESTION_ENDED_SHORT_TEXT:

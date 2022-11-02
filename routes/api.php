@@ -113,6 +113,7 @@ Route::group(['prefix' => 'v1'], function () {
             ], function ($router) {
                 Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
                 Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
+                Route::get('/format-date/type', [SurveyController::class, 'getFormatDateType']);
                 Route::post('/detail/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
                 Route::group([
                     'middleware' => 'client_auth',

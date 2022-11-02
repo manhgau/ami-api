@@ -96,16 +96,16 @@ class SurveyPartnerInputController extends Controller
                         $data['point_tpr'] =  $model_profile->point_tpr + $point;
                         $data['kpi_point'] = $model_profile->kpi_point + $point;
                         PartnerProfile::updatePartnerProfile($data, $partner_id);
-                        // $input_log['partner_id'] = $partner_id;
-                        // $partner_profile = Partner::getPartnerById($partner_id);
-                        // $input_log['phone'] = $partner_profile->phone;
-                        // $input_log['partner_name'] = $partner_profile->name;
-                        // $input_log['type'] = PartnerPointLog::CONG;
-                        // $input_log['point'] =  $point;
-                        // $input_log['action '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
-                        // $input_log['object_type '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
-                        // $input_log['object_id '] = $request->survey_id;
-                        // PartnerPointLog::create($input_log);
+                        $input_log['partner_id'] = $partner_id;
+                        $partner_profile = Partner::getPartnerById($partner_id);
+                        $input_log['phone'] = $partner_profile->phone;
+                        $input_log['partner_name'] = $partner_profile->name;
+                        $input_log['type'] = PartnerPointLog::CONG;
+                        $input_log['point'] =  $point;
+                        $input_log['action '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
+                        $input_log['object_type '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
+                        $input_log['object_id '] = $request->survey_id;
+                        PartnerPointLog::create($input_log);
                     }
                     return ClientResponse::responseSuccess('Cập nhập thành công', $result);
                 } catch (\Exception $ex) {

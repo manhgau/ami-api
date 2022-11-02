@@ -8,6 +8,7 @@ use App\Helpers\Common\CFunction;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
+use App\Models\FormatDateType;
 use App\Models\Package;
 use App\Models\QuestionType;
 use App\Models\QuestionTypeProfile;
@@ -154,6 +155,19 @@ class SurveyController extends Controller
     {
         try {
             $result = QuestionType::getTypeQuestionBygroup();
+            if (!$result) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            return ClientResponse::responseSuccess('OK', $result);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getFormatDateType()
+    {
+        try {
+            $result = FormatDateType::getFormatDateType();
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
