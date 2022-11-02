@@ -15,6 +15,7 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
 use DB;
 use App\Helpers\Context;
+use App\Helpers\FormatDate;
 use App\Helpers\JWT;
 
 class AuthController extends Controller
@@ -337,24 +338,23 @@ class AuthController extends Controller
                     $partner_id = $partner->id ?? 0;
                     $validator = Validator::make($request->all(), [
                         //required
-                        'year_of_birth' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
+                        'fullname'        => 'required|string|max:50',
+                        'phone'        => 'required|string|max:50',
+                        'year_of_birth' => 'required|date',
                         'gender'        => 'required|digits:1|integer|exists:App\Models\Gender,id',
-                        'province_code' => 'required|string|exists:App\Models\Province,code',
-                        'district_code' => 'required|string|exists:App\Models\District,code',
-                        'ward_code' => 'required|string|exists:App\Models\Ward,code',
+                        'province_code' => 'string|exists:App\Models\Province,code',
+                        'district_code' => 'string|exists:App\Models\District,code',
+                        'addrees'        => 'required|string|max:255',
                         'job_type_id'   => 'required|integer|exists:App\Models\JobType,id',
                         'academic_level_id' => 'required|integer|exists:App\Models\AcademicLevel,id',
                         'marital_status_id' => 'integer|exists:App\Models\MaritalStatus,id',
                         //
-                        'job_status_id' => 'required|integer|exists:App\Models\JobStatus,id',
                         'personal_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
                         'family_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
-                        'family_people' => 'integer',
+                        'family_people' => 'integer|exists:App\Models\NumberOfFamilys,id',
                         'is_key_shopper' => 'boolean',
                         'has_children' => 'boolean',
                         'most_cost_of_living' => 'boolean',
-                        'children_age_ranges' => 'array',
-                        'children_age_ranges.*' => 'exists:App\Models\ChildrenAgeRanges,id', // check each item in the array
 
                     ]);
 
@@ -370,13 +370,14 @@ class AuthController extends Controller
                         $profile->partner_id = $partner_id;
                     }
                     //required
-                    $profile->year_of_birth = $request->year_of_birth;
+                    $profile->fullname = $request->fullname;
+                    $profile->phone = $request->phone;
+                    $profile->year_of_birth = FormatDate::formatDate($request->year_of_birth);
                     $profile->gender = $request->gender;
                     $profile->province_code = $request->province_code;
                     $profile->district_code = $request->district_code;
-                    $profile->ward_code = $request->ward_code;
+                    $profile->addrees = $request->addrees;
                     $profile->job_type_id = $request->job_type_id;
-                    $profile->job_status_id = $request->job_status_id;
                     $profile->academic_level_id = $request->academic_level_id;
                     $profile->marital_status_id = $request->marital_status_id;
 
@@ -385,21 +386,8 @@ class AuthController extends Controller
                     $profile->family_people = $request->family_people;
                     $profile->is_key_shopper = $request->is_key_shopper;
                     $profile->has_children = $request->has_children;
-                    $profile->most_cost_of_living = $request->most_cost_of_living;
                     //update profile
                     $profile->save();
-                    //update children_age_ranges
-                    $children_age_ranges = $request->children_age_ranges;
-                    if (is_array($children_age_ranges) && count($children_age_ranges) > 0) {
-                        PartnerChildrenAgeRange::where('partner_id', $partner_id)->delete();
-                        foreach ($children_age_ranges as $cr) {
-                            $m = new PartnerChildrenAgeRange();
-                            $m->partner_id = $partner_id;
-                            $m->children_age_range_id = $cr;
-                            $m->save();
-                        }
-                    }
-
                     return ClientResponse::responseSuccess('Cập nhật thông tin tài khoản thành công');
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());

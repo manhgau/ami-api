@@ -17,7 +17,7 @@ use App\Helpers\Context;
 use App\Helpers\RemoveData;
 use App\Models\District;
 use App\Models\NotificationsFirebasePartners;
-use App\Models\NotifyType;
+use App\Models\NotificationType;
 
 class NotificationsFirebasePartnerController extends Controller
 {
@@ -79,7 +79,7 @@ class NotificationsFirebasePartnerController extends Controller
     {
 
         try {
-            $datas = NotifyType::getNotficationType();
+            $datas = NotificationType::getNotficationType();
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

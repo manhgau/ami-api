@@ -11,13 +11,13 @@ class PartnerProfile extends Model
         'point',
         'kpi_point',
         'fullname',
+        'phone',
         'year_of_birth',
         'gender',
         'province_code',
         'district_code',
-        'ward_code',
+        'addrees',
         'job_type_id',
-        'job_status_id',
         'academic_level_id',
         'marital_status_id',
         'personal_income_level_id',
@@ -25,7 +25,6 @@ class PartnerProfile extends Model
         'family_people',
         'has_children',
         'is_key_shopper',
-        'most_cost_of_living',
         'note',
     ];
 

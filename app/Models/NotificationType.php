@@ -5,7 +5,7 @@ namespace App\Models;
 /*use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;*/
 
-class NotifyType
+class NotificationType
 {
 
     const NOTIFICATION_COMMON                           = 'common';

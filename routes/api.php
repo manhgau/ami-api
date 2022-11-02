@@ -35,6 +35,7 @@ use App\Http\Controllers\v1\partner\ChildrenAgeRangesController;
 use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
 use App\Http\Controllers\v1\partner\GendersController;
 use App\Http\Controllers\v1\partner\NotificationsFirebasePartnerController;
+use App\Http\Controllers\v1\partner\NumberOfFamilyController;
 use App\Http\Controllers\v1\partner\PackageController;
 use App\Http\Controllers\v1\partner\PersonalIncomeLevelsController;
 use App\Http\Controllers\v1\partner\SurveyPartnerController;
@@ -112,6 +113,7 @@ Route::group(['prefix' => 'v1'], function () {
             ], function ($router) {
                 Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
                 Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
+                Route::get('/format-date/type', [SurveyController::class, 'getFormatDateType']);
                 Route::post('/detail/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
                 Route::group([
                     'middleware' => 'client_auth',
@@ -172,19 +174,6 @@ Route::group(['prefix' => 'v1'], function () {
                     Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
                 });
             });
-            Route::get('province', [PartnerProvinceController::class, 'getProvince']);
-            Route::get('district/{province_code}', [DistrictController::class, 'getDistrict']);
-            Route::get('ward/{district_code}', [WardController::class, 'getWard']);
-            //
-            Route::get('job-status', [JobStatusController::class, 'getJobStatus']);
-            Route::get('job-type', [JobTypeCotroller::class, 'getJobType']);
-            Route::get('business-scope', [BusinessScopeCotroller::class, 'getBusinessScope']);
-            Route::get('academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
-            //
-            Route::get('family-income-level', [FamilyIncomeLevelsController::class, 'getFamilyIncomeLevels']);
-            Route::get('children-age-range', [ChildrenAgeRangesController::class, 'getChildrenAgeRanges']);
-            Route::get('personal-income-level', [PersonalIncomeLevelsController::class, 'getPersonalIncomeLevels']);
-            Route::get('gender', [GendersController::class, 'getGenders']);
             //package
             Route::get('package', [PackageController::class, 'getListPackage']);
             Route::get('package/{id}', [PackageController::class, 'getDetailPackage']);
@@ -206,6 +195,20 @@ Route::group(['prefix' => 'v1'], function () {
         'prefix' => 'partner'
     ], function ($router) {
         Route::get('/settings', [PartnerConfigController::class, 'settings']);
+        Route::get('province', [PartnerProvinceController::class, 'getProvince']);
+        Route::get('district/{province_code}', [DistrictController::class, 'getDistrict']);
+        Route::get('ward/{district_code}', [WardController::class, 'getWard']);
+        //
+        Route::get('job-status', [JobStatusController::class, 'getJobStatus']);
+        Route::get('job-type', [JobTypeCotroller::class, 'getJobType']);
+        Route::get('business-scope', [BusinessScopeCotroller::class, 'getBusinessScope']);
+        Route::get('academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
+        //
+        Route::get('family-income-level', [FamilyIncomeLevelsController::class, 'getFamilyIncomeLevels']);
+        Route::get('children-age-range', [ChildrenAgeRangesController::class, 'getChildrenAgeRanges']);
+        Route::get('personal-income-level', [PersonalIncomeLevelsController::class, 'getPersonalIncomeLevels']);
+        Route::get('gender', [GendersController::class, 'getGenders']);
+        Route::get('family-people', [NumberOfFamilyController::class, 'getFamilyPeople']);
         //auth
         Route::group([
             'prefix' => 'auth'

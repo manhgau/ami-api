@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\v1\client;
 
+use App\Helpers\CheckPackageUser;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
+use App\Models\FormatDateType;
 use App\Models\Package;
 use App\Models\QuestionType;
 use App\Models\QuestionTypeProfile;
@@ -35,7 +37,7 @@ class SurveyController extends Controller
             }
             $input = $request->all();
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            if ((Survey::countSurvey($user_id)) >= (Package::checkTheUserPackage($user_id)->limit_projects)) {
+            if (CheckPackageUser::checkSurveykPackageUser($user_id)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
             $input['user_id'] = $user_id;
@@ -153,6 +155,19 @@ class SurveyController extends Controller
     {
         try {
             $result = QuestionType::getTypeQuestionBygroup();
+            if (!$result) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            return ClientResponse::responseSuccess('OK', $result);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getFormatDateType()
+    {
+        try {
+            $result = FormatDateType::getFormatDateType();
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
