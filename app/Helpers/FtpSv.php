@@ -24,10 +24,9 @@ class FtpSv
             foreach (explode('/', $today) as $fName) {
                 $temp_path .= '/' . $fName;
                 $ftpPath .= '/' . $fName;
-                if (!@ftp_chdir($ftp_conn, $fName)) {
-                    ftp_mkdir($ftp_conn, $fName);
-                    ftp_chdir($ftp_conn, $fName);
-                } else {
+                if (!@ftp_chdir($ftp_conn, $ftpPath)) {
+                    ftp_mkdir($ftp_conn, $ftpPath);
+                    ftp_chdir($ftp_conn, $ftpPath);
                     ftp_chmod($ftp_conn, 0755, $ftpPath);
                 }
             }
