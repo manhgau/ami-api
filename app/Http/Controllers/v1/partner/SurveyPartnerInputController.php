@@ -190,11 +190,21 @@ class SurveyPartnerInputController extends Controller
             if ($partner) {
                 try {
                     $partner_id = $partner->id ?? 0;
-                    $result = SurveyPartnerInput::checkPartnerInput($partner_id);
+                    $partner_profile = $partner->profile;
+                    $survey_id = $request->survey_id;
+                    $result = SurveyPartnerInput::checkPartnerInput($partner_id, $survey_id);
                     if (!$result) {
-                        return ClientResponse::responseError('Tài khoản chưa trả lời khảo sát');
+                        $data =  [
+                            ['key' => 'partner', 'name' => $partner_profile->fullname, 'disabled' => 0, 'description' => ''],
+                            ['key' => 'other', 'name' => 'Khác', 'disabled' => 0, 'description' => '(Thu thập bảng hỏi từ đáp viên khác)'],
+                        ];
+                        return ClientResponse::responseSuccess('Tài khoản chưa trả lời khảo sát', $data);
                     }
-                    return ClientResponse::responseSuccess('Tài khoản đã trả lời khảo sát');
+                    $data =  [
+                        ['key' => 'partner', 'name' => $partner_profile->fullname, 'disabled' => 1, 'description' => ''],
+                        ['key' => 'other', 'name' => 'Khác', 'disabled' => 0, 'description' => '(Thu thập bảng hỏi từ đáp viên khác)'],
+                    ];
+                    return ClientResponse::responseSuccess('Tài khoản đã trả lời khảo sát', $data);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
                 }

@@ -19,8 +19,10 @@ class SurveyQuestion extends Model
         'is_scored_question',
         'matrix_subtype',
         'is_time',
+        'type_ranking',
         'is_page',
         'page_id',
+        'is_multiple',
         'format_date_time',
         'comments_allowed',
         'comment_message',
@@ -93,7 +95,23 @@ class SurveyQuestion extends Model
 
     public static  function getListQuestion($survey_id, $perPage, $page)
     {
-        return self::select('id', 'survey_id', 'sequence', 'title', 'question_type', 'skip_count', 'view', 'number_of_response')->where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')
+        return self::select(
+            'id',
+            'survey_id',
+            'sequence',
+            'title',
+            'question_type',
+            'skip_count',
+            'view',
+            'type_ranking',
+            'is_multiple',
+            'validation_random',
+            'is_time',
+            'format_date_time'
+        )
+            ->where('deleted', self::NOT_DELETED)
+            ->where('survey_id', $survey_id)
+            ->orderBy('sequence', 'ASC')
             ->paginate($perPage, "*", "page", $page)->toArray();
     }
 

@@ -8,10 +8,8 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
-use App\Models\Partner;
 use App\Models\Survey;
 use App\Models\SurveyPartner;
-use App\Models\SurveyPartnerInput;
 use Carbon\Carbon;
 
 class SurveyPartnerController extends Controller

@@ -109,8 +109,8 @@ class SurveyPartnerInput extends Model
             ->first();
     }
 
-    public static  function checkPartnerInput($partner_id)
+    public static  function checkPartnerInput($partner_id, $survey_id)
     {
-        return self::where('partner_id', $partner_id)->where('state', self::STATE_DONE)->count();
+        return self::where('partner_id', $partner_id)->where('survey_id', $survey_id)->where('state', self::STATE_DONE)->count();
     }
 }

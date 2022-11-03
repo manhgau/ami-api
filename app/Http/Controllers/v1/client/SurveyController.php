@@ -116,7 +116,7 @@ class SurveyController extends Controller
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;
             $texts = '';
-            if ($data['note']) {
+            if ($request->note) {
                 foreach ($data['note'] as $key => $value) {
                     $typeProfile = QuestionTypeProfile::getTypeProfile();
                     $string = '<span><strong>' . $typeProfile[$value['key']] . ': </strong>' . json_encode($value['value'], JSON_UNESCAPED_UNICODE) . '</span><br>';
