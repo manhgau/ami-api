@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Helpers;
-
-use App\Models\SurveyTemplate;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class FtpSv
@@ -29,7 +28,7 @@ class FtpSv
                     ftp_mkdir($ftp_conn, $fName);
                     ftp_chdir($ftp_conn, $fName);
                 } else {
-                    ftp_chmod($ftp_conn, 0755, $ftpPath);
+                    //ftp_chmod($ftp_conn, 0755, $ftpPath);
                 }
             }
             $ftp_put = $ftpPath . '/' . $file_name;
@@ -44,6 +43,7 @@ class FtpSv
             ftp_close($ftp_conn);
             return false;
         } catch (Exception $e) {
+            Log::error($e->getMessage());
             return false;
         }
     }
