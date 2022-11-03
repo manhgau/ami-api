@@ -54,6 +54,15 @@ class SurveyPartner extends Model
         return self::where('deleted', self::NOT_DELETED)->where('stattus', self::STATUS_ACTIVE)->where('id', $survey_partner_id)->update($data);
     }
 
+    public static  function checkSurveyPartner($survey_id, $partner_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)
+            ->where('stattus', self::STATUS_ACTIVE)
+            ->where('survey_id', $survey_id)
+            ->where('partner_id', $partner_id)
+            ->first();
+    }
+
     public static  function getDetailSurveyPartner($survey_partner_id)
     {
         return DB::table('survey_partners as a')

@@ -252,7 +252,7 @@ Route::group(['prefix' => 'v1'], function () {
                     Route::get('/save/{survey_partner_id}', [SurveyPartnerController::class, 'saveSurveyPartner']);
                     Route::get('/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
                     Route::get('/input/{survey_partner_input_id}', [SurveyPartnerInputController::class, 'getDetailSurveyPartnerInput']);
-                    Route::get('/input/check', [SurveyPartnerInputController::class, 'checkPartnerInput']);
+                    Route::get('{survey_id}/input/check', [SurveyPartnerInputController::class, 'checkPartnerInput']);
                     Route::group([
                         'prefix' => '/{survey_id}/input'
                     ], function ($router) {

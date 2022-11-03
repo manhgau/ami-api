@@ -82,10 +82,8 @@ class SurveyPartnerInputLineController extends Controller
                             }
                             break;
                         case QuestionType::RATING_STAR:
+                        case QuestionType::RANKING:
                             $validator = Validator::make($request->all(), [
-                                'suggested_answer_id' => [
-                                    $survey_question->validation_required ? 'required' : '',
-                                ],
                                 'value_star_rating' => [
                                     $survey_question->validation_required ? 'required' : '',
                                 ],
@@ -95,7 +93,6 @@ class SurveyPartnerInputLineController extends Controller
                                 return ClientResponse::responseError($errorString);
                             }
 
-                            $input['suggested_answer_id'] = $request->suggested_answer_id;
                             $input['value_star_rating'] = $request->value_star_rating;
                             $data_input = $input;
                             break;
@@ -187,9 +184,11 @@ class SurveyPartnerInputLineController extends Controller
                             $data = $request->all();
                             if (is_array($data)) {
                                 foreach ($data  as $key => $value) {
-                                    $input['matrix_row_id'] = $value['matrix_row_id'];
-                                    $input['matrix_column_id'] = $value['matrix_column_id'];
-                                    $data_input[$key] = $input;
+                                    foreach ($value['matrix_row_id'] as $item) {
+                                        $input['matrix_row_id'] = $item;
+                                        $input['matrix_column_id'] = $value['matrix_column_id'];
+                                        $data_input[] = $input;
+                                    }
                                 }
                             }
                             break;

@@ -82,6 +82,7 @@ class SurveyPartnerInput extends Model
             ->where('a.partner_id', $partner_id)
             ->where('b.start_time', '<', $time_now)
             ->where('b.end_time', '>', $time_end)
+            ->where('c.partner_id', $partner_id)
             ->orderBy('b.created_at', 'desc')
             ->distinct()
             ->paginate($perPage, "*", "page", $page)->toArray();
@@ -109,8 +110,8 @@ class SurveyPartnerInput extends Model
             ->first();
     }
 
-    public static  function checkPartnerInput($partner_id)
+    public static  function checkPartnerInput($partner_id, $survey_id)
     {
-        return self::where('partner_id', $partner_id)->where('state', self::STATE_DONE)->count();
+        return self::where('partner_id', $partner_id)->where('survey_id', $survey_id)->where('state', self::STATE_DONE)->count();
     }
 }
