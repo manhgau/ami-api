@@ -28,13 +28,13 @@ class FtpSv
                     ftp_mkdir($ftp_conn, $fName);
                     ftp_chdir($ftp_conn, $fName);
                 } else {
-                    ftp_chmod($ftp_conn, 0777, $ftpPath);
+                    ftp_chmod($ftp_conn, 0755, $ftpPath);
                 }
             }
             $ftp_put = $ftpPath . '/' . $file_name;
             if (ftp_put($ftp_conn, $ftp_put, $localPath, FTP_BINARY)) {
                 unlink($localPath);
-                ftp_chmod($ftp_conn, 0777, $ftpPath . '/' . $file_name);
+                ftp_chmod($ftp_conn, 0755, $ftpPath . '/' . $file_name);
                 ftp_close($ftp_conn);
                 $data =  '/' . $temp_path . '/' . $file_name;
                 return  $data;
