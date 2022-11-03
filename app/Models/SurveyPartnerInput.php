@@ -82,6 +82,7 @@ class SurveyPartnerInput extends Model
             ->where('a.partner_id', $partner_id)
             ->where('b.start_time', '<', $time_now)
             ->where('b.end_time', '>', $time_end)
+            ->where('c.partner_id', $partner_id)
             ->orderBy('b.created_at', 'desc')
             ->distinct()
             ->paginate($perPage, "*", "page", $page)->toArray();

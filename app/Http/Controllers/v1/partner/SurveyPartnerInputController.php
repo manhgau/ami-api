@@ -50,12 +50,6 @@ class SurveyPartnerInputController extends Controller
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
-                    Survey::updateSurvey(
-                        [
-                            "view" => $survey->view + 1,
-                        ],
-                        $request->survey_id
-                    );
                     return ClientResponse::responseSuccess('Thêm mới thành công', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
@@ -131,7 +125,6 @@ class SurveyPartnerInputController extends Controller
                     $time_end = date('Y-m-d H:i:s', time() - (30 * 86400));
                     $datas = SurveyPartnerInput::getlistSurveyPartnerInput($perPage,  $page, $partner_id, $time_now, $time_end);
                     $datas = RemoveData::removeUnusedData($datas);
-                    return $datas;
                     $array = array();
                     foreach ($datas['data'] as $key => $value) {
                         $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $value->end_time)->timestamp;
