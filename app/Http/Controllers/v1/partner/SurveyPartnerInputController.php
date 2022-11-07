@@ -84,9 +84,8 @@ class SurveyPartnerInputController extends Controller
                     }
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($request->survey_id, $partner_id);
                     if ($count_survey_partner_input <= $survey->attempts_limit_max && $count_survey_partner_input >= $survey->attempts_limit_min) {
-                        $number_input = SurveyPartnerInputLine::countSurveyPartnerInputLine($partner_input_id, $request->survey_id);
                         $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
-                        $point = $number_input * $survey->point;
+                        $point = $survey->point;
                         $data['point_tpr'] =  $model_profile->point_tpr + $point;
                         $data['kpi_point_tpr'] = $model_profile->kpi_point_tpr + $point;
                         PartnerProfile::updatePartnerProfile($data, $partner_id);
