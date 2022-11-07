@@ -100,6 +100,7 @@ class SurveyQuestion extends Model
             'survey_id',
             'sequence',
             'title',
+            'description',
             'question_type',
             'skip_count',
             'view',
