@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Helpers;
+
 use Illuminate\Support\Facades\Log;
 use Exception;
 
@@ -17,7 +18,7 @@ class FtpSv
             $file->move($folder, $file_name);
             $localPath = $folder . '/' . $file_name;
             $ftp_server = env('FTP_HOST');
-            $ftp_conn = ftp_connect($ftp_server) or die("Could not connect to server");
+            $ftp_conn = ftp_connect($ftp_server);
             $login = @ftp_login($ftp_conn, env('FTP_USERNAME'), env('FTP_PASSWORD'));
             @ftp_chdir($ftp_conn,  $ftpPath);
             $today = date('Y/m/d', time());

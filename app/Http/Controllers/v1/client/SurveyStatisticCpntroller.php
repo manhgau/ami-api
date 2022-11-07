@@ -20,6 +20,7 @@ class SurveyStatisticCpntroller extends Controller
             $start_time = $request->start_time;
             $end_time = $request->end_time;
             $gender = $request->gender;
+            $year_of_birth = $request->year_of_birth;
             $province_codes = $request->province_codes;
             $academic_level_ids = $request->academic_level_ids;
             $job_type_ids = $request->job_type_ids;
@@ -34,6 +35,7 @@ class SurveyStatisticCpntroller extends Controller
                 $academic_level_ids,
                 $province_codes,
                 $gender,
+                $year_of_birth,
                 $job_type_ids,
                 $marital_status_ids,
                 $family_peoples,
@@ -63,7 +65,33 @@ class SurveyStatisticCpntroller extends Controller
             $perPage = $request->per_page ?? 5;
             $page = $request->current_page ?? 1;
             $survey_id = $request->survey_id;
-            $datas = SurveyQuestion::getListQuestion($survey_id, $perPage,  $page);
+            $start_time = $request->start_time;
+            $end_time = $request->end_time;
+            $gender = $request->gender;
+            $year_of_birth = $request->year_of_birth;
+            $province_codes = $request->province_codes;
+            $academic_level_ids = $request->academic_level_ids;
+            $job_type_ids = $request->job_type_ids;
+            $marital_status_ids = $request->marital_status_ids;
+            $family_peoples = $request->family_peoples;
+            $has_children = $request->has_children;
+            $is_key_shopper = $request->is_key_shopper;
+            $datas = SurveyQuestion::getListQuestion(
+                $survey_id,
+                $perPage,
+                $page,
+                $start_time,
+                $end_time,
+                $academic_level_ids,
+                $province_codes,
+                $gender,
+                $year_of_birth,
+                $job_type_ids,
+                $marital_status_ids,
+                $family_peoples,
+                $has_children,
+                $is_key_shopper
+            );
             $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');

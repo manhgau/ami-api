@@ -88,7 +88,7 @@ class SurveyPartnerInputController extends Controller
                         $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
                         $point = $number_input * $survey->point;
                         $data['point_tpr'] =  $model_profile->point_tpr + $point;
-                        $data['kpi_point'] = $model_profile->kpi_point + $point;
+                        $data['kpi_point_tpr'] = $model_profile->kpi_point_tpr + $point;
                         PartnerProfile::updatePartnerProfile($data, $partner_id);
                         $input_log['partner_id'] = $partner_id;
                         $partner_profile = Partner::getPartnerById($partner_id);
