@@ -6,6 +6,7 @@ use App\Http\Controllers\v1\partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\v1\client\ConfigController as  ClientConfigController;
 use App\Http\Controllers\v1\client\ContactController;
 use App\Http\Controllers\v1\client\SettingController;
+use App\Http\Controllers\v1\client\SmsController;
 use App\Http\Controllers\v1\client\SubscribesController;
 use App\Http\Controllers\v1\client\SurveyCategoryController;
 use App\Http\Controllers\v1\client\SurveyController;
@@ -54,6 +55,8 @@ use App\Http\Controllers\v1\visitor\PartnerContactsController;
 
 //
 Route::group(['prefix' => 'v1'], function () {
+    Route::post('/send-sms', [SmsController::class, 'sendSms']);
+
     //common
     Route::group([
         'prefix' => 'common'
@@ -61,6 +64,8 @@ Route::group(['prefix' => 'v1'], function () {
         //clear cache, config cache
         Route::post('/clear-config-cache', [ToolsController::class, 'clearConfigCache']);
         Route::post('/delete-cache', [ToolsController::class, 'deleteCache']);
+        //One
+
     });
     //END common
 
@@ -86,6 +91,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/resend-active-email', [AuthController::class, 'resendActiveEmail']);
             Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
             Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
 
             Route::group([
                 'middleware' => 'client_auth',

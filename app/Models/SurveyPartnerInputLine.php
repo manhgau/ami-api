@@ -130,7 +130,6 @@ class SurveyPartnerInputLine extends Model
         return $result;
     }
 
-
     public static  function getSurveyStatisticTextOrDate($perPage, $page, $question_id, $survey_id, $question_type, $is_anynomous = null)
     {
         $result = DB::table('survey_partner_input_lines')

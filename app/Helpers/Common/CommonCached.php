@@ -20,6 +20,7 @@ class CommonCached
     //
     const api_list_job_status                               = 'api_cached:api_list_job_status';
     const api_list_job_type                                 = 'api_cached:api_list_job_type';
+    const api_list_job_types                                 = 'api_cached:api_list_job_types';
     const api_list_business_scope                           = 'api_cached:api_list_business_scope';
     const api_list_academic_level                           = 'api_cached:api_list_academic_level';
     const api_list_family_income_levels                     = 'api_cached:api_list_family_income_levels';

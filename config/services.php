@@ -30,4 +30,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'one_sms'   => [
+        'api_url'   =>  'https://api.conek.vn/SendSms',
+        'username'   =>  'test_account',
+        'password'   =>  'c7cccd23f0d37fc186feb23653231730',
+        'brandname'   =>  'CONEK',
+    ]
+
 ];

@@ -25,26 +25,25 @@ class MappingUidFcmTokenController extends Controller
             return ClientResponse::responseError($errorString);
         }
         $os = Str::lower($request->os);
-        if(in_array($os, MappingUidFcmToken::getOSList())==false) {
+        if (in_array($os, MappingUidFcmToken::getOSList()) == false) {
             return ClientResponse::responseError('Nhập sai os');
         }
         $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
         if ($tokenInfo) {
             $partner = $tokenInfo->partner;
-            $partner_id =  $partner->id??0;
+            $partner_id =  $partner->id ?? 0;
             $partner = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id);
             if ($partner) {
                 $update = MappingUidFcmToken::where('partner_id', $partner_id)->update(
-                    ['fcm_token' => $request->fcm_token,'os'=>$os]
+                    ['fcm_token' => $request->fcm_token, 'os' => $os]
                 );
                 if ($update) {
                     return ClientResponse::responseSuccess('Câp nhập thành công');
                 }
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            $create = MappingUidFcmToken::create(['partner_id' => $partner_id, 'fcm_token' => $request->fcm_token, 'os'=>$os]);
+            $create = MappingUidFcmToken::create(['partner_id' => $partner_id, 'fcm_token' => $request->fcm_token, 'os' => $os]);
             return ClientResponse::responseSuccess('Thêm mới thành công', $create);
-
         }
     }
 }

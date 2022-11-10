@@ -16,11 +16,10 @@ use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
 use App\Models\JobType;
 
-class JobTypeCotroller extends Controller
+class JobTypeController extends Controller
 {
     public function getJobType(Request $request)
     {
-
         try {
             $perPage = $request->per_page ?? 100;
             $page = $request->current_page ?? 1;
