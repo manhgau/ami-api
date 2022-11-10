@@ -8,7 +8,6 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Context;
 use App\Helpers\FormatDate;
 use App\Models\QuestionType;
-use App\Models\Survey;
 use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
 
@@ -82,9 +81,8 @@ class SurveyPartnerInputLineController extends Controller
                             }
                             break;
                         case QuestionType::RATING_STAR:
-                        case QuestionType::RANKING:
                             $validator = Validator::make($request->all(), [
-                                'value_star_rating' => [
+                                'value_rating_ranking' => [
                                     $survey_question->validation_required ? 'required' : '',
                                 ],
                             ]);
@@ -93,7 +91,22 @@ class SurveyPartnerInputLineController extends Controller
                                 return ClientResponse::responseError($errorString);
                             }
 
-                            $input['value_star_rating'] = $request->value_star_rating;
+                            $input['value_rating_ranking'] = $request->value_rating_ranking;
+                            $data_input = $input;
+                            break;
+                        case QuestionType::RANKING:
+                            $validator = Validator::make($request->all(), [
+                                'value_rating_ranking' => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                ],
+                            ]);
+                            if ($validator->fails()) {
+                                $errorString = implode(",", $validator->messages()->all());
+                                return ClientResponse::responseError($errorString);
+                            }
+
+                            $input['value_rating_ranking'] = $request->value_rating_ranking;
+                            $input['value_level_ranking'] = SurveyQuestion::getNameLevelRanking($question_id)[$request->value_rating_ranking];
                             $data_input = $input;
                             break;
                         case QuestionType::DATETIME_DATE_RANGE:
@@ -214,23 +227,6 @@ class SurveyPartnerInputLineController extends Controller
             }
         } else {
             return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
-        }
-    }
-    public function exitSurvey(Request $request)
-    {
-        try {
-            $survey_id = $request->survey_id;
-            $question_id = $request->question_id;
-            $survey = Survey::getDetailSurvey($survey_id);
-            $question = SurveyQuestion::getDetailSurveyQuestion($question_id);
-            $skipped_survey = Survey::updateSurvey(['skip_count' => $survey->$survey + 1], $survey_id);
-            $skipped_question = SurveyQuestion::updateSurveyQuestion(['skip_count' => $question->$survey + 1], $question_id);
-            if (!$skipped_survey && !$skipped_question) {
-                return ClientResponse::responseError('Đã có lỗi xảy ra');
-            }
-            return ClientResponse::responseSuccess('OK');
-        } catch (\Exception $ex) {
-            return ClientResponse::responseError($ex->getMessage());
         }
     }
 }

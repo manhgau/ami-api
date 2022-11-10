@@ -28,6 +28,11 @@ class YearOfBirths extends Model
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->update($data);
     }
 
+    public static  function getAllYearOfBirth()
+    {
+        return self::where('deleted', self::NOT_DELETED)->get();
+    }
+
     public static  function updateMany($data, $ids)
     {
         return self::where('deleted', self::NOT_DELETED)->whereIn('id', $ids)->update($data);

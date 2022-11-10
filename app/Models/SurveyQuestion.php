@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class SurveyQuestion extends Model
 {
@@ -148,5 +147,22 @@ class SurveyQuestion extends Model
     public static  function getQuestionOfSurvey($survey_id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->orderBy('sequence', 'ASC')->get();
+    }
+
+    public static  function getNameLevelRanking($question_id)
+    {
+        $question_detail = self::getDetailSurveyQuestion($question_id);
+        return [
+            1                   => $question_detail->name_level_1,
+            2                   => $question_detail->name_level_1,
+            3                   => $question_detail->name_level_1,
+            4                   => $question_detail->name_level_1,
+            5                   => $question_detail->name_level_1,
+            6                   => $question_detail->name_level_1,
+            7                   => $question_detail->name_level_2,
+            8                   => $question_detail->name_level_2,
+            9                   => $question_detail->name_level_3,
+            10                  => $question_detail->name_level_3,
+        ];
     }
 }
