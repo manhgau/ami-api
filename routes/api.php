@@ -14,7 +14,7 @@ use App\Http\Controllers\v1\client\SurveyPartnerInputAnynomousController;
 use App\Http\Controllers\v1\client\SurveyPartnerInputLineAnynomousController;
 use App\Http\Controllers\v1\client\SurveyQuestionAnswersController;
 use App\Http\Controllers\v1\client\SurveyQuestionController;
-use App\Http\Controllers\v1\client\SurveyStatisticCpntroller;
+use App\Http\Controllers\v1\client\SurveyStatisticController;
 use App\Http\Controllers\v1\client\SurveyTemplateController;
 use App\Http\Controllers\v1\partner\MappingUidFcmTokenController;
 use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
@@ -160,9 +160,11 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::group([
                     'prefix' => '/{survey_id}/statistic'
                 ], function ($router) {
-                    Route::post('/', [SurveyStatisticCpntroller::class, 'getStatisticSurvey']);
-                    Route::post('/diagram/target/{group_by}', [SurveyStatisticCpntroller::class, 'getDiagramSurvey']);
-                    Route::post('/question/{question_id}', [SurveyStatisticCpntroller::class, 'getSurveyStatisticDetail']);
+                    Route::post('/', [SurveyStatisticController::class, 'getStatisticSurvey']);
+                    Route::post('/list-questions', [SurveyStatisticController::class, 'getStatisticQuestionsSurvey']);
+                    Route::post('/diagram/target/{group_by}', [SurveyStatisticController::class, 'getDiagramSurvey']);
+                    Route::post('/diagram/year-of-birth', [SurveyStatisticController::class, 'getDiagramYearOfBirth']);
+                    Route::post('/question/{question_id}', [SurveyStatisticController::class, 'getSurveyStatisticDetail']);
                 });
                 Route::group([
                     'prefix' => '/{survey_id}/anynomous'
@@ -262,7 +264,7 @@ Route::group(['prefix' => 'v1'], function () {
                         Route::post('/', [SurveyPartnerInputController::class, 'answerSurvey']);
                         Route::post('/{partner_input_id}/update', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
                         Route::post('/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
-                        Route::get('/question/{question_id}/exit', [SurveyPartnerInputLineController::class, 'exitSurvey']);
+                        Route::get('/{partner_input_id}/question/{question_id}/exit', [SurveyPartnerInputController::class, 'exitSurvey']);
                     });
                 });
             });

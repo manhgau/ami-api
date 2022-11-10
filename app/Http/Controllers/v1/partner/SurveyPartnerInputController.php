@@ -13,6 +13,7 @@ use App\Models\PartnerProfile;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
 use App\Models\SurveyPartnerInputLine;
+use App\Models\SurveyQuestion;
 use Carbon\Carbon;
 
 class SurveyPartnerInputController extends Controller
@@ -41,7 +42,7 @@ class SurveyPartnerInputController extends Controller
                     $input['partner_id'] = $partner_id;
                     $input['survey_id'] = $request->survey_id;
                     $input['state'] = SurveyPartnerInput::STATE_NEW;
-                    $input['start_datetime'] =  Carbon::now();
+                    $input['start_datetime'] =  time();
                     $survey = Survey::getDetailSurvey($request->survey_id);
                     if (!$survey || $survey->state != Survey::STATUS_ON_PROGRESS) {
                         return ClientResponse::responseError('Khảo sát không tồn tại hoặc đã đóng');
@@ -69,7 +70,7 @@ class SurveyPartnerInputController extends Controller
                 try {
                     $partner_input_id = $request->partner_input_id;
                     $partner_id = $partner->id ?? 0;
-                    $input_update['start_datetime'] =  Carbon::now();
+                    $input_update['end_datetime'] =   time();
                     $input_update['state'] =  SurveyPartnerInput::STATE_DONE;
                     $result = SurveyPartnerInput::updateSurveyPartnerInput($input_update, $partner_input_id);
 
@@ -171,6 +172,28 @@ class SurveyPartnerInputController extends Controller
             }
         } else {
             return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
+    }
+
+    public function exitSurvey(Request $request)
+    {
+        try {
+            $survey_id = $request->survey_id;
+            $question_id = $request->question_id;
+            $partner_input_id = $request->partner_input_id;
+            $input_update['end_datetime'] =   time();
+            $input_update['skip'] =  SurveyPartnerInput::SKIP;
+            $survey = Survey::getDetailSurvey($survey_id);
+            $question = SurveyQuestion::getDetailSurveyQuestion($question_id);
+            $result = SurveyPartnerInput::updateSurveyPartnerInput($input_update, $partner_input_id);
+            if (!$result) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            Survey::updateSurvey(['skip_count' => $survey->$survey + 1], $survey_id);
+            SurveyQuestion::updateSurveyQuestion(['skip_count' => $question->$survey + 1], $question_id);
+            return ClientResponse::responseSuccess('OK');
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
         }
     }
 

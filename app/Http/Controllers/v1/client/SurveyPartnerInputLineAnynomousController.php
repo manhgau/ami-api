@@ -60,7 +60,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                         'suggested_answer_id' => [
                             $survey_question->validation_required ? 'required' : '',
                         ],
-                        'value_star_rating' => [
+                        'value_rating_ranking' => [
                             $survey_question->validation_required ? 'required' : '',
                         ],
                     ]);
@@ -70,7 +70,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     }
 
                     $input['suggested_answer_id'] = $request->suggested_answer_id;
-                    $input['value_star_rating'] = $request->value_star_rating;
+                    $input['value_rating_ranking'] = $request->value_rating_ranking;
                     $data_input = $input;
                     break;
                 case QuestionType::DATETIME_DATE_RANGE:
