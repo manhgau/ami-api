@@ -242,23 +242,23 @@ class SurveyStatisticController extends Controller
                 case QuestionType::YES_NO:
                 case QuestionType::MULTI_CHOICE:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
-                    $data =  SurveyPartnerInputLine::getSurveyStatisticCheckbox($question_id, $survey_id, $is_anynomous);
+                    $data =  SurveyPartnerInput::getSurveyStatisticCheckbox($question_id, $survey_id, $is_anynomous);
                     $chart = $data;
                     break;
                 case QuestionType::RATING_STAR:
-                    $data =  SurveyPartnerInputLine::getSurveyStatisticRating($question_id, $survey_id, $is_anynomous);
+                    $data =  SurveyPartnerInput::getSurveyStatisticRating($question_id, $survey_id, $is_anynomous);
                     $chart = $data;
                     break;
                 case QuestionType::DATETIME_DATE:
                 case QuestionType::DATETIME_DATE_RANGE:
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                 case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                    $data =  SurveyPartnerInputLine::getSurveyStatisticTextOrDate($perPage, $page,  $question_id, $survey_id, $question_type, $is_anynomous);
+                    $data =  SurveyPartnerInput::getSurveyStatisticTextOrDate($perPage, $page,  $question_id, $survey_id, $question_type, $is_anynomous);
                     $list = $data;
                     return $list;
                     break;
                 case QuestionType::MULTI_FACTOR_MATRIX:
-                    $data =  SurveyPartnerInputLine::getSurveyStatisticMatrix($question_id, $survey_id, $is_anynomous);
+                    $data =  SurveyPartnerInput::getSurveyStatisticMatrix($question_id, $survey_id, $is_anynomous);
                     $chart = $data;
                     break;
                 default:
