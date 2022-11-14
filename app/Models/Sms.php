@@ -22,8 +22,8 @@ class Sms extends Model
     {
         $status = -1;
         $message = 'Không thể gửi sms';
+        $logs = new SmsLog();
         try {
-            $logs = new SmsLog();
             $logs->phone = $phone;
             $logs->content = $content;
 
@@ -38,10 +38,12 @@ class Sms extends Model
                 $message = $rs['message'] ?? 'Gửi tin nhắn không thành công';
                 $logs->note = $message;
             }
-            $logs->save();
+
         } catch (\Exception $ex) {
             $message = $ex->getMessage();
+            $logs->note = $message;
         }
+        $logs->save();
         return [
             'status' => $status,
             'message' => $message
@@ -51,6 +53,11 @@ class Sms extends Model
 
     private static function __sendSmsViaApi($phone, $content)
     {
+        return [
+            'status' => 1,
+            'message' => "Gửi tin nhắn thàn công"
+        ];
+        //TODO,..
         return self::__sendSMSViaOneSms($phone, $content);
     }
 
