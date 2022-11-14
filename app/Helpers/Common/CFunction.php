@@ -51,7 +51,7 @@ class CFunction
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_SSL_VERIFYHOST  => FALSE,
                 CURLOPT_SSL_VERIFYPEER  => FALSE,
-                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_CUSTOMREQUEST => $method,
                 CURLOPT_POSTFIELDS => $data,
                 CURLOPT_HTTPHEADER => array(
                     'Content-Type: application/json',
