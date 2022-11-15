@@ -66,6 +66,7 @@ Route::group(['prefix' => 'v1'], function () {
         //clear cache, config cache
         Route::post('/clear-config-cache', [ToolsController::class, 'clearConfigCache']);
         Route::post('/delete-cache', [ToolsController::class, 'deleteCache']);
+        Route::get('/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
     });
     //END common
 
