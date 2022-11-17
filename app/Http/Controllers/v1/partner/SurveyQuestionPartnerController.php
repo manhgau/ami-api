@@ -23,7 +23,7 @@ class SurveyQuestionPartnerController extends Controller
             if ($partner) {
                 try {
                     $survey_id = $request->survey_id;
-                    $perPage = $request->per_page ?? 10;
+                    $perPage = $request->per_page ?? 20;
                     $page = $request->current_page ?? 1;
                     $partner_id = $partner->id ?? 0;
                     if (!SurveyPartner::checkSurveyPartner($survey_id, $partner_id)) {
@@ -36,34 +36,17 @@ class SurveyQuestionPartnerController extends Controller
                     }
                     $datas = [];
                     foreach ($lists['data'] as $key => $value) {
-                        $question_id = $value['id'];
-                        $random = $value['validation_random'];
-                        switch ($value['question_type']) { // question_id 
-                            case QuestionType::MULTI_FACTOR_MATRIX:
-                                $data_response = $value;
-                                $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->orWhere('matrix_question_id', $value['id'])->get();
-                                $datas[$key] = $data_response;
-                                break;
-                            case QuestionType::MULTI_CHOICE:
-                            case QuestionType::MULTI_CHOICE_DROPDOWN:
-                            case QuestionType::YES_NO:
-                                $data_response = $value;
-                                $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
-                                $datas[$key] = $data_response;
-                                break;
-                            case QuestionType::RATING_STAR:
-                            case QuestionType::RANKING:
-                            case QuestionType::DATETIME_DATE:
-                            case QuestionType::DATETIME_DATE_RANGE:
-                            case QuestionType::QUESTION_ENDED_SHORT_TEXT:
-                            case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                            case QuestionType::NUMBER:
-                                $data_response = $value;
-                                $datas[$key] = $data_response;
-                                break;
-                            default:
-                                return ClientResponse::responseError('question type không hợp lệ', $value['question_type']);
-                                break;
+                        if ($value['question_type'] == QuestionType::GROUP) {
+
+                            $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value['id']);
+                            $list_question = [];
+                            foreach ($question_group as $cat => $item) {
+                                $list_question  = self::__getAnswer($cat, $item, $list_question);
+                            }
+                            $value['group_question'] = $list_question;
+                            $datas[$key] = $value;
+                        } else {
+                            $datas  = self::__getAnswer($key, $value, $datas);
                         }
                     }
                     $lists['data'] = $datas;
@@ -75,5 +58,39 @@ class SurveyQuestionPartnerController extends Controller
                 return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
             }
         }
+    }
+
+    private static function __getAnswer($key, $value, $datas)
+    {
+        $question_id = $value['id'];
+        $random = $value['validation_random'];
+        switch ($value['question_type']) { // question_id 
+            case QuestionType::MULTI_FACTOR_MATRIX:
+                $data_response = $value;
+                $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->orWhere('matrix_question_id', $value['id'])->get();
+                $datas[$key] = $data_response;
+                break;
+            case QuestionType::MULTI_CHOICE:
+            case QuestionType::MULTI_CHOICE_DROPDOWN:
+            case QuestionType::YES_NO:
+                $data_response = $value;
+                $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
+                $datas[$key] = $data_response;
+                break;
+            case QuestionType::RATING_STAR:
+            case QuestionType::RANKING:
+            case QuestionType::DATETIME_DATE:
+            case QuestionType::DATETIME_DATE_RANGE:
+            case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+            case QuestionType::QUESTION_ENDED_LONG_TEXT:
+            case QuestionType::NUMBER:
+            case QuestionType::GROUP:
+                $datas[$key] = $value;
+                break;
+            default:
+                return ClientResponse::responseError('question type không hợp lệ', $value['question_type']);
+                break;
+        }
+        return $datas;
     }
 }

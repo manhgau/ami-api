@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Helpers\RemoveData;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -28,6 +30,10 @@ class SurveyPartnerInput extends Model
     const DONE = 'done';
     const SKIP = 1;
     const NOT_SKIP = 0;
+
+    const CLOSED  = 'closed';
+    const ON_PROGRESS  = 'on_progress';
+    const NOT_PROGRESS  = 'not_progress';
 
     const ANYNOMOUS_TRUE                     = 1;
     const ANYNOMOUS_FALSE                    = 0;
@@ -61,9 +67,9 @@ class SurveyPartnerInput extends Model
     }
 
 
-    public static  function getlistSurveyPartnerInput($perPage = 10,  $page = 1, $partner_id, $time_now, $time_end)
+    public static  function getlistSurveyPartnerInput($perPage = 10,  $page = 1, $partner_id, $time_now, $time_end, $search = null, $status = null)
     {
-        return DB::table('survey_partner_inputs as a')
+        $query =  DB::table('survey_partner_inputs as a')
             ->join('surveys as b', 'b.id', '=', 'a.survey_id')
             ->join('survey_partners as c', 'c.survey_id', '=', 'b.id')
             ->select(
@@ -86,8 +92,31 @@ class SurveyPartnerInput extends Model
             ->where('b.end_time', '>', $time_end)
             ->where('c.partner_id', $partner_id)
             ->orderBy('b.created_at', 'desc')
-            ->distinct()
-            ->paginate($perPage, "*", "page", $page)->toArray();
+            ->distinct();
+        if ($search != null) {
+            $query->where('b.title', 'like', '%' . $search . '%');
+        }
+        if ($status == self::CLOSED) {
+            $query->where('b.end_time', '<', Carbon::now())
+                ->whereColumn('b.attempts_limit_min', '>', 'c.number_of_response');
+        }
+        if ($status == self::ON_PROGRESS) {
+            $query->where(function ($query) {
+                $query->orwhere(function ($query) {
+                    $query->where('b.state', Survey::STATUS_ON_PROGRESS)
+                        ->whereColumn('b.attempts_limit_max', 'c.number_of_response');
+                });
+                $query->orwhere(function ($query) {
+                    $query->where('b.end_time', '<', Carbon::now())
+                        ->whereColumn('b.attempts_limit_min', '<=', 'c.number_of_response');
+                });
+            });
+        }
+        if ($status == self::NOT_PROGRESS) {
+            $query->where('b.state', Survey::STATUS_ON_PROGRESS)
+                ->whereColumn('b.attempts_limit_max', '>', 'c.number_of_response');
+        }
+        return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
 
     public static  function getDetailSurveyPartnerInput($survey_partner_input_id, $partner_id)
