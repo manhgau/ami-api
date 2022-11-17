@@ -116,7 +116,7 @@ class SurveyStatisticController extends Controller
     public function getStatisticQuestionsSurvey(Request $request)
     {
         try {
-            $perPage = $request->per_page ?? 5;
+            $perPage = $request->per_page ?? 20;
             $page = $request->current_page ?? 1;
             $survey_id = $request->survey_id;
             $is_anynomous = $request->is_anynomous;
@@ -138,6 +138,7 @@ class SurveyStatisticController extends Controller
             }
             $question = [];
             foreach ($datas['data'] as $key => $value) {
+
                 $query = SurveyPartnerInput::getStatisticQuestionsSurvey(
                     $survey_id,
                     $value['id'],
@@ -234,6 +235,17 @@ class SurveyStatisticController extends Controller
             $is_anynomous = $request->is_anynomous;
             $survey_id = $request->survey_id;
             $question_id = $request->question_id;
+            $start_time = FormatDate::formatDate($request->start_time);
+            $end_time = FormatDate::formatDate($request->end_time . '' . '23:59:59');
+            $gender = $request->gender;
+            $year_of_birth = $request->year_of_birth;
+            $province_codes = $request->province_codes;
+            $academic_level_ids = $request->academic_level_ids;
+            $job_type_ids = $request->job_type_ids;
+            $marital_status_ids = $request->marital_status_ids;
+            $family_peoples = $request->family_peoples;
+            $has_children = $request->has_children;
+            $is_key_shopper = $request->is_key_shopper;
             $list = '';
             $chart = '';
             $survey_questions = SurveyQuestion::getDetailSurveyQuestion($question_id);

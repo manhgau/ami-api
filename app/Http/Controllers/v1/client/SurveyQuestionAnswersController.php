@@ -92,13 +92,13 @@ class SurveyQuestionAnswersController extends Controller
     {
         try {
             $question_id = $request->question_id;
-            $question_answer = SurveyQuestionAnswer::select()->where('question_id', $question_id)->update(['deleted' => SurveyQuestionAnswer::DELETED]);
+            $question_answer_number = SurveyQuestionAnswer::select()->where('question_id', $question_id)->where(['deleted' => SurveyQuestionAnswer::NOT_DELETED])->count();
             $input['sequence'] = $request->sequence;
             $input['value'] = $request->value;
             $input['question_id'] =  $question_id;
             $arr = [];
             foreach ($request->option    as $key => $value) {
-                $input['sequence'] = $key;
+                $input['sequence'] = $question_answer_number + $key + 1;
                 $input['value'] = $value;
                 $arr[] = $input;
             }

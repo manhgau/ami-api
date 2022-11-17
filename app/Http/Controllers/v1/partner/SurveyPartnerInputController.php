@@ -11,6 +11,7 @@ use App\Models\Partner;
 use App\Models\PartnerPointLog;
 use App\Models\PartnerProfile;
 use App\Models\Survey;
+use App\Models\SurveyPartner;
 use App\Models\SurveyPartnerInput;
 use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
@@ -41,7 +42,7 @@ class SurveyPartnerInputController extends Controller
                     $input['fullname'] = $partner_profile->name;
                     $input['partner_id'] = $partner_id;
                     $input['survey_id'] = $request->survey_id;
-                    $input['state'] = SurveyPartnerInput::STATE_NEW;
+                    $input['state'] = SurveyPartnerInput::NEW;
                     $input['start_datetime'] =  time();
                     $survey = Survey::getDetailSurvey($request->survey_id);
                     if (!$survey || $survey->state != Survey::STATUS_ON_PROGRESS) {
@@ -69,14 +70,17 @@ class SurveyPartnerInputController extends Controller
             if ($partner) {
                 try {
                     $partner_input_id = $request->partner_input_id;
+                    $survey_id = $request->survey_id;
                     $partner_id = $partner->id ?? 0;
                     $input_update['end_datetime'] =   time();
-                    $input_update['state'] =  SurveyPartnerInput::STATE_DONE;
+                    $input_update['state'] =  SurveyPartnerInput::DONE;
                     $result = SurveyPartnerInput::updateSurveyPartnerInput($input_update, $partner_input_id);
-
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
+                    $survey_partners = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
+                    $survey_partners->number_of_response = $survey_partners->number_of_response + 1;
+                    $survey_partners->save();
                     $survey = Survey::getDetailSurvey($request->survey_id);
                     $count_survey_input = SurveyPartnerInput::countSurveyInput($request->survey_id);
                     if ($count_survey_input == $survey->number_of_response_required) {
@@ -121,9 +125,11 @@ class SurveyPartnerInputController extends Controller
                     $partner_id = $partner->id ?? 0;
                     $perPage = $request->per_page ?? 10;
                     $page = $request->current_page ?? 1;
+                    $status = $request->status;
+                    $search = $request->search;
                     $time_now = Carbon::now();
                     $time_end = date('Y-m-d H:i:s', time() - (30 * 86400));
-                    $datas = SurveyPartnerInput::getlistSurveyPartnerInput($perPage,  $page, $partner_id, $time_now, $time_end);
+                    $datas = SurveyPartnerInput::getlistSurveyPartnerInput($perPage,  $page, $partner_id, $time_now, $time_end, $search, $status);
                     $datas = RemoveData::removeUnusedData($datas);
                     $array = array();
                     foreach ($datas['data'] as $key => $value) {

@@ -49,6 +49,7 @@ class SurveyQuestion extends Model
     const NOT_DELETED  = 0;
     const DELETED  = 1;
     const NO_PAGE  = 0;
+    const IS_PAGE  = 1;
 
     protected $hidden = ['deleted', 'created_at', 'updated_at', 'updated_by', 'created_by'];
 
@@ -59,7 +60,23 @@ class SurveyQuestion extends Model
 
     public static  function getListSurveyQuestion($survey_id)
     {
-        return self::select('id', 'survey_id', 'title', 'is_page', 'page_id', 'sequence', 'question_type')
+        return self::select(
+            'id',
+            'survey_id',
+            'sequence',
+            'title',
+            'description',
+            'question_type',
+            'skip_count',
+            'view',
+            'type_ranking',
+            'is_multiple',
+            'validation_random',
+            'is_time',
+            'format_date_time',
+            'is_page',
+            'page_id'
+        )
             ->where('deleted', self::NOT_DELETED)
             ->where('survey_id', $survey_id)
             ->where('page_id', self::NO_PAGE)
@@ -79,7 +96,23 @@ class SurveyQuestion extends Model
 
     public static  function listGroupQuestions($survey_id, $page_id)
     {
-        return self::select('id', 'survey_id', 'title', 'is_page', 'page_id', 'sequence', 'question_type')
+        return self::select(
+            'id',
+            'survey_id',
+            'sequence',
+            'title',
+            'description',
+            'question_type',
+            'skip_count',
+            'view',
+            'type_ranking',
+            'is_multiple',
+            'validation_random',
+            'is_time',
+            'format_date_time',
+            'is_page',
+            'page_id'
+        )
             ->where('deleted', self::NOT_DELETED)
             ->where('survey_id', $survey_id)
             ->where('page_id', $page_id)
@@ -102,11 +135,14 @@ class SurveyQuestion extends Model
             'is_multiple',
             'validation_random',
             'is_time',
-            'format_date_time'
+            'format_date_time',
+            'is_page',
+            'page_id'
         )
             ->where('deleted', self::NOT_DELETED)
             ->where('survey_id', $survey_id)
-            ->orderBy('sequence', 'ASC')
+            ->where('page_id', self::NO_PAGE)
+            ->orderBy('sequence', 'asc')
             ->paginate($perPage, "*", "page", $page)->toArray();
     }
 

@@ -26,10 +26,11 @@ class SurveyPartnerController extends Controller
                     $perPage = $request->per_page ?? 5;
                     $page = $request->current_page ?? 1;
                     $search = $request->search;
+                    $status = $request->status;
                     $is_save = (int)$request->is_save ?? null;
                     $time_now = Carbon::now();
                     $time_end = date('Y-m-d H:i:s', time() - (30 * 86400));
-                    $datas = SurveyPartner::getlistSurveyPartner($perPage,  $page, $partner_id, $time_now,  $time_end, $is_save, $search);
+                    $datas = SurveyPartner::getlistSurveyPartner($perPage,  $page, $partner_id, $time_now,  $time_end, $is_save, $search, $status);
                     $datas = RemoveData::removeUnusedData($datas);
                     $array = array();
                     foreach ($datas['data'] as $key => $value) {
