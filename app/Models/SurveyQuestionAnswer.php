@@ -35,14 +35,25 @@ class SurveyQuestionAnswer extends Model
 
     public static  function getAllSurveyQuestionAnswer($id,  $random = 0)
     {
-        $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'value', 'value_type')->where('question_id', $id)->where('deleted', self::NOT_DELETED);
+        $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'value', 'value_type')
+            ->where('question_id', $id)
+            ->where('deleted', self::NOT_DELETED)
+            ->orderBy('sequence', 'asc');
         if ($random == 1) {
             $query = $query->inRandomOrder();
         }
         return $query;
     }
 
+    public static  function getAnswerMatrixRow($question_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)->orderBy('sequence', 'asc')->get();
+    }
 
+    public static  function getAllAnswer($question_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)->orWhere('matrix_question_id', $question_id)->get()->toArray();
+    }
 
     public static  function getDetailSurveyQuestionAnswer($id)
     {

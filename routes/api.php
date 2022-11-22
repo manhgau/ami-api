@@ -147,6 +147,7 @@ Route::group(['prefix' => 'v1'], function () {
                             Route::post('/update-many', [SurveyQuestionController::class, 'updateManySurveyQuestion']);
                             Route::post('/{question_id}/update', [SurveyQuestionController::class, 'updateSurveyQuestion']);
                             Route::post('/{question_id}/delete', [SurveyQuestionController::class, 'delSurveyQuestion']);
+                            Route::post('/{question_id}/copy', [SurveyQuestionController::class, 'copySurveyQuestion']);
                             Route::group([
                                 'prefix' => '/{question_id}/answers'
 
