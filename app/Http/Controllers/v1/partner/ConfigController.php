@@ -20,7 +20,13 @@ class ConfigController extends Controller
         $all_settings = AppSetting::getAllSetting();
         //setting
         $settings->image_domain     = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
-        $settings->is_maintain      = (int)AppSetting::getByKey(AppSetting::IS_MAINTAIN, $all_settings);
+        //check maintain
+        $is_maintain = (int)AppSetting::getByKey(AppSetting::IS_MAINTAIN, $all_settings);
+        $settings->is_maintain = $is_maintain;
+        if($is_maintain==AppSetting::IS_MAINTAIN_VALUE){
+            return ClientResponse::response(ClientResponse::$app_is_maintain, "Hệ thống đang bảo trì, vui lòng quay lại sau.");
+        }
+        //
 
         //version
         $settings->newest_version = floatval(1.0);
