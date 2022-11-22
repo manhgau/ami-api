@@ -26,8 +26,8 @@ class SurveyPartnerInput extends Model
         'created_at',
         'updated_at',
     ];
-    const NEW = 'new';
-    const DONE = 'done';
+    const STATUS_NEW = 'new';
+    const STATUS_DONE = 'done';
     const SKIP = 1;
     const NOT_SKIP = 0;
 
@@ -216,6 +216,7 @@ class SurveyPartnerInput extends Model
             ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->select(DB::raw('count(*) as total , survey_partner_input_lines.suggested_answer_id'))
             ->where('survey_partner_input_lines.survey_id', $survey_id)
+            ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->groupBy('suggested_answer_id')->get();
@@ -241,21 +242,17 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.question_sequence',
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
+            ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
             ->get()
-            ->groupBy('name_answer');
+            ->groupBy('value_rating_ranking');
 
-        foreach ($result as $k => $v) {
-            $d = $v->groupBy('value_rating_ranking');
-            $array = [];
-            foreach ($d as $key => $item) {
-                $array['total'] = count($item);
-                $array['value_rating_ranking'] = $key;
-                $d[$key] = $array;
-            }
-            $result[$k] = $d;
+        foreach ($result as $key => $value) {
+            $array['number_partner_answer'] = count($value);
+            $array['value_rating_ranking'] = $key;
+            $result[$key] = $array;
         }
         return $result;
     }
@@ -269,19 +266,19 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.value_rating_ranking',
                 'survey_partner_input_lines.answer_type',
                 'survey_partner_input_lines.question_sequence',
+                'survey_partner_input_lines.value_level_ranking',
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
+            ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
-            ->get()
-            ->groupBy('name_answer');
-
+            ->get()->groupBy('value_level_ranking');
         foreach ($result as $k => $v) {
             $d = $v->groupBy('value_rating_ranking');
             $array = [];
             foreach ($d as $key => $item) {
-                $array['total'] = count($item);
+                $array['number_partner_answer'] = count($item);
                 $array['value_rating_ranking'] = $key;
                 $d[$key] = $array;
             }
@@ -363,6 +360,7 @@ class SurveyPartnerInput extends Model
                 'survey_question_answers.value as name_answer_column',
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
+            ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->get();
@@ -378,10 +376,14 @@ class SurveyPartnerInput extends Model
         }
         $result = $result->groupBy('name_answer_column');
         foreach ($result as $k => $item) {
-            $result[$k] = $item->groupBy('name_answer_row');
+            $group_item = $item->groupBy('name_answer_row');
+            foreach ($group_item as $key => $value) {
+                $data['name_answer_row'] = $key;
+                $data['number_partner_answer'] = count($value);
+                $group_item[$key] = $data;
+            }
+            $result[$k] = $group_item;
         }
-
-        dd($result);
         return $result;
     }
 
