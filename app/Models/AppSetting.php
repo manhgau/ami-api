@@ -11,6 +11,7 @@ class AppSetting extends Model
     const FRONTEND_WEB_URL                  = 'frontend_web_url';
     const IMAGE_DOMAIN                      = 'image_domain';
     const IS_MAINTAIN                       = 'is_maintain';
+    const IS_MAINTAIN_VALUE                 = 1;
     const LOGO                              = 'logo';
     const SURVEY_PROFILE_ID                 = 'survey_profile_id';
 
