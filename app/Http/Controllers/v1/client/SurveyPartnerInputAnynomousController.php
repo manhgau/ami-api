@@ -57,7 +57,7 @@ class SurveyPartnerInputAnynomousController extends Controller
 
             $partner_input_id = $request->partner_input_id;
             $input_update['start_datetime'] =  Carbon::now();
-            $input_update['state'] =  SurveyPartnerInput::STATE_DONE;
+            $input_update['state'] =  SurveyPartnerInput::STATUS_DONE;
             $result = SurveyPartnerInput::updateSurveyPartnerInput($input_update, $partner_input_id);
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
