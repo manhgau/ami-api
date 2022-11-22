@@ -85,7 +85,7 @@ class SurveyPartnerInput extends Model
                 'b.end_time',
                 'b.number_of_response_required',
                 'b.count_questions',
-                'b.view',
+                'b.view'
             )
             ->where('a.partner_id', $partner_id)
             ->where('b.start_time', '<', $time_now)
@@ -134,7 +134,7 @@ class SurveyPartnerInput extends Model
                 'b.end_time',
                 'b.number_of_response_required',
                 'b.count_questions',
-                'b.view',
+                'b.view'
             )
             ->where('a.id', $survey_partner_input_id)
             ->where('a.partner_id', $partner_id)
@@ -187,7 +187,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_inputs.start_datetime',
                 'survey_partner_inputs.end_datetime',
                 'survey_partner_inputs.skip',
-                'survey_partner_inputs.state',
+                'survey_partner_inputs.state'
             )
             ->where('survey_partner_inputs.survey_id', $survey_id);
         $query = self::__filterTarget($query, $filter);
@@ -201,7 +201,7 @@ class SurveyPartnerInput extends Model
             ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->select(
                 'survey_partner_inputs.partner_id',
-                'survey_partner_input_lines.skipped',
+                'survey_partner_input_lines.skipped'
             )
             ->where('survey_partner_input_lines.question_id', $question_id)
             ->where('survey_partner_inputs.survey_id', $survey_id);
@@ -239,7 +239,7 @@ class SurveyPartnerInput extends Model
             ->select(
                 'survey_partner_input_lines.value_rating_ranking',
                 'survey_partner_input_lines.answer_type',
-                'survey_partner_input_lines.question_sequence',
+                'survey_partner_input_lines.question_sequence'
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
@@ -266,7 +266,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.value_rating_ranking',
                 'survey_partner_input_lines.answer_type',
                 'survey_partner_input_lines.question_sequence',
-                'survey_partner_input_lines.value_level_ranking',
+                'survey_partner_input_lines.value_level_ranking'
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
@@ -302,7 +302,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.value_date',
                 'survey_partner_input_lines.value_date_start',
                 'survey_partner_input_lines.value_date_end',
-                'survey_partner_input_lines.created_at',
+                'survey_partner_input_lines.created_at'
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
@@ -357,7 +357,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.id as lines_id',
                 'survey_partner_input_lines.matrix_row_id',
                 'survey_partner_input_lines.matrix_column_id',
-                'survey_question_answers.value as name_answer_column',
+                'survey_question_answers.value as name_answer_column'
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
