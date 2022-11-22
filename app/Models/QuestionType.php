@@ -76,7 +76,7 @@ class QuestionType
                     ['question_type' => self::NUMBER, 'name' => 'Number'],
                     ['question_type' => self::DATETIME_DATE, 'name' => 'Date'],
                     ['question_type' => self::RATING_STAR, 'name' => 'Rating (đánh giá)'],
-                    ['question_type' => self::RANKING, 'name' => 'Ranking (Xếp hạng thứ tự)'],
+                    ['question_type' => self::RANKING, 'name' => 'Mức độ'],
                 ]
             ],
             [

@@ -168,7 +168,12 @@ class SurveyQuestion extends Model
 
     public static function countQuestion($survey_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->count();
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('is_page', self::IS_PAGE)->count();
+    }
+
+    public static function countSequence($survey_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('page_id', 0)->count();
     }
 
     public static  function getSurveyQuestion($ids)

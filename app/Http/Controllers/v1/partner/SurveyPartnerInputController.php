@@ -42,7 +42,7 @@ class SurveyPartnerInputController extends Controller
                     $input['fullname'] = $partner_profile->name;
                     $input['partner_id'] = $partner_id;
                     $input['survey_id'] = $request->survey_id;
-                    $input['state'] = SurveyPartnerInput::NEW;
+                    $input['state'] = SurveyPartnerInput::STATUS_NEW;
                     $input['start_datetime'] =  time();
                     $survey = Survey::getDetailSurvey($request->survey_id);
                     if (!$survey || $survey->state != Survey::STATUS_ON_PROGRESS) {
@@ -73,7 +73,7 @@ class SurveyPartnerInputController extends Controller
                     $survey_id = $request->survey_id;
                     $partner_id = $partner->id ?? 0;
                     $input_update['end_datetime'] =   time();
-                    $input_update['state'] =  SurveyPartnerInput::DONE;
+                    $input_update['state'] =  SurveyPartnerInput::STATUS_DONE;
                     $result = SurveyPartnerInput::updateSurveyPartnerInput($input_update, $partner_input_id);
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');

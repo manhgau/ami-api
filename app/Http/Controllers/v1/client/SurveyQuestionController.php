@@ -33,7 +33,8 @@ class SurveyQuestionController extends Controller
             }
             $input['created_by'] = $user_id;
             $input['survey_id'] = $request->survey_id;
-            $input['count_questions'] =  SurveyQuestion::countQuestion($input['survey_id']) + 1;
+            $count_questions = SurveyQuestion::countQuestion($input['survey_id']);
+            $input['count_questions'] =   $count_questions + 1;
             $question_type = Str::lower($request->question_type);
             if (QuestionType::checkQuestionTypeValid($question_type) === false) {
                 return ClientResponse::responseError('Lỗi ! Không có dạng câu hỏi khảo sát này.');
@@ -207,6 +208,10 @@ class SurveyQuestionController extends Controller
             if (!$survey_question) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
+            $count_questions = SurveyQuestion::countSequence($request->survey_id);
+            $survey_question = $survey_question->toArray();
+            $survey_question['title'] = $survey_question['title'] . '_copy';
+            $survey_question['sequence'] = $count_questions + 1;
             switch ($survey_question['question_type']) { // question_id 
                 case QuestionType::MULTI_FACTOR_MATRIX:
                 case QuestionType::MULTI_CHOICE:
@@ -216,8 +221,6 @@ class SurveyQuestionController extends Controller
                     unset($survey_question['id']);
                     unset($survey_question['created_at']);
                     unset($survey_question['updated_at']);
-                    $survey_question['title'] = $survey_question['title'] . '_copy';
-                    $survey_question = $survey_question->toArray();
                     $insert = SurveyQuestion::createSurveyQuestion($survey_question);
                     foreach ($list_answer as $key => $value) {
 
@@ -238,8 +241,6 @@ class SurveyQuestionController extends Controller
                     unset($survey_question['id']);
                     unset($survey_question['created_at']);
                     unset($survey_question['updated_at']);
-                    $survey_question['title'] = $survey_question['title'] . '_copy';
-                    $survey_question = $survey_question->toArray();
                     $insert = SurveyQuestion::createSurveyQuestion($survey_question);
                     break;
                 default:
