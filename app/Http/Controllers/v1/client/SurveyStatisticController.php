@@ -22,31 +22,19 @@ class SurveyStatisticController extends Controller
             $survey_id = $request->survey_id;
             $group_by = $request->group_by;
             $limit = $request->limit;
-            $start_time = FormatDate::formatDate($request->start_time);
-            $end_time = FormatDate::formatDate($request->end_time);
-            $gender = $request->gender;
-            $year_of_birth = $request->year_of_birth;
-            $province_codes = $request->province_codes;
-            $academic_level_ids = $request->academic_level_ids;
-            $job_type_ids = $request->job_type_ids;
-            $marital_status_ids = $request->marital_status_ids;
-            $family_peoples = $request->family_peoples;
-            $has_children = $request->has_children;
-            $is_key_shopper = $request->is_key_shopper;
-            $result = SurveyPartnerInput::getDiagramSurvey(
-                $survey_id,
-                $start_time,
-                $end_time,
-                $academic_level_ids,
-                $province_codes,
-                $gender,
-                $year_of_birth,
-                $job_type_ids,
-                $marital_status_ids,
-                $family_peoples,
-                $has_children,
-                $is_key_shopper
-            );
+            $filter['is_anynomous'] = $request->is_anynomous ?? null;
+            $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['gender'] = $request->gender ?? null;
+            $filter['year_of_birth'] = $request->year_of_birth ?? null;
+            $filter['province_codes'] = $request->province_codes ?? null;
+            $filter['academic_level_ids'] = $request->academic_level_ids ?? null;
+            $filter['job_type_ids'] = $request->job_type_ids ?? null;
+            $filter['marital_status_ids'] = $request->marital_status_ids ?? null;
+            $filter['family_peoples'] = $request->family_peoples ?? null;
+            $filter['has_children'] = $request->has_children ?? null;
+            $filter['is_key_shopper'] = $request->is_key_shopper ?? null;
+            $result = SurveyPartnerInput::getDiagramSurvey($survey_id, $filter);
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
@@ -68,38 +56,24 @@ class SurveyStatisticController extends Controller
     {
         try {
             $survey_id = $request->survey_id;
-            $start_time = FormatDate::formatDate($request->start_time);
-            $end_time = FormatDate::formatDate($request->end_time);
-            $gender = $request->gender;
-            $year_of_birth = $request->year_of_birth;
-            $province_codes = $request->province_codes;
-            $academic_level_ids = $request->academic_level_ids;
-            $job_type_ids = $request->job_type_ids;
-            $marital_status_ids = $request->marital_status_ids;
-            $family_peoples = $request->family_peoples;
-            $has_children = $request->has_children;
-            $is_key_shopper = $request->is_key_shopper;
+            $filter['is_anynomous'] = $request->is_anynomous ?? null;
+            $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['gender'] = $request->gender ?? null;
+            $filter['year_of_birth'] = $request->year_of_birth ?? null;
+            $filter['province_codes'] = $request->province_codes ?? null;
+            $filter['academic_level_ids'] = $request->academic_level_ids ?? null;
+            $filter['job_type_ids'] = $request->job_type_ids ?? null;
+            $filter['marital_status_ids'] = $request->marital_status_ids ?? null;
+            $filter['family_peoples'] = $request->family_peoples ?? null;
+            $filter['has_children'] = $request->has_children ?? null;
+            $filter['is_key_shopper'] = $request->is_key_shopper ?? null;
             $list_year_of_birth = YearOfBirths::getAllYearOfBirth();
             $data = [];
             foreach ($list_year_of_birth as $value) {
                 $year_max = Carbon::now()->year  - $value['min_value'];
                 $year_min = Carbon::now()->year - $value['max_value'];
-                $result = SurveyPartnerInput::getDiagramYearOfBirth(
-                    $survey_id,
-                    $year_min,
-                    $year_max,
-                    $start_time,
-                    $end_time,
-                    $academic_level_ids,
-                    $province_codes,
-                    $gender,
-                    $year_of_birth,
-                    $job_type_ids,
-                    $marital_status_ids,
-                    $family_peoples,
-                    $has_children,
-                    $is_key_shopper
-                );
+                $result = SurveyPartnerInput::getDiagramYearOfBirth($survey_id, $year_min, $year_max, $filter);
                 $arr['year_of_birth_name'] = $value['name'];
                 $arr['totle'] =  $result->count();
                 $data[$value['name']] = $arr;
@@ -119,18 +93,18 @@ class SurveyStatisticController extends Controller
             $perPage = $request->per_page ?? 20;
             $page = $request->current_page ?? 1;
             $survey_id = $request->survey_id;
-            $is_anynomous = $request->is_anynomous;
-            $start_time = FormatDate::formatDate($request->start_time);
-            $end_time = FormatDate::formatDate($request->end_time);
-            $gender = $request->gender;
-            $year_of_birth = $request->year_of_birth;
-            $province_codes = $request->province_codes;
-            $academic_level_ids = $request->academic_level_ids;
-            $job_type_ids = $request->job_type_ids;
-            $marital_status_ids = $request->marital_status_ids;
-            $family_peoples = $request->family_peoples;
-            $has_children = $request->has_children;
-            $is_key_shopper = $request->is_key_shopper;
+            $filter['is_anynomous'] = $request->is_anynomous ?? null;
+            $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['gender'] = $request->gender ?? null;
+            $filter['year_of_birth'] = $request->year_of_birth ?? null;
+            $filter['province_codes'] = $request->province_codes ?? null;
+            $filter['academic_level_ids'] = $request->academic_level_ids ?? null;
+            $filter['job_type_ids'] = $request->job_type_ids ?? null;
+            $filter['marital_status_ids'] = $request->marital_status_ids ?? null;
+            $filter['family_peoples'] = $request->family_peoples ?? null;
+            $filter['has_children'] = $request->has_children ?? null;
+            $filter['is_key_shopper'] = $request->is_key_shopper ?? null;
             $datas = SurveyQuestion::getListQuestion($survey_id, $perPage, $page);
             $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
@@ -138,29 +112,18 @@ class SurveyStatisticController extends Controller
             }
             $question = [];
             foreach ($datas['data'] as $key => $value) {
+                if ($value['question_type'] == QuestionType::GROUP) {
 
-                $query = SurveyPartnerInput::getStatisticQuestionsSurvey(
-                    $survey_id,
-                    $value['id'],
-                    $is_anynomous,
-                    $start_time,
-                    $end_time,
-                    $academic_level_ids,
-                    $province_codes,
-                    $gender,
-                    $year_of_birth,
-                    $job_type_ids,
-                    $marital_status_ids,
-                    $family_peoples,
-                    $has_children,
-                    $is_key_shopper
-                );
-                $question = $value;
-                $group = $query->get()->groupBy('skipped');
-                $question['number_of_response'] =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]->groupBy('partner_id')) : 0;
-                $question['number_of_skip'] = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_id')) : 0;
-                $question['view'] =  $question['number_of_response'] + $question['number_of_skip'];
-                $datas['data'][$key] = $question;
+                    $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value['id']);
+                    $list_question = [];
+                    foreach ($question_group as $cat => $item) {
+                        $list_question[$cat] = self::__getDataQuestions($item, $survey_id, $list_question, $filter);
+                    }
+                    $value['group_question'] = $list_question;
+                    $datas['data'][$key] = $value;
+                } else {
+                    $datas['data'][$key] = self::__getDataQuestions($value, $survey_id, $question, $filter);
+                }
             }
             return ClientResponse::responseSuccess('Ok', $datas);
         } catch (\Exception $ex) {
@@ -168,41 +131,42 @@ class SurveyStatisticController extends Controller
         }
     }
 
+    private static function __getDataQuestions($value, $survey_id, $question, $filter)
+    {
+        $query = SurveyPartnerInput::getStatisticQuestionsSurvey(
+            $survey_id,
+            $value['id'],
+            $filter
+        );
+        $question = $value;
+        $group = $query->get()->groupBy('skipped');
+        $question['number_of_response'] =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]->groupBy('partner_id')) : 0;
+        $question['number_of_skip'] = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_id')) : 0;
+        $question['view'] =  $question['number_of_response'] + $question['number_of_skip'];
+        return $question;
+    }
+
     public function getStatisticSurvey(Request $request)
     {
         try {
             $survey_id = $request->survey_id;
-            $is_anynomous = $request->is_anynomous;
-            $start_time = FormatDate::formatDate($request->start_time);
-            $end_time = FormatDate::formatDate($request->end_time . '' . '23:59:59');
-            $gender = $request->gender;
-            $year_of_birth = $request->year_of_birth;
-            $province_codes = $request->province_codes;
-            $academic_level_ids = $request->academic_level_ids;
-            $job_type_ids = $request->job_type_ids;
-            $marital_status_ids = $request->marital_status_ids;
-            $family_peoples = $request->family_peoples;
-            $has_children = $request->has_children;
-            $is_key_shopper = $request->is_key_shopper;
+            $filter['is_anynomous'] = $request->is_anynomous ?? null;
+            $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['gender'] = $request->gender ?? null;
+            $filter['year_of_birth'] = $request->year_of_birth ?? null;
+            $filter['province_codes'] = $request->province_codes ?? null;
+            $filter['academic_level_ids'] = $request->academic_level_ids ?? null;
+            $filter['job_type_ids'] = $request->job_type_ids ?? null;
+            $filter['marital_status_ids'] = $request->marital_status_ids ?? null;
+            $filter['family_peoples'] = $request->family_peoples ?? null;
+            $filter['has_children'] = $request->has_children ?? null;
+            $filter['is_key_shopper'] = $request->is_key_shopper ?? null;
             $survey_detail = Survey::getDetailSurveyStatistic($survey_id);
             if (!$survey_detail) {
                 return ClientResponse::responseError('Không có bản ghi nào phù hợp');
             }
-            $query = SurveyPartnerInput::getStatisticSurvey(
-                $survey_id,
-                $is_anynomous,
-                $start_time,
-                $end_time,
-                $academic_level_ids,
-                $province_codes,
-                $gender,
-                $year_of_birth,
-                $job_type_ids,
-                $marital_status_ids,
-                $family_peoples,
-                $has_children,
-                $is_key_shopper
-            );
+            $query = SurveyPartnerInput::getStatisticSurvey($survey_id, $filter);
             if ($query->count() == 0) {
                 $survey_detail['number_of_response'] =  0;
                 $survey_detail['number_of_skip'] = 0;
@@ -232,20 +196,20 @@ class SurveyStatisticController extends Controller
         try {
             $perPage = $request->per_page ?? 5;
             $page = $request->current_page ?? 1;
-            $is_anynomous = $request->is_anynomous;
             $survey_id = $request->survey_id;
             $question_id = $request->question_id;
-            $start_time = FormatDate::formatDate($request->start_time);
-            $end_time = FormatDate::formatDate($request->end_time . '' . '23:59:59');
-            $gender = $request->gender;
-            $year_of_birth = $request->year_of_birth;
-            $province_codes = $request->province_codes;
-            $academic_level_ids = $request->academic_level_ids;
-            $job_type_ids = $request->job_type_ids;
-            $marital_status_ids = $request->marital_status_ids;
-            $family_peoples = $request->family_peoples;
-            $has_children = $request->has_children;
-            $is_key_shopper = $request->is_key_shopper;
+            $filter['is_anynomous'] = $request->is_anynomous ?? null;
+            $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['gender'] = $request->gender ?? null;
+            $filter['year_of_birth'] = $request->year_of_birth ?? null;
+            $filter['province_codes'] = $request->province_codes ?? null;
+            $filter['academic_level_ids'] = $request->academic_level_ids ?? null;
+            $filter['job_type_ids'] = $request->job_type_ids ?? null;
+            $filter['marital_status_ids'] = $request->marital_status_ids ?? null;
+            $filter['family_peoples'] = $request->family_peoples ?? null;
+            $filter['has_children'] = $request->has_children ?? null;
+            $filter['is_key_shopper'] = $request->is_key_shopper ?? null;
             $list = '';
             $chart = '';
             $survey_questions = SurveyQuestion::getDetailSurveyQuestion($question_id);
@@ -254,23 +218,27 @@ class SurveyStatisticController extends Controller
                 case QuestionType::YES_NO:
                 case QuestionType::MULTI_CHOICE:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
-                    $data =  SurveyPartnerInput::getSurveyStatisticCheckbox($question_id, $survey_id, $is_anynomous);
+                    $data =  SurveyPartnerInput::getSurveyStatisticCheckbox($question_id, $survey_id, $filter);
                     $chart = $data;
                     break;
                 case QuestionType::RATING_STAR:
-                    $data =  SurveyPartnerInput::getSurveyStatisticRating($question_id, $survey_id, $is_anynomous);
+                    $data =  SurveyPartnerInput::getSurveyStatisticRating($question_id, $survey_id, $filter);
+                    $chart = $data;
+                    break;
+                case QuestionType::RANKING:
+                    $data =  SurveyPartnerInput::getSurveyStatisticRanking($question_id, $survey_id, $filter);
                     $chart = $data;
                     break;
                 case QuestionType::DATETIME_DATE:
                 case QuestionType::DATETIME_DATE_RANGE:
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                 case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                    $data =  SurveyPartnerInput::getSurveyStatisticTextOrDate($perPage, $page,  $question_id, $survey_id, $question_type, $is_anynomous);
+                case QuestionType::NUMBER:
+                    $data =  SurveyPartnerInput::getSurveyStatisticTextOrDate($perPage, $page,  $question_id, $survey_id, $question_type, $filter);
                     $list = $data;
-                    return $list;
                     break;
                 case QuestionType::MULTI_FACTOR_MATRIX:
-                    $data =  SurveyPartnerInput::getSurveyStatisticMatrix($question_id, $survey_id, $is_anynomous);
+                    $data =  SurveyPartnerInput::getSurveyStatisticMatrix($question_id, $survey_id, $filter);
                     $chart = $data;
                     break;
                 default:

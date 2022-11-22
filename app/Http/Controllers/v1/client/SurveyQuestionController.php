@@ -198,4 +198,57 @@ class SurveyQuestionController extends Controller
             return ClientResponse::responseError($ex->getMessage());
         }
     }
+
+    public static function copySurveyQuestion(Request $request)
+    {
+        try {
+            $question_id = $request->question_id;
+            $survey_question = SurveyQuestion::getDetailSurveyQuestion($question_id);
+            if (!$survey_question) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            switch ($survey_question['question_type']) { // question_id 
+                case QuestionType::MULTI_FACTOR_MATRIX:
+                case QuestionType::MULTI_CHOICE:
+                case QuestionType::MULTI_CHOICE_DROPDOWN:
+                case QuestionType::YES_NO:
+                    $list_answer = SurveyQuestionAnswer::getAllAnswer($question_id);
+                    unset($survey_question['id']);
+                    unset($survey_question['created_at']);
+                    unset($survey_question['updated_at']);
+                    $survey_question['title'] = $survey_question['title'] . '_copy';
+                    $survey_question = $survey_question->toArray();
+                    $insert = SurveyQuestion::createSurveyQuestion($survey_question);
+                    foreach ($list_answer as $key => $value) {
+
+                        $value['question_id'] === 0 ? 0 : $value['question_id'] = $insert['id'];
+                        $value['matrix_question_id'] === 0 ? 0 : $value['matrix_question_id'] = $insert['id'];
+                        unset($value['id']);
+                        $list_answer[$key] = $value;
+                    }
+                    SurveyQuestionAnswer::insert($list_answer);
+                    break;
+                case QuestionType::DATETIME_DATE:
+                case QuestionType::DATETIME_DATE_RANGE:
+                case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+                case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                case QuestionType::NUMBER:
+                case QuestionType::RATING_STAR:
+                case QuestionType::RANKING:
+                    unset($survey_question['id']);
+                    unset($survey_question['created_at']);
+                    unset($survey_question['updated_at']);
+                    $survey_question['title'] = $survey_question['title'] . '_copy';
+                    $survey_question = $survey_question->toArray();
+                    $insert = SurveyQuestion::createSurveyQuestion($survey_question);
+                    break;
+                default:
+                    return ClientResponse::responseError('question type không hợp lệ', $survey_question['question_type']);
+                    break;
+            }
+            return ClientResponse::responseSuccess('Copy thành công', $insert);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
 }

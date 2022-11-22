@@ -146,21 +146,9 @@ class SurveyPartnerInput extends Model
         return self::where('partner_id', $partner_id)->where('survey_id', $survey_id)->where('state', self::DONE)->count();
     }
 
-    public static  function getDiagramSurvey(
-        $survey_id,
-        $start_time = null,
-        $end_time = null,
-        $academic_level_ids = null,
-        $province_codes = null,
-        $gender = null,
-        $year_of_birth = null,
-        $job_type_ids = null,
-        $marital_status_ids = null,
-        $family_peoples = null,
-        $has_children = null,
-        $is_key_shopper = null
-    ) {
-        $result = DB::table('survey_partner_inputs')
+    public static  function getDiagramSurvey($survey_id, $filter)
+    {
+        $query = DB::table('survey_partner_inputs')
             ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->join('provinces', 'provinces.code', '=', 'survey_profile_inputs.province_code')
             ->join('genders', 'genders.id', '=', 'survey_profile_inputs.gender')
@@ -174,117 +162,25 @@ class SurveyPartnerInput extends Model
             )
             ->where('survey_partner_inputs.survey_id', $survey_id)
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE);
-        if ($start_time != null && $end_time != null) {
-            $result->whereBetween('survey_partner_inputs.created_at', [$start_time, $end_time]);
-        };
-        if ($gender != null) {
-            $result->whereIn('survey_profile_inputs.gender', $gender);
-        };
-        if ($year_of_birth != null) {
-            $result->whereIn('survey_profile_inputs.year_of_birth', $year_of_birth);
-        };
-        if ($academic_level_ids != null) {
-            $result->whereIn('survey_profile_inputs.academic_level_id', $academic_level_ids);
-        };
-        if ($province_codes != null) {
-            $result->whereIn('survey_profile_inputs.province_code', $province_codes);
-        };
-        if ($job_type_ids != null) {
-            $result->whereIn('survey_profile_inputs.job_type_id', $job_type_ids);
-        };
-        if ($marital_status_ids != null) {
-            $result->whereIn('survey_profile_inputs.marital_status_id', $marital_status_ids);
-        };
-        if ($family_peoples != null) {
-            $result->whereIn('survey_profile_inputs.family_people', $family_peoples);
-        };
-        if ($marital_status_ids != null) {
-            $result->whereIn('survey_profile_inputs.marital_status_id', $marital_status_ids);
-        };
-        if ($is_key_shopper != null) {
-            $result->whereIn('survey_profile_inputs.is_key_shopper', $is_key_shopper);
-        };
-        if ($has_children != null) {
-            $result->whereIn('survey_profile_inputs.has_children', $has_children);
-        };
-        $result = $result->get();
-        return $result;
+        $query = self::__filterTarget($query, $filter);
+        return $query->get();
     }
 
-    public static  function getDiagramYearOfBirth(
-        $survey_id,
-        $year_min,
-        $year_max,
-        $start_time = null,
-        $end_time = null,
-        $academic_level_ids = null,
-        $province_codes = null,
-        $gender = null,
-        $year_of_birth = null,
-        $job_type_ids = null,
-        $marital_status_ids = null,
-        $family_peoples = null,
-        $has_children = null,
-        $is_key_shopper = null
-    ) {
-        $result = DB::table('survey_partner_inputs')
+    public static  function getDiagramYearOfBirth($survey_id, $year_min, $year_max, $filter)
+    {
+        $query = DB::table('survey_partner_inputs')
             ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->where('survey_partner_inputs.survey_id', $survey_id)
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE)
             ->whereYear('year_of_birth', '>=', $year_min)
             ->whereYear('year_of_birth', '<=', $year_max);
-        if ($start_time != null && $end_time != null) {
-            $result->whereBetween('survey_partner_inputs.created_at', [$start_time, $end_time]);
-        }
-        if ($gender != null) {
-            $result->whereIn('survey_profile_inputs.gender', $gender);
-        }
-        if ($year_of_birth != null) {
-            $result->whereIn('survey_profile_inputs.year_of_birth', $year_of_birth);
-        }
-        if ($academic_level_ids != null) {
-            $result->whereIn('survey_profile_inputs.academic_level_id', $academic_level_ids);
-        }
-        if ($province_codes != null) {
-            $result->whereIn('survey_profile_inputs.province_code', $province_codes);
-        }
-        if ($job_type_ids != null) {
-            $result->whereIn('survey_profile_inputs.job_type_id', $job_type_ids);
-        }
-        if ($marital_status_ids != null) {
-            $result->whereIn('survey_profile_inputs.marital_status_id', $marital_status_ids);
-        }
-        if ($family_peoples != null) {
-            $result->whereIn('survey_profile_inputs.family_people', $family_peoples);
-        }
-        if ($marital_status_ids != null) {
-            $result->whereIn('survey_profile_inputs.marital_status_id', $marital_status_ids);
-        }
-        if ($is_key_shopper != null) {
-            $result->whereIn('survey_profile_inputs.is_key_shopper', $is_key_shopper);
-        }
-        if ($has_children != null) {
-            $result->whereIn('survey_profile_inputs.has_children', $has_children);
-        }
-        return $result->get();
+        $query = self::__filterTarget($query, $filter);
+        return $query->get();
     }
 
-    public static  function getStatisticSurvey(
-        $survey_id,
-        $is_anynomous = null,
-        $start_time = null,
-        $end_time = null,
-        $academic_level_ids = null,
-        $province_codes = null,
-        $gender = null,
-        $year_of_birth = null,
-        $job_type_ids = null,
-        $marital_status_ids = null,
-        $family_peoples = null,
-        $has_children = null,
-        $is_key_shopper = null
-    ) {
-        $result = DB::table('survey_partner_inputs')
+    public static  function getStatisticSurvey($survey_id, $filter)
+    {
+        $query = DB::table('survey_partner_inputs')
             ->join('surveys', 'surveys.id', '=', 'survey_partner_inputs.survey_id')
             ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->select(
@@ -294,62 +190,13 @@ class SurveyPartnerInput extends Model
                 'survey_partner_inputs.state',
             )
             ->where('survey_partner_inputs.survey_id', $survey_id);
-        if ($is_anynomous != null) {
-            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
-        }
-        if ($start_time != null && $end_time != null) {
-            $result->whereBetween('survey_partner_inputs.created_at', [$start_time, $end_time]);
-        }
-        if ($gender != null) {
-            $result->whereIn('survey_profile_inputs.gender', $gender);
-        }
-        if ($year_of_birth != null) {
-            $result->whereIn('survey_profile_inputs.year_of_birth', $year_of_birth);
-        }
-        if ($academic_level_ids != null) {
-            $result->whereIn('survey_profile_inputs.academic_level_id', $academic_level_ids);
-        }
-        if ($province_codes != null) {
-            $result->whereIn('survey_profile_inputs.province_code', $province_codes);
-        }
-        if ($job_type_ids != null) {
-            $result->whereIn('survey_profile_inputs.job_type_id', $job_type_ids);
-        }
-        if ($marital_status_ids != null) {
-            $result->whereIn('survey_profile_inputs.marital_status_id', $marital_status_ids);
-        }
-        if ($family_peoples != null) {
-            $result->whereIn('survey_profile_inputs.family_people', $family_peoples);
-        }
-        if ($marital_status_ids != null) {
-            $result->whereIn('survey_profile_inputs.marital_status_id', $marital_status_ids);
-        }
-        if ($is_key_shopper != null) {
-            $result->whereIn('survey_profile_inputs.is_key_shopper', $is_key_shopper);
-        }
-        if ($has_children != null) {
-            $result->whereIn('survey_profile_inputs.has_children', $has_children);
-        }
-        return $result;
+        $query = self::__filterTarget($query, $filter);
+        return $query;
     }
 
-    public static  function getStatisticQuestionsSurvey(
-        $survey_id,
-        $question_id,
-        $is_anynomous = null,
-        $start_time = null,
-        $end_time = null,
-        $academic_level_ids = null,
-        $province_codes = null,
-        $gender = null,
-        $year_of_birth = null,
-        $job_type_ids = null,
-        $marital_status_ids = null,
-        $family_peoples = null,
-        $has_children = null,
-        $is_key_shopper = null
-    ) {
-        $result = DB::table('survey_partner_inputs')
+    public static  function getStatisticQuestionsSurvey($survey_id, $question_id, $filter)
+    {
+        $query = DB::table('survey_partner_inputs')
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
             ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->select(
@@ -358,56 +205,20 @@ class SurveyPartnerInput extends Model
             )
             ->where('survey_partner_input_lines.question_id', $question_id)
             ->where('survey_partner_inputs.survey_id', $survey_id);
-        if ($is_anynomous != null) {
-            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
-        }
-        if ($start_time != null && $end_time != null) {
-            $result->whereBetween('survey_partner_inputs.created_at', [$start_time, $end_time]);
-        }
-        if ($gender != null) {
-            $result->whereIn('survey_profile_inputs.gender', $gender);
-        }
-        if ($year_of_birth != null) {
-            $result->whereIn('survey_profile_inputs.year_of_birth', $year_of_birth);
-        }
-        if ($academic_level_ids != null) {
-            $result->whereIn('survey_profile_inputs.academic_level_id', $academic_level_ids);
-        }
-        if ($province_codes != null) {
-            $result->whereIn('survey_profile_inputs.province_code', $province_codes);
-        }
-        if ($job_type_ids != null) {
-            $result->whereIn('survey_profile_inputs.job_type_id', $job_type_ids);
-        }
-        if ($marital_status_ids != null) {
-            $result->whereIn('survey_profile_inputs.marital_status_id', $marital_status_ids);
-        }
-        if ($family_peoples != null) {
-            $result->whereIn('survey_profile_inputs.family_people', $family_peoples);
-        }
-        if ($marital_status_ids != null) {
-            $result->whereIn('survey_profile_inputs.marital_status_id', $marital_status_ids);
-        }
-        if ($is_key_shopper != null) {
-            $result->whereIn('survey_profile_inputs.is_key_shopper', $is_key_shopper);
-        }
-        if ($has_children != null) {
-            $result->whereIn('survey_profile_inputs.has_children', $has_children);
-        }
-        return $result;
+        $query = self::__filterTarget($query, $filter);
+        return $query;
     }
 
-    public static  function getSurveyStatisticCheckbox($question_id, $survey_id, $is_anynomous = null)
+    public static  function getSurveyStatisticCheckbox($question_id, $survey_id, $filter)
     {
-        $result = DB::table('survey_partner_input_lines')
-            ->join('survey_partner_inputs', 'survey_partner_inputs.id', '=', 'survey_partner_input_lines.partner_input_id')
+        $query = DB::table('survey_partner_inputs')
+            ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
+            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->select(DB::raw('count(*) as total , survey_partner_input_lines.suggested_answer_id'))
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.question_id', $question_id);
-        if ($is_anynomous != null) {
-            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
-        };
-        $result = $result->groupBy('suggested_answer_id')->get();
+        $query = self::__filterTarget($query, $filter);
+        $result = $query->groupBy('suggested_answer_id')->get();
         $data_results = array();
         foreach ($result as $key => $value) {
             $name_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($value->suggested_answer_id);
@@ -419,24 +230,50 @@ class SurveyPartnerInput extends Model
         return $data_results;
     }
 
-    public static  function getSurveyStatisticRating($question_id, $survey_id, $is_anynomous = null)
+    public static  function getSurveyStatisticRating($question_id, $survey_id, $filter)
     {
-        $result = DB::table('survey_partner_input_lines')
-            ->join('survey_question_answers', 'survey_question_answers.id', '=', 'survey_partner_input_lines.suggested_answer_id')
-            ->join('survey_partner_inputs', 'survey_partner_inputs.id', '=', 'survey_partner_input_lines.partner_input_id')
+        $query = DB::table('survey_partner_inputs')
+            ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
+            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->select(
                 'survey_partner_input_lines.value_rating_ranking',
                 'survey_partner_input_lines.answer_type',
                 'survey_partner_input_lines.question_sequence',
-                'survey_partner_input_lines.suggested_answer_id',
-                'survey_question_answers.value as name_answer'
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.question_id', $question_id);
-        if ($is_anynomous != null) {
-            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
-        };
-        $result = $result->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
+        $query = self::__filterTarget($query, $filter);
+        $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
+            ->get()
+            ->groupBy('name_answer');
+
+        foreach ($result as $k => $v) {
+            $d = $v->groupBy('value_rating_ranking');
+            $array = [];
+            foreach ($d as $key => $item) {
+                $array['total'] = count($item);
+                $array['value_rating_ranking'] = $key;
+                $d[$key] = $array;
+            }
+            $result[$k] = $d;
+        }
+        return $result;
+    }
+
+    public static  function getSurveyStatisticRanking($question_id, $survey_id, $filter)
+    {
+        $query = DB::table('survey_partner_inputs')
+            ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
+            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->select(
+                'survey_partner_input_lines.value_rating_ranking',
+                'survey_partner_input_lines.answer_type',
+                'survey_partner_input_lines.question_sequence',
+            )
+            ->where('survey_partner_input_lines.survey_id', $survey_id)
+            ->where('survey_partner_input_lines.question_id', $question_id);
+        $query = self::__filterTarget($query, $filter);
+        $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
             ->get()
             ->groupBy('name_answer');
 
@@ -454,39 +291,54 @@ class SurveyPartnerInput extends Model
     }
 
 
-    public static  function getSurveyStatisticTextOrDate($perPage, $page, $question_id, $survey_id, $question_type, $is_anynomous = null)
+    public static  function getSurveyStatisticTextOrDate($perPage, $page, $question_id, $survey_id, $question_type, $filter)
     {
-        $result = DB::table('survey_partner_input_lines')
-            ->join('survey_partner_inputs', 'survey_partner_inputs.id', '=', 'survey_partner_input_lines.partner_input_id')
+        $query = DB::table('survey_partner_inputs')
+            ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
+            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->select(
                 'survey_partner_input_lines.question_sequence',
                 'survey_partner_input_lines.answer_type',
                 'survey_partner_input_lines.value_text_box',
+                'survey_partner_input_lines.value_char_box',
+                'survey_partner_input_lines.value_number',
                 'survey_partner_input_lines.value_date',
                 'survey_partner_input_lines.value_date_start',
-                'survey_partner_input_lines.value_date_end'
+                'survey_partner_input_lines.value_date_end',
+                'survey_partner_input_lines.created_at',
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
+            ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
-        if ($is_anynomous != null) {
-            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
-        };
-        $result = $result->paginate($perPage, "*", "page", $page)->toArray();
+        $query = self::__filterTarget($query, $filter);
+        $result = $query->paginate($perPage, "*", "page", $page)->toArray();
         $result =    RemoveData::removeUnusedData($result);
         $data = [];
         foreach ($result['data'] as $key => $value) {
             switch ($question_type) {
                 case QuestionType::DATETIME_DATE:
                     $input['value'] = $value->value_date;
+                    $input['created_at'] = $value->created_at;
                     $data[$key] = $input;
                     break;
                 case QuestionType::DATETIME_DATE_RANGE:
                     $input['value'] = $value->value_date_start . '-' . $value->value_date_end;
+                    $input['created_at'] = $value->created_at;
                     $data[$key] = $input;
                     break;
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
-                case QuestionType::QUESTION_ENDED_LONG_TEXT:
                     $input['value'] = $value->value_text_box;
+                    $input['created_at'] = $value->created_at;
+                    $data[$key] = $input;
+                    break;
+                case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                    $input['value'] = $value->value_char_box;
+                    $input['created_at'] = $value->created_at;
+                    $data[$key] = $input;
+                    break;
+                case QuestionType::NUMBER:
+                    $input['value'] = $value->value_number;
+                    $input['created_at'] = $value->created_at;
                     $data[$key] = $input;
                     break;
                 default:
@@ -498,39 +350,100 @@ class SurveyPartnerInput extends Model
         return $result;
     }
 
-    public static  function getSurveyStatisticMatrix($question_id, $survey_id, $is_anynomous = null)
+    public static  function getSurveyStatisticMatrix($question_id, $survey_id, $filter)
     {
-        $result = DB::table('survey_partner_input_lines')
+        $query = DB::table('survey_partner_inputs')
+            ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
+            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->join('survey_question_answers', 'survey_question_answers.id', '=', 'survey_partner_input_lines.matrix_column_id')
-            ->join('survey_partner_inputs', 'survey_partner_inputs.id', '=', 'survey_partner_input_lines.partner_input_id')
             ->select(
+                'survey_partner_input_lines.id as lines_id',
                 'survey_partner_input_lines.matrix_row_id',
                 'survey_partner_input_lines.matrix_column_id',
                 'survey_question_answers.value as name_answer_column',
             )
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.question_id', $question_id);
-        if ($is_anynomous != null) {
-            $result->where('survey_partner_inputs.is_anynomous', $is_anynomous);
-        };
-        $result = $result->get()->groupBy('name_answer_column');
-        foreach ($result as $key => $value) {
-            foreach ($value as $k => $item) {
-                $input = json_encode($item);
-                $name_answer_row = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($item->matrix_row_id)->value;
-                $input = json_decode($input, true);
-                $input['name_answer_row'] = $name_answer_row;
-                $value[$k] = $input;
-            }
-            $group = $value->groupBy('name_answer_row');
-            $array = [];
-            foreach ($group as $h => $cat) {
-                $array['total'] = count($cat);
-                $array['name_answer_row'] = $h;
-                $group[$h] = $array;
-            }
-            $result[$key] = $group;
+        $query = self::__filterTarget($query, $filter);
+        $result = $query->get();
+        $answers = SurveyQuestionAnswer::getAnswerMatrixRow($question_id);
+        $answers_value = [];
+        foreach ($answers as $key => $value) {
+            $answers_value[$value['id']] = $value['value'];
         }
+        foreach ($result as $key => $value) {
+            $input = json_decode(json_encode($value), true);
+            $input['name_answer_row'] = $answers_value[$value->matrix_row_id];
+            $result[$key] = $input;
+        }
+        $result = $result->groupBy('name_answer_column');
+        foreach ($result as $k => $item) {
+            $result[$k] = $item->groupBy('name_answer_row');
+        }
+
+        dd($result);
         return $result;
+    }
+
+    private static function __filterTarget($query, $filter)
+    {
+        if ($filter['is_anynomous'] != null) {
+            $query->where('survey_partner_inputs.is_anynomous', $filter['is_anynomous']);
+        }
+        if ($filter['start_time'] != null && $filter['end_time'] != null) {
+            $query->whereBetween('survey_partner_inputs.created_at', [$filter['start_time'], $filter['end_time']]);
+        }
+        if ($filter['gender'] != null) {
+            $query->whereIn('survey_profile_inputs.gender', $filter['gender']);
+        }
+        if ($filter['academic_level_ids'] != null) {
+            $query->whereIn('survey_profile_inputs.academic_level_id', $filter['academic_level_ids']);
+        }
+        if ($filter['province_codes'] != null) {
+            $query->whereIn('survey_profile_inputs.province_code',  $filter['province_codes']);
+        }
+        if ($filter['job_type_ids'] != null) {
+            $query->whereIn('survey_profile_inputs.job_type_id', $filter['job_type_ids']);
+        }
+        if ($filter['marital_status_ids'] != null) {
+            $query->whereIn('survey_profile_inputs.marital_status_id',  $filter['marital_status_ids']);
+        }
+        if ($filter['has_children'] != null) {
+            $query->whereIn('survey_profile_inputs.is_key_shopper', $filter['has_children']);
+        }
+        if ($filter['is_key_shopper'] != null) {
+            $query->whereIn('survey_profile_inputs.has_children', $filter['is_key_shopper']);
+        }
+        $year_of_birth = $filter['year_of_birth'];
+        if ($year_of_birth !== null) {
+            $query->where(function ($query) use ($year_of_birth) {
+                $time = Carbon::now()->year;
+                foreach ($year_of_birth as $value) {
+                    $detail = YearOfBirths::getDetail($value);
+                    $year_max = Carbon::create($time - $detail->min_value)->format('Y-m-d');
+                    $year_min = Carbon::create($time - $detail->max_value, 12, 30)->format('Y-m-d');
+                    $data = [
+                        'year_min' => $year_min,
+                        'year_max' => $year_max,
+                    ];
+                    $query->orWhereBetween(
+                        'survey_profile_inputs.year_of_birth',
+                        [
+                            $data['year_min'], $data['year_max']
+                        ]
+                    );
+                }
+            });
+        }
+        $family_peoples = $filter['family_peoples'];
+        if ($family_peoples !== null) {
+            $query->where(function ($query) use ($family_peoples) {
+                foreach ($family_peoples as $value) {
+                    $detail = NumberOfFamilys::getDetail($value);
+                    $query->orWhereBetween('survey_profile_inputs.family_people', [(int) $detail->min_value, (int) $detail->max_value]);
+                }
+            });
+        }
+        return $query;
     }
 }
