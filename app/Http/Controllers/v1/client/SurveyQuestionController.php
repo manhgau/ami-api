@@ -21,6 +21,7 @@ class SurveyQuestionController extends Controller
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'question_type' => 'required|string',
+                'sequence' => 'required|integer',
             ]);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
