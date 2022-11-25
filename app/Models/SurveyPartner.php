@@ -34,6 +34,9 @@ class SurveyPartner extends Model
                 'b.end_time',
                 'b.count_questions',
                 'b.view',
+                'b.attempts_limit_min',
+                'b.attempts_limit_max',
+                'b.is_answer_single',
             )
             ->where('a.stattus', self::STATUS_ACTIVE)
             ->where('a.deleted', self::NOT_DELETED)
@@ -86,6 +89,9 @@ class SurveyPartner extends Model
                 'b.end_time',
                 'b.count_questions',
                 'b.view',
+                'b.attempts_limit_min',
+                'b.attempts_limit_max',
+                'b.is_answer_single',
             )
             ->where('a.stattus', self::STATUS_ACTIVE)
             ->where('a.deleted', self::NOT_DELETED)

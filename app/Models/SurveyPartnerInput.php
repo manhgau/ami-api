@@ -78,14 +78,15 @@ class SurveyPartnerInput extends Model
                 'c.is_save',
                 'c.id as survey_partner_id',
                 'b.id as survey_id',
-                'b.category_id',
                 'b.state',
                 'b.point',
                 'b.start_time',
                 'b.end_time',
-                'b.number_of_response_required',
                 'b.count_questions',
-                'b.view'
+                'b.view',
+                'b.attempts_limit_min',
+                'b.attempts_limit_max',
+                'b.is_answer_single',
             )
             ->where('a.partner_id', $partner_id)
             ->where('b.start_time', '<', $time_now)
@@ -127,14 +128,15 @@ class SurveyPartnerInput extends Model
                 'a.id',
                 'b.title',
                 'b.id as survey_id',
-                'b.category_id',
                 'b.state',
                 'b.point',
                 'b.start_time',
                 'b.end_time',
-                'b.number_of_response_required',
                 'b.count_questions',
-                'b.view'
+                'b.view',
+                'b.attempts_limit_min',
+                'b.attempts_limit_max',
+                'b.is_answer_single',
             )
             ->where('a.id', $survey_partner_input_id)
             ->where('a.partner_id', $partner_id)

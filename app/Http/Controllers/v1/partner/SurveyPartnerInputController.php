@@ -136,7 +136,7 @@ class SurveyPartnerInputController extends Controller
                         $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $value->end_time)->timestamp;
                         $time_remaining = $timestamp - Carbon::now()->timestamp;
                         $data = json_decode(json_encode($value), true);
-                        $data['time_remaining'] = $time_remaining;
+                        $data['time_remaining'] = floor(max(0, $time_remaining) / (60 * 60 * 24));
                         $array[$key] = $data;
                     }
                     $datas['data'] = $array;

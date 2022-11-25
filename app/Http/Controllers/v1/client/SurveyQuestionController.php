@@ -210,7 +210,7 @@ class SurveyQuestionController extends Controller
             if (!$survey_question) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            $count_questions = SurveyQuestion::countSequence($request->survey_id);
+            $count_questions = SurveyQuestion::countSequence($request->survey_id, $survey_question->page_id);
             $survey_question = $survey_question->toArray();
             $survey_question['title'] = $survey_question['title'] . '_copy';
             $survey_question['sequence'] = $count_questions + 1;
