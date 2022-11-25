@@ -19,10 +19,11 @@ class RedisLogRequestResponse{
 
     public static function store($request_id, $arr, $app=self::WEB_KEY, $type=self::LOG_REQUEST_KEY)
     {
-        $time = 60 * 60;
+        $time = 5 * (60 * 60);
         $key = now()->format('Y-m-d');
-        Redis::hmset(''.$app.'_'.$type.':' . $key, $request_id, json_encode($arr));
-        Redis::expire(''.$type.':' . $key, $time);
+        $ckey = ''.$app.'_'.$type.':' . $key;
+        Redis::hmset($ckey, $request_id, json_encode($arr));
+        Redis::expire($ckey, $time);
     }
 
     public static function find($date, $app=self::WEB_KEY, $type=self::LOG_REQUEST_KEY)
