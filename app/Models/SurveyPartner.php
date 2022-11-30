@@ -17,9 +17,11 @@ class SurveyPartner extends Model
     const NOT_DELETED  = 0;
     const DELETED  = 1;
     const CLOSED  = 'closed';
+    const COMPLETED  = 'completed';
+    const NOT_COMPLETED  = 'not_completed';
     const ON_PROGRESS  = 'on_progress';
 
-    public static  function getlistSurveyPartner($perPage = 10,  $page = 1, $partner_id, $time_now, $time_end, $is_save = null, $search = null, $status = null)
+    public static  function getlistSurveyPartner($perPage = 10,  $page = 1, $partner_id, $time_now, $time_end, $is_save = null, $search = null)
     {
         $query = DB::table('survey_partners as a')
             ->join('surveys as b', 'b.id', '=', 'a.survey_id')
@@ -30,6 +32,9 @@ class SurveyPartner extends Model
                 'b.point',
                 'b.state',
                 'a.is_save',
+                'a.number_of_respone_partner',
+                'b.limmit_of_response',
+                'b.number_of_respone',
                 'b.start_time',
                 'b.end_time',
                 'b.count_questions',
@@ -50,12 +55,12 @@ class SurveyPartner extends Model
         if ($search != null) {
             $query->where('b.title', 'like', '%' . $search . '%');
         }
-        if ($status == self::CLOSED) {
-            $query->where('b.end_time', '<', Carbon::now());
-        }
-        if ($status == self::ON_PROGRESS) {
-            $query->where('b.end_time', '>', Carbon::now())->where('b.state', Survey::STATUS_ON_PROGRESS);
-        }
+        // if ($status == self::CLOSED) {
+        //     $query->where('b.end_time', '<', Carbon::now());
+        // }
+        // if ($status == self::ON_PROGRESS) {
+        //     $query->where('b.end_time', '>', Carbon::now())->where('b.state', Survey::STATUS_ON_PROGRESS);
+        // }
         return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
 

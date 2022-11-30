@@ -23,7 +23,7 @@ class Survey extends Model
         'real_end_time',
         'question_layout',
         'progression_mode',
-        'number_of_response_required',
+        'number_of_respone',
         'point',
         'is_attempts_limited',
         'attempts_limit_min',
@@ -31,6 +31,7 @@ class Survey extends Model
         'is_time_limited',
         'time_limit',
         'is_random_answer',
+        'is_random',
         'created_at',
         'updated_at',
         'created_by',
@@ -46,6 +47,8 @@ class Survey extends Model
     const STATUS_DRAFT = 'draft';
     const STATUS_ON_PROGRESS = 'on_progress';
     const STATUS_COMPLETED = 'completed';
+    const  ANSWER_MULTIPLE = 0;
+    const  ANSWER_SINGLE = 1;
 
     public static  function getListSurvey($perPage = 10,  $page = 1, $user_id, $state = null)
     {
@@ -61,6 +64,22 @@ class Survey extends Model
     public static  function getDetailSurvey($id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('active', self::ACTIVE)->first();
+    }
+
+    public static  function getSetupSurvey($survey_id)
+    {
+        return self::select(
+            'title',
+            'survey_profile_id',
+            'font_size',
+            'background_id',
+            'is_answer_single',
+            'is_random',
+        )
+            ->where('deleted', self::NOT_DELETED)
+            ->where('id', $survey_id)
+            ->where('active', self::ACTIVE)
+            ->first();
     }
 
     public static  function getDetailSurveyStatistic($id)

@@ -26,21 +26,32 @@ class SurveyPartnerController extends Controller
                     $perPage = $request->per_page ?? 5;
                     $page = $request->current_page ?? 1;
                     $search = $request->search;
-                    $status = $request->status;
+                    $status = $request->status ?? null;
                     $is_save = (int)$request->is_save ?? null;
                     $time_now = Carbon::now();
                     $time_end = date('Y-m-d H:i:s', time() - (30 * 86400));
-                    $datas = SurveyPartner::getlistSurveyPartner($perPage,  $page, $partner_id, $time_now,  $time_end, $is_save, $search, $status);
+                    $datas = SurveyPartner::getlistSurveyPartner($perPage,  $page, $partner_id, $time_now,  $time_end, $is_save, $search);
                     $datas = RemoveData::removeUnusedData($datas);
                     $array = array();
                     foreach ($datas['data'] as $key => $value) {
                         $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $value->end_time)->timestamp;
                         $time_remaining = $timestamp - Carbon::now()->timestamp;
-                        $data = json_decode(json_encode($value), true);
-                        //$data['time_remaining'] = max(0, $time_remaining);
-                        $data['time_remaining'] = floor(max(0, $time_remaining) / (60 * 60 * 24));
-                        $array[$key] = $data;
+                        $value->time_remaining = floor(max(0, $time_remaining) / (60 * 60 * 24));
+                        if ($value->end_time <= $time_now) {
+                            $value->status = SurveyPartner::CLOSED;
+                        } else {
+                            if ($value->number_of_respone == $value->limmit_of_response) {
+                                $value->status = SurveyPartner::COMPLETED;
+                            } else {
+                                $value->status = SurveyPartner::NOT_COMPLETED;
+                            }
+                        }
+                        if ($value->is_answer_single == Survey::ANSWER_SINGLE && $value->number_of_respone_partner == Survey::ANSWER_SINGLE) {
+                            $value->status = SurveyPartner::COMPLETED;
+                        }
+                        $array[$key] = $value;
                     }
+
                     $datas['data'] = $array;
                     if (!$datas) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
@@ -67,7 +78,6 @@ class SurveyPartnerController extends Controller
                     if (!$result) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
-                    Survey::updateSurvey(['view' => $result->view + 1], $result->survey_id);
                     $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $result->end_time)->timestamp;
                     $time_remaining = $timestamp - Carbon::now()->timestamp;
                     $result = json_decode(json_encode($result), true);
@@ -100,6 +110,28 @@ class SurveyPartnerController extends Controller
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
                     return ClientResponse::responseSuccess('Cập nhập thành công');
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
+    }
+
+    public function getSetupSurvey(Request $request)
+    {
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $survey_id = $request->survey_id;
+                    $survey_setup = Survey::getSetupSurvey($survey_id);
+                    if (!$survey_setup) {
+                        return ClientResponse::responseError('Không có bản ghi phù hợp');
+                    }
+                    return ClientResponse::responseSuccess('OK', $survey_setup);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
                 }
