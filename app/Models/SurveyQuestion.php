@@ -51,6 +51,7 @@ class SurveyQuestion extends Model
     const NO_PAGE  = 0;
     const IS_PAGE  = 1;
 
+
     protected $hidden = ['deleted', 'created_at', 'updated_at', 'updated_by', 'created_by'];
 
     public static  function createSurveyQuestion($data)
@@ -120,9 +121,9 @@ class SurveyQuestion extends Model
             ->get();
     }
 
-    public static  function getListQuestion($survey_id, $perPage, $page)
+    public static  function getListQuestion($survey_id, $perPage, $page, $random)
     {
-        return self::select(
+        $query = self::select(
             'id',
             'survey_id',
             'sequence',
@@ -135,15 +136,20 @@ class SurveyQuestion extends Model
             'is_multiple',
             'validation_random',
             'is_time',
+            'is_date',
             'format_date_time',
             'is_page',
             'page_id'
         )
             ->where('deleted', self::NOT_DELETED)
             ->where('survey_id', $survey_id)
-            ->where('page_id', self::NO_PAGE)
-            ->orderBy('sequence', 'asc')
-            ->paginate($perPage, "*", "page", $page)->toArray();
+            ->where('page_id', self::NO_PAGE);
+        if ($random == 1) {
+            $query = $query->inRandomOrder();
+        } else {
+            $query = $query->orderBy('sequence', 'asc');
+        }
+        return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
 
     public static  function getDetailSurveyQuestion($id)

@@ -87,6 +87,9 @@ class SurveyPartnerInput extends Model
                 'b.attempts_limit_min',
                 'b.attempts_limit_max',
                 'b.is_answer_single',
+                'c.number_of_respone_partner',
+                'b.limmit_of_response',
+                'b.number_of_respone',
             )
             ->where('a.partner_id', $partner_id)
             ->where('b.start_time', '<', $time_now)

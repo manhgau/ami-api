@@ -6,6 +6,7 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
 use App\Models\QuestionType;
+use App\Models\Survey;
 use App\Models\SurveyPartner;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
@@ -29,7 +30,8 @@ class SurveyQuestionPartnerController extends Controller
                     if (!SurveyPartner::checkSurveyPartner($survey_id, $partner_id)) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
-                    $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page);
+                    $survey_setup = Survey::getSetupSurvey($survey_id);
+                    $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page,  $survey_setup->is_random);
                     $lists = RemoveData::removeUnusedData($lists);
                     if (!$lists) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');

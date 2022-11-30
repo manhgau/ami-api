@@ -78,16 +78,18 @@ class SurveyPartnerInputController extends Controller
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
-                    $survey_partners = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
-                    $survey_partners->number_of_response = $survey_partners->number_of_response + 1;
-                    $survey_partners->save();
-                    $survey = Survey::getDetailSurvey($request->survey_id);
-                    $count_survey_input = SurveyPartnerInput::countSurveyInput($request->survey_id);
-                    if ($count_survey_input == $survey->number_of_response_required) {
-                        $input['state'] = Survey::STATUS_COMPLETED;
-                        Survey::updateSurvey($input, $request->survey_id);
+                    $survey_partner = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
+                    $survey_partner->number_of_respone_partner = $survey_partner->number_of_respone_partner + 1;
+                    $survey_partner->save();
+                    $survey = Survey::getDetailSurvey($survey_id);
+                    $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id);
+                    if ($count_survey_input < $survey->number_of_respone) {
+                        $survey->number_of_response = $survey->number_of_response + 1;
+                    } else {
+                        $survey->state = Survey::STATUS_COMPLETED;
                     }
-                    $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($request->survey_id, $partner_id);
+                    $survey->save();
+                    $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($survey_id, $partner_id);
                     if ($count_survey_partner_input <= $survey->attempts_limit_max && $count_survey_partner_input >= $survey->attempts_limit_min) {
                         $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
                         $point = $survey->point;
@@ -102,7 +104,7 @@ class SurveyPartnerInputController extends Controller
                         $input_log['point'] =  $point;
                         $input_log['action '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
                         $input_log['object_type '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
-                        $input_log['object_id '] = $request->survey_id;
+                        $input_log['object_id '] = $survey_id;
                         PartnerPointLog::create($input_log);
                     }
                     return ClientResponse::responseSuccess('Cập nhập thành công', $result);
@@ -135,9 +137,20 @@ class SurveyPartnerInputController extends Controller
                     foreach ($datas['data'] as $key => $value) {
                         $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $value->end_time)->timestamp;
                         $time_remaining = $timestamp - Carbon::now()->timestamp;
-                        $data = json_decode(json_encode($value), true);
-                        $data['time_remaining'] = floor(max(0, $time_remaining) / (60 * 60 * 24));
-                        $array[$key] = $data;
+                        $value->time_remaining = floor(max(0, $time_remaining) / (60 * 60 * 24));
+                        if ($value->end_time <= $time_now) {
+                            $value->status = SurveyPartner::CLOSED;
+                        } else {
+                            if ($value->number_of_respone == $value->limmit_of_response) {
+                                $value->status = SurveyPartner::COMPLETED;
+                            } else {
+                                $value->status = SurveyPartner::NOT_COMPLETED;
+                            }
+                        }
+                        if ($value->is_answer_single == Survey::ANSWER_SINGLE && $value->number_of_respone_partner == Survey::ANSWER_SINGLE) {
+                            $value->status = SurveyPartner::COMPLETED;
+                        }
+                        $array[$key] = $value;
                     }
                     $datas['data'] = $array;
                     if (!$datas) {
@@ -166,7 +179,6 @@ class SurveyPartnerInputController extends Controller
                     if (!$result) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
-                    Survey::updateSurvey(['view' => $result->view + 1], $result->survey_id);
                     $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $result->end_time)->timestamp;
                     $time_remaining = $timestamp - Carbon::now()->timestamp;
                     $result = json_decode(json_encode($result), true);
@@ -213,6 +225,13 @@ class SurveyPartnerInputController extends Controller
                     $partner_id = $partner->id ?? 0;
                     $partner_profile = $partner->profile;
                     $survey_id = $request->survey_id;
+                    $survey_detail = Survey::getDetailSurvey($survey_id);
+                    $survey_detail->view  = $survey_detail->view + 1;
+                    $survey_detail->save();
+                    $number_of_response = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_FALSE);
+                    if ($number_of_response >= $survey_detail->limmit_of_response) {
+                        return ClientResponse::response(ClientResponse::$limmit_of_response, 'Khảo sát đã đạt lượt phản hồ giới hạn');
+                    }
                     $result = SurveyPartnerInput::checkPartnerInput($partner_id, $survey_id);
                     if (!$result) {
                         $data =  [

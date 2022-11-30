@@ -23,6 +23,7 @@ class ClientResponse
     //Partner cập nhật hồ sơ cá nhân
     public static $partner_input = 600;     //Partner đã trả lời khảo sát
     public static $un_partner_input = 601;     //Partner chưa trả lời khảo sát
+    public static $limmit_of_response = 602;     //Khảo sát đã đạt lượt phản hồ giới hạn
 
     public static function response($code, $message, $data = [], $headers = [], $options = [])
     {
@@ -48,10 +49,11 @@ class ClientResponse
         return self::response(self::$error_code, $message, $data);
     }
 
-    private function __log_response_data($data=[], $code=''){
+    private function __log_response_data($data = [], $code = '')
+    {
         $is_debug = env('LOG_DEBUG');
-        if($is_debug) {
-            $resquest_id = Context::getInstance()->get(Context::REQUEST_ID)??Str::uuid();
+        if ($is_debug) {
+            $resquest_id = Context::getInstance()->get(Context::REQUEST_ID) ?? Str::uuid();
             $dateString = now()->format('Y-m-d H:i:s');
             $req = $data;
             $req['dateString'] = $dateString;
