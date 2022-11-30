@@ -36,7 +36,7 @@ class ClientResponse
         ];
 
         self::__log_response_data($data, $code);
-        return response()->json($data, $code);
+        return response()->json($data, self::$success_code);
     }
 
     public static function responseSuccess($message, $data = [])
