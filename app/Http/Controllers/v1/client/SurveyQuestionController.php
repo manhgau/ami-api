@@ -97,6 +97,7 @@ class SurveyQuestionController extends Controller
                     case QuestionType::RATING_STAR:
                     case QuestionType::RANKING:
                     case QuestionType::GROUP:
+                        $detail['answers'] = [];
                         break;
                     default:
                         return ClientResponse::responseError('question type không hợp lệ', $detail['question_type']);
