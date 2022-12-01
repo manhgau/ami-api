@@ -13,10 +13,9 @@ class ClientAuthOwnerSurvey
 {
     public function handle($request, Closure $next)
     {
-        //TODO...
         $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-        $id = $request->id ? $request->id : $request->survey_id;
-        $survey_user = Survey::findOrFail($id)->where('user_id', $user_id)->first();
+        $id = $request->id ??($request->survey_id??'');
+        $survey_user = Survey::getDetailSurveyByUser($id, $user_id);
         if (!$survey_user) {
             return ClientResponse::response(ClientResponse::$client_auth_owner_survey, 'Khảo sát này không phải của bạn');
         }
