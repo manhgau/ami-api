@@ -66,6 +66,11 @@ class Survey extends Model
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('active', self::ACTIVE)->first();
     }
 
+    public static  function getDetailSurveyByUser($id, $user_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('user_id', $user_id)->where('active', self::ACTIVE)->first();
+    }
+
     public static  function getSetupSurvey($survey_id)
     {
         return self::select(
