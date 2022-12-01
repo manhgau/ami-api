@@ -87,6 +87,7 @@ class SurveyController extends Controller
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
+            $detail->real_end_time = date_format(date_create($detail->real_end_time), 'd/m/Y');
             return ClientResponse::responseSuccess('OK', $detail);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
