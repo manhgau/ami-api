@@ -6,6 +6,7 @@ use App\Helpers\CheckPackageUser;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
 use App\Helpers\Context;
+use App\Helpers\FormatDate;
 use App\Helpers\RemoveData;
 use App\Models\FormatDateType;
 use App\Models\Package;
@@ -97,7 +98,6 @@ class SurveyController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'string|max:255',
-                'category_id' => 'integer|max:20',
             ]);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
@@ -111,7 +111,7 @@ class SurveyController extends Controller
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             $data = $request->all();
-            $request->real_end_time ?? $data['end_time'] = $request->real_end_time;
+            $request->real_end_time ?? $data['real_end_time'] = FormatDate::formatDate($request->real_end_time);
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;

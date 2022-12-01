@@ -21,7 +21,7 @@ class SurveyPartner extends Model
     const NOT_COMPLETED  = 'not_completed';
     const ON_PROGRESS  = 'on_progress';
 
-    public static  function getlistSurveyPartner($perPage = 10,  $page = 1, $partner_id, $time_now, $time_end, $is_save = null, $search = null)
+    public static  function getlistSurveyPartner($perPage = 10,  $page = 1, $partner_id, $time_now, $time_end, $is_save = null, $search = null, $status = null)
     {
         $query = DB::table('survey_partners as a')
             ->join('surveys as b', 'b.id', '=', 'a.survey_id')
@@ -55,12 +55,12 @@ class SurveyPartner extends Model
         if ($search != null) {
             $query->where('b.title', 'like', '%' . $search . '%');
         }
-        // if ($status == self::CLOSED) {
-        //     $query->where('b.end_time', '<', Carbon::now());
-        // }
-        // if ($status == self::ON_PROGRESS) {
-        //     $query->where('b.end_time', '>', Carbon::now())->where('b.state', Survey::STATUS_ON_PROGRESS);
-        // }
+        if ($status == self::CLOSED) {
+            $query->where('b.end_time', '<', Carbon::now());
+        }
+        if ($status == self::ON_PROGRESS) {
+            $query->where('b.end_time', '>', Carbon::now())->where('b.state', Survey::STATUS_ON_PROGRESS);
+        }
         return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
 

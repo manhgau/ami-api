@@ -32,8 +32,8 @@ class SurveyPartnerInput extends Model
     const NOT_SKIP = 0;
 
     const CLOSED  = 'closed';
-    const ON_PROGRESS  = 'on_progress';
-    const NOT_PROGRESS  = 'not_progress';
+    const COMPLETED  = 'completed';
+    const NOT_COMPLETED  = 'not_completed';
 
     const ANYNOMOUS_TRUE                     = 1;
     const ANYNOMOUS_FALSE                    = 0;
@@ -101,24 +101,20 @@ class SurveyPartnerInput extends Model
             $query->where('b.title', 'like', '%' . $search . '%');
         }
         if ($status == self::CLOSED) {
-            $query->where('b.end_time', '<', Carbon::now())
-                ->whereColumn('b.attempts_limit_min', '>', 'c.number_of_response');
+            $query->where('b.end_time', '<', Carbon::now());
         }
-        if ($status == self::ON_PROGRESS) {
+        if ($status == self::COMPLETED) {
             $query->where(function ($query) {
                 $query->orwhere(function ($query) {
-                    $query->where('b.state', Survey::STATUS_ON_PROGRESS)
-                        ->whereColumn('b.attempts_limit_max', 'c.number_of_response');
+                    $query->where('b.end_time', '>', Carbon::now())->whereColumn('b.number_of_respone', '=', 'b.limmit_of_response');
                 });
                 $query->orwhere(function ($query) {
-                    $query->where('b.end_time', '<', Carbon::now())
-                        ->whereColumn('b.attempts_limit_min', '<=', 'c.number_of_response');
+                    $query->where('b.end_time', '>', Carbon::now())->where('b.is_answer_single', Survey::ANSWER_SINGLE)->where('c.number_of_respone_partner', '=', 1);
                 });
             });
         }
-        if ($status == self::NOT_PROGRESS) {
-            $query->where('b.state', Survey::STATUS_ON_PROGRESS)
-                ->whereColumn('b.attempts_limit_max', '>', 'c.number_of_response');
+        if ($status == self::NOT_COMPLETED) {
+            $query->where('b.end_time', '>', Carbon::now())->where('b.is_answer_single', Survey::ANSWER_MULTIPLE)->whereColumn('b.number_of_respone', '<', 'b.limmit_of_response');
         }
         return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
