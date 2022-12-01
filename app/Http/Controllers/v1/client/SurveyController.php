@@ -111,7 +111,8 @@ class SurveyController extends Controller
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             $data = $request->all();
-            $request->real_end_time ?? $data['real_end_time'] = FormatDate::formatDate($request->real_end_time);
+            // dd($data);
+            $request->real_end_time ? $data['real_end_time'] = FormatDate::formatDate($request->real_end_time) : null;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;
