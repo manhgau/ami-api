@@ -16,6 +16,7 @@ use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
 use App\Helpers\FtpSv;
 use App\Helpers\RemoveData;
+use App\Models\AppSetting;
 use App\Models\Images;
 use Validator;
 
@@ -64,6 +65,12 @@ class ImagesController extends Controller
             if (empty($datas)) {
                 $datas = Images::getTemplateImage($perPage,  $page);
                 $datas = RemoveData::removeUnusedData($datas);
+                foreach ($datas['data'] as $key => $value) {
+                    $all_settings = AppSetting::getAllSetting();
+                    $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+                    $value['image'] = $image_domain . $value['image'];
+                    $datas['data'][$key] = $value;
+                }
                 CommonCached::storeData($ckey, $datas);
             }
             if (!$datas) {

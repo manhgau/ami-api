@@ -135,6 +135,7 @@ class SurveyQuestion extends Model
             'type_ranking',
             'is_multiple',
             'validation_random',
+            'validation_required',
             'is_time',
             'is_date',
             'format_date_time',
