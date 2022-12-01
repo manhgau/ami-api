@@ -5,8 +5,12 @@ namespace App\Http\Controllers\v1\client;
 use Illuminate\Http\Request;
 use Validator;
 use App\Helpers\ClientResponse;
+use App\Helpers\RemoveData;
+use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
+use App\Models\SurveyQuestion;
+use App\Models\SurveyQuestionAnswer;
 use Carbon\Carbon;
 use Jenssegers\Agent\Facades\Agent;
 
@@ -24,8 +28,8 @@ class SurveyPartnerInputAnynomousController extends Controller
                 return ClientResponse::responseError($errorString);
             }
             $input['survey_id'] = $request->survey_id;
-            $input['state'] = SurveyPartnerInput::STATE_NEW;
-            $input['start_datetime'] =  Carbon::now();
+            $input['state'] = SurveyPartnerInput::STATUS_NEW;
+            $input['start_datetime'] =  time();
             $input['os'] = Agent::device();
             $input['ip'] = $request->ip();
             $input['browser'] = Agent::browser();
@@ -66,5 +70,78 @@ class SurveyPartnerInputAnynomousController extends Controller
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
+    }
+
+
+    public function getSurveyQuestion(Request $request)
+    {
+        try {
+            $survey_id = $request->survey_id;
+            $perPage = $request->per_page ?? 20;
+            $page = $request->current_page ?? 1;
+            $survey_setup = Survey::getSetupSurvey($survey_id);
+            if (!$survey_setup) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page,  $survey_setup->is_random);
+            $lists = RemoveData::removeUnusedData($lists);
+            if (!$lists) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            $datas = [];
+            foreach ($lists['data'] as $key => $value) {
+                if ($value['question_type'] == QuestionType::GROUP) {
+
+                    $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value['id']);
+                    $list_question = [];
+                    foreach ($question_group as $cat => $item) {
+                        $list_question  = self::__getAnswer($cat, $item, $list_question);
+                    }
+                    $value['group_question'] = $list_question;
+                    $datas[$key] = $value;
+                } else {
+                    $datas  = self::__getAnswer($key, $value, $datas);
+                }
+            }
+            $lists['data'] = $datas;
+            $lists['survey_setup'] = $survey_setup;
+            return ClientResponse::responseSuccess('OK', $lists);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    private static function __getAnswer($key, $value, $datas)
+    {
+        $question_id = $value['id'];
+        $random = $value['validation_random'];
+        switch ($value['question_type']) { // question_id 
+            case QuestionType::MULTI_FACTOR_MATRIX:
+                $data_response = $value;
+                $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->orWhere('matrix_question_id', $value['id'])->get();
+                $datas[$key] = $data_response;
+                break;
+            case QuestionType::MULTI_CHOICE:
+            case QuestionType::MULTI_CHOICE_DROPDOWN:
+            case QuestionType::YES_NO:
+                $data_response = $value;
+                $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
+                $datas[$key] = $data_response;
+                break;
+            case QuestionType::RATING_STAR:
+            case QuestionType::RANKING:
+            case QuestionType::DATETIME_DATE:
+            case QuestionType::DATETIME_DATE_RANGE:
+            case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+            case QuestionType::QUESTION_ENDED_LONG_TEXT:
+            case QuestionType::NUMBER:
+            case QuestionType::GROUP:
+                $datas[$key] = $value;
+                break;
+            default:
+                return ClientResponse::responseError('question type không hợp lệ', $value['question_type']);
+                break;
+        }
+        return $datas;
     }
 }

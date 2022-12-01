@@ -115,7 +115,6 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
                 Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
                 Route::get('/format-date/type', [SurveyController::class, 'getFormatDateType']);
-                Route::post('/detail/{survey_id}', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
                 Route::group([
                     'middleware' => 'client_auth',
                 ], function ($router) {
@@ -171,11 +170,12 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::group([
                     'prefix' => '/{survey_id}/anynomous'
                 ], function ($router) {
+                    //Route::get('/', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
                     Route::post('/', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
                     Route::post('/{partner_input_id}/update', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
                     Route::post('line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
                     Route::get('/detail/{survey_partner_id}', [SurveyPartnerInputAnynomousController::class, 'getDetailSurveyPartner']);
-                    Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
+                    Route::get('/list-question', [SurveyPartnerInputAnynomousController::class, 'getSurveyQuestion']);
                 });
             });
             //package

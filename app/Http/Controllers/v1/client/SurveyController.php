@@ -18,7 +18,6 @@ use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
 use App\Models\SurveyTemplate;
 use App\Models\SurveyTemplateQuestion;
-use App\Models\SurveyUser;
 use Carbon\Carbon;
 use Validator;
 use Illuminate\Http\Request;
@@ -30,6 +29,7 @@ class SurveyController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
+                'description' => 'string|max:255',
             ]);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
@@ -80,10 +80,10 @@ class SurveyController extends Controller
         }
     }
 
-    public function getDetailSurvey($id)
+    public function getDetailSurvey(Request $request)
     {
         try {
-            $detail = Survey::getDetailSurvey($id);
+            $detail = Survey::getDetailSurvey($request->survey_id);
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
@@ -94,17 +94,19 @@ class SurveyController extends Controller
         }
     }
 
-    public function editSurvey(Request $request, $id)
+    public function editSurvey(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'string|max:255',
+                'description' => 'string|max:255',
+                'survey_id' => 'string|exists:App\Models\Survey,id',
             ]);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
-            $survey_user = Survey::getDetailSurvey($id);
+            $survey_user = Survey::getDetailSurvey($request->survey_id);
             if ($survey_user->state == Survey::STATUS_COMPLETED) {
                 return ClientResponse::responseError('Không được sửa khảo sát này');
             }
@@ -112,7 +114,6 @@ class SurveyController extends Controller
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             $data = $request->all();
-            // dd($data);
             $request->real_end_time ? $data['real_end_time'] = FormatDate::formatDate($request->real_end_time) : null;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $data['user_id'] = $user_id;
@@ -126,7 +127,7 @@ class SurveyController extends Controller
                 }
                 $data['note'] = $texts;
             }
-            $update_survey = Survey::updateSurvey($data, $id);
+            $update_survey = Survey::updateSurvey($data, $request->survey_id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
@@ -136,14 +137,14 @@ class SurveyController extends Controller
         }
     }
 
-    public function deleteSurvey($id)
+    public function deleteSurvey(Request $request)
     {
         try {
-            $survey_user = Survey::getDetailSurvey($id);
+            $survey_user = Survey::getDetailSurvey($request->survey_id);
             if (!$survey_user) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            $del_survey = Survey::updateSurvey(['deleted' => Survey::DELETED], $id);
+            $del_survey = Survey::updateSurvey(['deleted' => Survey::DELETED], $request->survey_id);
             if (!$del_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
