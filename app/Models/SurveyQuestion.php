@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class SurveyQuestion extends Model
 {
@@ -95,67 +96,95 @@ class SurveyQuestion extends Model
             ->get();
     }
 
-    public static  function listGroupQuestions($survey_id, $page_id)
+    public static  function getAllQuestionGroup($survey_id, $page_id)
     {
-        return self::select(
-            'id',
-            'survey_id',
-            'sequence',
-            'title',
-            'description',
-            'question_type',
-            'skip_count',
-            'view',
-            'type_ranking',
-            'is_multiple',
-            'validation_random',
-            'is_time',
-            'format_date_time',
-            'is_page',
-            'page_id'
-        )
-            ->where('deleted', self::NOT_DELETED)
+        return self::where('deleted', self::NOT_DELETED)
             ->where('survey_id', $survey_id)
             ->where('page_id', $page_id)
             ->orderBy('sequence', 'asc')
             ->get();
     }
 
+    public static  function listGroupQuestions($survey_id, $page_id)
+    {
+        return  DB::table('survey_questions  as a')
+            ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
+            ->select(
+                'a.id',
+                'a.survey_id',
+                'a.sequence',
+                'a.title',
+                'a.description',
+                'a.question_type',
+                'a.skip_count',
+                'a.view',
+                'a.type_ranking',
+                'a.is_multiple',
+                'a.validation_random',
+                'a.is_time',
+                'a.format_date_time',
+                'a.is_page',
+                'a.page_id',
+                'a.background_id',
+                'b.image as background',
+            )
+            ->where('a.deleted', self::NOT_DELETED)
+            ->where('a.survey_id', $survey_id)
+            ->where('a.page_id', $page_id)
+            ->orderBy('a.sequence', 'asc')
+            ->get();
+    }
+
     public static  function getListQuestion($survey_id, $perPage, $page, $random)
     {
-        $query = self::select(
-            'id',
-            'survey_id',
-            'sequence',
-            'title',
-            'description',
-            'question_type',
-            'skip_count',
-            'view',
-            'type_ranking',
-            'is_multiple',
-            'validation_random',
-            'validation_required',
-            'is_time',
-            'is_date',
-            'format_date_time',
-            'is_page',
-            'page_id'
-        )
-            ->where('deleted', self::NOT_DELETED)
-            ->where('survey_id', $survey_id)
-            ->where('page_id', self::NO_PAGE);
+        $query = DB::table('survey_questions  as a')
+            ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
+            ->select(
+                'a.id',
+                'a.survey_id',
+                'a.sequence',
+                'a.title',
+                'a.description',
+                'a.question_type',
+                'a.skip_count',
+                'a.view',
+                'a.type_ranking',
+                'a.is_multiple',
+                'a.validation_random',
+                'a.validation_required',
+                'a.is_time',
+                'a.is_date',
+                'a.format_date_time',
+                'a.is_page',
+                'a.page_id',
+                'a.name_level_1',
+                'a.name_level_2',
+                'a.name_level_3',
+                'a.background_id',
+                'b.image as background',
+            )
+            ->where('a.deleted', self::NOT_DELETED)
+            ->where('a.survey_id', $survey_id)
+            ->where('a.page_id', self::NO_PAGE);
         if ($random == 1) {
             $query = $query->inRandomOrder();
         } else {
-            $query = $query->orderBy('sequence', 'asc');
+            $query = $query->orderBy('a.sequence', 'asc');
         }
         return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
 
     public static  function getDetailSurveyQuestion($id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->first();
+        return  DB::table('survey_questions  as a')
+            ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
+            ->select(
+                'a.*',
+                'b.image as background',
+            )
+            ->where('a.deleted', self::NOT_DELETED)
+            ->where('a.id', $id)
+            ->first();
     }
 
     public static  function checkQuestionOfSurvey($survey_id, $question_id)

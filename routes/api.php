@@ -34,6 +34,7 @@ use App\Http\Controllers\v1\partner\BusinessScopeCotroller;
 use App\Http\Controllers\v1\partner\ChildrenAgeRangesController;
 use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
 use App\Http\Controllers\v1\partner\GendersController;
+use App\Http\Controllers\v1\partner\MaritalStatusController;
 use App\Http\Controllers\v1\partner\NotificationsFirebasePartnerController;
 use App\Http\Controllers\v1\partner\NumberOfFamilyController;
 use App\Http\Controllers\v1\partner\PackageController;
@@ -43,6 +44,7 @@ use App\Http\Controllers\v1\partner\SurveyPartnerInputController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputLineController;
 use App\Http\Controllers\v1\partner\SurveyQuestionPartnerController;
 use App\Http\Controllers\v1\partner\SurveyQuestionProfileController;
+use App\Http\Controllers\v1\partner\YearOfBirthController;
 use App\Http\Controllers\v1\visitor\FeedbackController;
 use App\Http\Controllers\v1\visitor\PartnerContactsController;
 
@@ -113,6 +115,7 @@ Route::group(['prefix' => 'v1'], function () {
 
             ], function ($router) {
                 Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
+                Route::get('/target', [SurveyController::class, 'getTargetSurvey']);
                 Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
                 Route::get('/format-date/type', [SurveyController::class, 'getFormatDateType']);
                 Route::group([
@@ -170,11 +173,10 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::group([
                     'prefix' => '/{survey_id}/anynomous'
                 ], function ($router) {
-                    //Route::get('/', [SurveyStatisticCpntroller::class, 'getSurveyDetail']);
+                    Route::get('/', [SurveyPartnerInputAnynomousController::class, 'getSetupSurvey']);
                     Route::post('/', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
                     Route::post('/{partner_input_id}/update', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
                     Route::post('line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
-                    Route::get('/detail/{survey_partner_id}', [SurveyPartnerInputAnynomousController::class, 'getDetailSurveyPartner']);
                     Route::get('/list-question', [SurveyPartnerInputAnynomousController::class, 'getSurveyQuestion']);
                 });
             });
@@ -213,6 +215,8 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('personal-income-level', [PersonalIncomeLevelsController::class, 'getPersonalIncomeLevels']);
         Route::get('gender', [GendersController::class, 'getGenders']);
         Route::get('family-people', [NumberOfFamilyController::class, 'getFamilyPeople']);
+        Route::get('year-of-birth', [YearOfBirthController::class, 'getYearOfBirth']);
+        Route::get('marital-status', [MaritalStatusController::class, 'getMaritalStatus']);
         //auth
         Route::group([
             'prefix' => 'auth'
