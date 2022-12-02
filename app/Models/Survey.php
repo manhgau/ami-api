@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Survey extends Model
 {
@@ -61,9 +62,19 @@ class Survey extends Model
         return $query;
     }
 
-    public static  function getDetailSurvey($id)
+    public static  function getDetailSurvey($survey_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('active', self::ACTIVE)->first();
+
+        return  DB::table('surveys  as a')
+            ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
+            ->select(
+                'a.*',
+                'b.image as background',
+            )
+            ->where('a.deleted', self::NOT_DELETED)
+            ->where('a.id', $survey_id)
+            ->where('a.active', self::ACTIVE)
+            ->first();
     }
 
     public static  function getDetailSurveyByUser($id, $user_id)
@@ -73,17 +84,20 @@ class Survey extends Model
 
     public static  function getSetupSurvey($survey_id)
     {
-        return self::select(
-            'title',
-            'survey_profile_id',
-            'font_size',
-            'background_id',
-            'is_answer_single',
-            'is_random',
-        )
-            ->where('deleted', self::NOT_DELETED)
-            ->where('id', $survey_id)
-            ->where('active', self::ACTIVE)
+        return  DB::table('surveys  as a')
+            ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
+            ->select(
+                'a.title',
+                'a.survey_profile_id',
+                'a.font_size',
+                'a.background_id',
+                'a.is_answer_single',
+                'a.is_random',
+                'b.image as background',
+            )
+            ->where('a.deleted', self::NOT_DELETED)
+            ->where('a.id', $survey_id)
+            ->where('a.active', self::ACTIVE)
             ->first();
     }
 

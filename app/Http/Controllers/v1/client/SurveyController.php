@@ -8,6 +8,7 @@ use App\Helpers\Common\CFunction;
 use App\Helpers\Context;
 use App\Helpers\FormatDate;
 use App\Helpers\RemoveData;
+use App\Models\AppSetting;
 use App\Models\FormatDateType;
 use App\Models\Package;
 use App\Models\QuestionType;
@@ -18,6 +19,7 @@ use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
 use App\Models\SurveyTemplate;
 use App\Models\SurveyTemplateQuestion;
+use App\Models\TypeTarget;
 use Carbon\Carbon;
 use Validator;
 use Illuminate\Http\Request;
@@ -87,6 +89,9 @@ class SurveyController extends Controller
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
+            $all_settings = AppSetting::getAllSetting();
+            $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+            $detail->background ? $detail->background = $image_domain . $detail->background : null;
             $detail->real_end_time = date_format(date_create($detail->real_end_time), 'm-d-Y');
             return ClientResponse::responseSuccess('OK', $detail);
         } catch (\Exception $ex) {
@@ -281,6 +286,16 @@ class SurveyController extends Controller
                 }
             }
             return ClientResponse::responseSuccess('Thêm mới thành công', $survey);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getTargetSurvey(Request $request)
+    {
+        try {
+            $target = TypeTarget::getTypeTarget();
+            return ClientResponse::responseSuccess('OK', $target);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

@@ -8,6 +8,7 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
+use App\Models\AppSetting;
 use App\Models\Survey;
 use App\Models\SurveyPartner;
 use Carbon\Carbon;
@@ -131,6 +132,9 @@ class SurveyPartnerController extends Controller
                     if (!$survey_setup) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
+                    $all_settings = AppSetting::getAllSetting();
+                    $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+                    $survey_setup->background ? $survey_setup->background = $image_domain . $survey_setup->background : null;
                     return ClientResponse::responseSuccess('OK', $survey_setup);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());

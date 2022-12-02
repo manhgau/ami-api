@@ -28,6 +28,8 @@ class CommonCached
     const api_list_personal_income_levels                   = 'api_cached:api_list_personal_income_levels';
     const api_list_genders                                  = 'api_cached:api_list_genders';
     const api_list_family_people                            = 'api_cached:api_list_family_people';
+    const api_get_marital_status                            = 'api_cached:api_get_marital_status';
+    const api_list_year_of_birth                            = 'api_cached:api_list_year_of_birth';
     //
     const cache_find_blog_category_by_id                    = "api_cached:cache_find_blog_category_by_id:id:";
     const cache_find_blog_category                          = "api_cached:cache_find_blog_category";

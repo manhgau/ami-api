@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\RemoveData;
+use App\Models\AppSetting;
 use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
@@ -43,12 +44,8 @@ class SurveyPartnerInputAnynomousController extends Controller
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            Survey::updateSurvey(
-                [
-                    "view" => $survey->view + 1,
-                ],
-                $request->survey_id
-            );
+            $survey->view = $survey->view + 1;
+            $survey->save();
             return ClientResponse::responseSuccess('Thêm mới thành công', $result);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
@@ -89,21 +86,26 @@ class SurveyPartnerInputAnynomousController extends Controller
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             $datas = [];
+            $all_settings = AppSetting::getAllSetting();
+            $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
             foreach ($lists['data'] as $key => $value) {
-                if ($value['question_type'] == QuestionType::GROUP) {
+                $value->background ? $value->background = $image_domain . $value->background : null;
+                if ($value->question_type == QuestionType::GROUP) {
 
-                    $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value['id']);
+                    $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
                     $list_question = [];
                     foreach ($question_group as $cat => $item) {
+                        $item->background ? $item->background = $image_domain . $item->background : null;
                         $list_question  = self::__getAnswer($cat, $item, $list_question);
                     }
-                    $value['group_question'] = $list_question;
+                    $value->group_question = $list_question;
                     $datas[$key] = $value;
                 } else {
                     $datas  = self::__getAnswer($key, $value, $datas);
                 }
             }
             $lists['data'] = $datas;
+            $survey_setup->background ? $survey_setup->background = $image_domain . $survey_setup->background : null;
             $lists['survey_setup'] = $survey_setup;
             return ClientResponse::responseSuccess('OK', $lists);
         } catch (\Exception $ex) {
@@ -113,19 +115,20 @@ class SurveyPartnerInputAnynomousController extends Controller
 
     private static function __getAnswer($key, $value, $datas)
     {
-        $question_id = $value['id'];
-        $random = $value['validation_random'];
-        switch ($value['question_type']) { // question_id 
+        $question_id = $value->id;
+        $random = $value->validation_random;
+        $data_response = $value;
+        switch ($value->question_type) { // question_id 
             case QuestionType::MULTI_FACTOR_MATRIX:
                 $data_response = $value;
-                $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->orWhere('matrix_question_id', $value['id'])->get();
+                $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->orWhere('matrix_question_id', $value->id)->get();
                 $datas[$key] = $data_response;
                 break;
             case QuestionType::MULTI_CHOICE:
             case QuestionType::MULTI_CHOICE_DROPDOWN:
             case QuestionType::YES_NO:
                 $data_response = $value;
-                $data_response['answers'] = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
+                $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
                 $datas[$key] = $data_response;
                 break;
             case QuestionType::RATING_STAR:
@@ -136,10 +139,10 @@ class SurveyPartnerInputAnynomousController extends Controller
             case QuestionType::QUESTION_ENDED_LONG_TEXT:
             case QuestionType::NUMBER:
             case QuestionType::GROUP:
-                $datas[$key] = $value;
+                $datas[$key] = $data_response;
                 break;
             default:
-                return ClientResponse::responseError('question type không hợp lệ', $value['question_type']);
+                return ClientResponse::responseError('question type không hợp lệ', $value->question_type);
                 break;
         }
         return $datas;
