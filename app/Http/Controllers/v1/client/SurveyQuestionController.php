@@ -184,14 +184,21 @@ class SurveyQuestionController extends Controller
     public static function delSurveyQuestion(Request $request)
     {
         try {
-            $survey_question = SurveyQuestion::getDetailSurveyQuestion($request->question_id);
+            $survey_id = $request->survey_id;
+            $question_id = $request->question_id;
+            $survey_question = SurveyQuestion::getDetailSurveyQuestion($question_id);
             if (!$survey_question) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            $del_survey = SurveyQuestion::updateSurveyQuestion(['deleted' => SurveyQuestion::DELETED], $request->question_id);
-            if (!$del_survey) {
-                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            SurveyQuestion::destroy($question_id);
+            if ($survey_question->question_type == QuestionType::GROUP) {
+                $list_questions = SurveyQuestion::getAllQuestion($survey_id, $survey_question->id);
+                foreach ($list_questions as $value) {
+                    SurveyQuestion::destroy($value->id);
+                    SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $value->id);
+                }
             }
+            SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $question_id);
             $count_questions = SurveyQuestion::countQuestion($request->survey_id);
             Survey::updateSurvey(["question_count" => $count_questions], $request->survey_id);
             $list = SurveyQuestion::getAllQuestion($request->survey_id, $survey_question->page_id);
@@ -212,6 +219,10 @@ class SurveyQuestionController extends Controller
     {
         try {
             $question_id = $request->question_id;
+            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+            if (CheckPackageUser::checkQuestionkPackageUser($user_id)) {
+                return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
+            }
             $survey_question = SurveyQuestion::getDetailSurveyQuestion($question_id);
             if (!$survey_question) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
@@ -233,7 +244,7 @@ class SurveyQuestionController extends Controller
                 foreach ($list_question_groups as $key => $value) {
                     $value = json_decode(json_encode($value), true);
                     $value['page_id'] =  $result->id;
-                    $result = self::__copyQuestion($value, $value['id']);
+                    self::__copyQuestion($value, $value['id']);
                 }
             } else {
                 $result = self::__copyQuestion($survey_question, $question_id);

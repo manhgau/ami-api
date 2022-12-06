@@ -31,6 +31,7 @@ class SurveyQuestionAnswersController extends Controller
         try {
             $question_id = $request->question_id;
             $question_survey = SurveyQuestion::where('id', $question_id)->where('deleted',  SurveyQuestion::NOT_DELETED)->first();
+            $input['survey_id'] = $request->survey_id;
             $input['sequence'] = $request->sequence;
             $input['value'] = $request->value;
             $input['question_id'] =  $question_id;
@@ -93,6 +94,7 @@ class SurveyQuestionAnswersController extends Controller
         try {
             $question_id = $request->question_id;
             $question_answer_number = SurveyQuestionAnswer::select()->where('question_id', $question_id)->where(['deleted' => SurveyQuestionAnswer::NOT_DELETED])->count();
+            $input['survey_id'] = $request->survey_id;
             $input['sequence'] = $request->sequence;
             $input['value'] = $request->value;
             $input['question_id'] =  $question_id;
