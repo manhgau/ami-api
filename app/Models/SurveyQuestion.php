@@ -60,6 +60,16 @@ class SurveyQuestion extends Model
         return SurveyQuestion::create($data);
     }
 
+    public static  function deleteAllSurveyQuestions($survey_id, $page_id = null)
+    {
+        $query =  self::where('survey_id', $survey_id);
+        if ($page_id != null) {
+            $query->where('page_id', $page_id);
+        }
+        return $query->delete();
+    }
+
+
     public static  function getListSurveyQuestion($survey_id)
     {
         return self::select(

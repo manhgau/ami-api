@@ -115,7 +115,6 @@ Route::group(['prefix' => 'v1'], function () {
 
             ], function ($router) {
                 Route::get('/category', [SurveyCategoryController::class, 'getListSurveyCategory']);
-                Route::get('/target', [SurveyController::class, 'getTargetSurvey']);
                 Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
                 Route::get('/format-date/type', [SurveyController::class, 'getFormatDateType']);
                 Route::group([
@@ -139,6 +138,13 @@ Route::group(['prefix' => 'v1'], function () {
                     ], function ($router) {
                         Route::post('/edit/{survey_id}', [SurveyController::class, 'editSurvey']);
                         Route::post('/delete/{survey_id}', [SurveyController::class, 'deleteSurvey']);
+                        Route::post('/copy/{survey_id}', [SurveyController::class, 'copySurvey']);
+                        Route::group([
+                            'prefix' => '/{survey_id}/target'
+                        ], function ($router) {
+                            Route::get('/', [SurveyController::class, 'getTargetSurvey']);
+                            Route::post('/', [SurveyController::class, 'createTargetSurvey']);
+                        });
                         Route::group([
                             'prefix' => '/{survey_id}/question'
 

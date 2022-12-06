@@ -15,9 +15,13 @@ class ClientAuthOwnerSurvey
     {
         $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
         $id = $request->id ?? ($request->survey_id ?? '');
+        $survey = Survey::getDetailSurvey($request->survey_id);
+        if (!$survey) {
+            return ClientResponse::responseError('Không có bản ghi phù hợp');
+        }
         $survey_user = Survey::getDetailSurveyByUser($id, $user_id);
         if (!$survey_user) {
-            return ClientResponse::responseError('Không có bản ghi phù hợp');
+            return ClientResponse::response(ClientResponse::$client_auth_owner_survey, 'Khảo sát không phải của bạn');
         }
         return $next($request);
     }

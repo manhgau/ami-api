@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SurveyQuestionAnswer extends Model
 {
     protected $fillable = [
+        'survey_id',
         'question_id',
         'matrix_question_id',
         'sequence',
@@ -31,6 +32,16 @@ class SurveyQuestionAnswer extends Model
     public static  function SurveyQuestionAnswer($data)
     {
         return self::create($data);
+    }
+
+    public static  function deleteAllSurveyQuestionsAnswer($survey_id, $question_id = null)
+    {
+        $query =  self::where('survey_id', $survey_id);
+        if ($question_id != null) {
+            $query->where('question_id', $question_id)
+                ->orWhere('matrix_question_id', $question_id);
+        }
+        return $query->delete();
     }
 
     public static  function getAllSurveyQuestionAnswer($id,  $random = 0)
