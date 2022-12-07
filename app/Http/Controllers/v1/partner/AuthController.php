@@ -9,7 +9,6 @@ use App\Models\Partner;
 use App\Models\Otp;
 use App\Models\Sms;
 use App\Models\PartnerAccessToken;
-use App\Models\PartnerChildrenAgeRange;
 use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
