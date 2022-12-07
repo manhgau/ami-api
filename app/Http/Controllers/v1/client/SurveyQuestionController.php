@@ -33,10 +33,12 @@ class SurveyQuestionController extends Controller
             if (CheckPackageUser::checkQuestionkPackageUser($user_id)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
             }
+            $survey_id = $request->survey_id;
             $input['created_by'] = $user_id;
-            $input['survey_id'] = $request->survey_id;
-            $count_questions = SurveyQuestion::countQuestion($input['survey_id']);
-            $input['count_questions'] =   $count_questions + 1;
+            $input['survey_id'] = $survey_id;
+            $count_questions = SurveyQuestion::countSequence($survey_id, SurveyQuestion::NO_PAGE);
+            $input_survey['count_questions'] =   $count_questions + 1;
+            Survey::updateSurvey($input_survey,  $survey_id);
             $question_type = Str::lower($request->question_type);
             if (QuestionType::checkQuestionTypeValid($question_type) === false) {
                 return ClientResponse::responseError('Lỗi ! Không có dạng câu hỏi khảo sát này.');
@@ -199,7 +201,7 @@ class SurveyQuestionController extends Controller
                 }
             }
             SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $question_id);
-            $count_questions = SurveyQuestion::countQuestion($request->survey_id);
+            $count_questions = SurveyQuestion::countSequence($survey_id, SurveyQuestion::NO_PAGE);
             Survey::updateSurvey(["question_count" => $count_questions], $request->survey_id);
             $list = SurveyQuestion::getAllQuestion($request->survey_id, $survey_question->page_id);
             $data = [];

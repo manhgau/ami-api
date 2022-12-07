@@ -32,7 +32,6 @@ class SurveyController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
-                'description' => 'string|max:255',
             ]);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
