@@ -242,7 +242,7 @@ class AuthController extends Controller
 
     public function refresh(Request $request)
     {
-        $token = $request->header('Authorization') ?? $request->refresh_token;
+        $token = $request->refresh_token ?? $request->header('Authorization');
         $refresh_token = JWT::checkAccessToken($token);
         if ($refresh_token) {
             $access_token_id = $refresh_token->aid ?? 0;
