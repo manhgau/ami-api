@@ -21,21 +21,6 @@ class TypeTarget
     const HAS_CHILDREN                                  = 'has_children';
     const ACADEMIC_LEVEL                                = 'academic_level_id';
 
-    // public static function getTypeProfile()
-    // {
-    //     return [
-    //         self::YEAR_OF_BIRTH         => 'Độ tuổi',
-    //         self::GENDER                => 'Giới tính',
-    //         self::PROVINCE              => 'TP/Tỉnh',
-    //         self::MARITAL_STATUS        => 'Hôn nhân',
-    //         self::JOB_TYPE              => 'Nghề nghiệp',
-    //         self::FAMILY_INCOME_LEVEL   => 'Mức thu nhâp cả hộ',
-    //         self::FAMILY_PEOPLE         => 'Số người trong gia đình',
-    //         self::IS_KEY_SHOPPER        => 'Có chịu trách nhiệm mua sắm chính không',
-    //         self::HAS_CHILDREN          => 'Gia đình có trẻ con không',
-    //         self::ACADEMIC_LEVEL        => 'Trình độ học vấn',
-    //     ];
-    // }
 
     public static function getTypeTarget()
     {

@@ -19,6 +19,7 @@ class Survey extends Model
         'active',
         'state',
         'skip_count',
+        'question_count',
         'start_time',
         'end_time',
         'real_end_time',
@@ -53,8 +54,24 @@ class Survey extends Model
 
     public static  function getListSurvey($perPage = 10,  $page = 1, $user_id, $state = null)
     {
-        $query =  self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)
-            ->where('user_id', $user_id)->orderBy('created_at', 'DESC');
+        $query =  self::select(
+            'id',
+            'title',
+            'user_id',
+            'description',
+            'state',
+            'skip_count',
+            'question_count',
+            'start_time',
+            'real_end_time',
+            'number_of_respone',
+            'created_at',
+            'updated_at',
+        )
+            ->where('deleted', self::NOT_DELETED)
+            ->where('active', self::ACTIVE)
+            ->where('user_id', $user_id)
+            ->orderBy('created_at', 'DESC');
         if ($state != null) {
             $query->where('state', $state);
         }

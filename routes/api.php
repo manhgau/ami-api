@@ -144,6 +144,7 @@ Route::group(['prefix' => 'v1'], function () {
                         ], function ($router) {
                             Route::get('/', [SurveyController::class, 'getTargetSurvey']);
                             Route::post('/', [SurveyController::class, 'createTargetSurvey']);
+                            Route::post('/{target_survey_id}/delete', [SurveyController::class, 'deleteTargetSurvey']);
                         });
                         Route::group([
                             'prefix' => '/{survey_id}/question'
