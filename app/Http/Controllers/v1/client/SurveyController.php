@@ -62,15 +62,14 @@ class SurveyController extends Controller
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
             $state = $request->state;
-            $is_anynomous = $request->is_anynomous;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $datas = Survey::getListSurvey($perPage,  $page, $user_id, $state);
-            $arr = [];
             foreach ($datas['data'] as $key => $value) {
-                $count_response = SurveyPartnerInput::countSurveyInput($value['id'], $is_anynomous);
-                $arr = $value;
-                $arr['count_response'] = $count_response;
-                $datas['data'][$key] = $arr;
+                $value['start_time'] ? $value['start_time'] = date_format(date_create($value['start_time']), 'd/m/Y') : null;
+                $value['real_end_time'] ? $value['real_end_time'] = date_format(date_create($value['real_end_time']), 'd/m/Y') : null;
+                $value['created_at'] ? $value['created_at'] = date_format(date_create($value['created_at']), 'd/m/Y') : null;
+                $value['updated_at'] ? $value['updated_at'] = date_format(date_create($value['updated_at']), 'd/m/Y') : null;
+                $datas['data'][$key] = $value;
             }
             $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
@@ -201,6 +200,7 @@ class SurveyController extends Controller
             $input['title'] = $request->title ?? $survey_template->title . ' copy';
             $input['active'] = Survey::ACTIVE;
             $input['id'] = CFunction::generateUuid();
+            $input['start_time'] = Carbon::now();
             $input['created_by'] = $user_id;
             $survey = Survey::create($input);
             if (!$survey) {
@@ -211,9 +211,11 @@ class SurveyController extends Controller
             foreach ($survey_template_question   as $key => $value) {
                 $ids[$key] = $value['survey_question_id'];
             }
-            $survey_questions = SurveyQuestion::getSurveyQuestion($ids);
+            $survey_questions = SurveyQuestion::getSurveyQuestion($ids)->toArray();
             foreach ($survey_questions  as  $survey_question) {
-                dd($survey_question);
+                $survey_id = $survey_question['survey_id'];
+                $survey_question['survey_id'] =  $survey->id;
+                self::__copySurveyQuestion($survey_question, $survey_id);
             }
             return ClientResponse::responseSuccess('Thêm mới thành công', $survey);
         } catch (\Exception $ex) {
@@ -246,7 +248,7 @@ class SurveyController extends Controller
             foreach ($list_questions  as  $list_question) {
                 $list_question = $list_question;
                 $list_question['survey_id'] = $survey->id;
-                $create_question = self::__copySurveyQuestion($list_question, $survey_id);
+                self::__copySurveyQuestion($list_question, $survey_id);
             }
             return ClientResponse::responseSuccess('Thêm mới thành công', $survey);
         } catch (\Exception $ex) {
@@ -265,6 +267,7 @@ class SurveyController extends Controller
             $result = SurveyQuestion::createSurveyQuestion($survey_question);
             foreach ($list_question_groups as  $value) {
                 $value['page_id'] =  $result->id;
+                $value['survey_id'] =  $survey_question['survey_id'];
                 self::__copyQuestion($value, $value['id']);
             }
         } else {
@@ -338,10 +341,10 @@ class SurveyController extends Controller
         try {
             $survey_id = $request->survey_id;
             $target_type = $request->target_type;
-            $target_ids = $request->target_ids;
+            $target_values = $request->target_values;
             $data = [];
-            foreach ($target_ids as $target_id) {
-                $input['target_id'] = $target_id;
+            foreach ($target_values as $target_value) {
+                $input['target_value'] = $target_value;
                 $input['survey_id'] = $survey_id;
                 $input['target_type'] = $target_type;
                 $data[] = $input;
@@ -353,6 +356,23 @@ class SurveyController extends Controller
             }
             $target_survey = SurveyTargets::getSurveyTarget($survey_id)->get()->groupBy('target_type');
             return ClientResponse::responseSuccess('OK', $target_survey);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function deleteTargetSurvey(Request $request)
+    {
+        try {
+            $survey_id = $request->survey_id;
+            $target_survey_id = $request->target_survey_id;
+            $detail = SurveyTargets::getDetailTargetSurvey($survey_id, $target_survey_id);
+            if (!$detail) {
+                return ClientResponse::responseError('Không tồn tại bản ghi');
+            }
+            SurveyTargets::destroy($target_survey_id);
+            $target_survey = SurveyTargets::getSurveyTarget($survey_id)->get()->groupBy('target_type');
+            return ClientResponse::responseSuccess('Xóa thành công', $target_survey);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Facades\DB;
 
 class SurveyTargets extends Model
 {
     protected $fillable = [
         'survey_id',
-        'target_id',
+        'target_value',
         'target_type',
         'created_at',
         'updated_at',
@@ -24,5 +24,10 @@ class SurveyTargets extends Model
             $query->where('target_type', $target_type);
         }
         return $query;
+    }
+
+    public static  function getDetailTargetSurvey($survey_id, $target_survey_id)
+    {
+        return self::where('survey_id', $survey_id)->where('id', $target_survey_id)->first();
     }
 }
