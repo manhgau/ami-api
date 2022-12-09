@@ -212,10 +212,12 @@ class SurveyController extends Controller
                 $ids[$key] = $value['survey_question_id'];
             }
             $survey_questions = SurveyQuestion::getSurveyQuestion($ids)->toArray();
-            foreach ($survey_questions  as  $survey_question) {
-                $survey_id = $survey_question['survey_id'];
-                $survey_question['survey_id'] =  $survey->id;
-                self::__copySurveyQuestion($survey_question, $survey_id);
+            if (count($survey_questions) > 0) {
+                foreach ($survey_questions  as  $survey_question) {
+                    $survey_id = $survey_question['survey_id'];
+                    $survey_question['survey_id'] =  $survey->id;
+                    self::__copySurveyQuestion($survey_question, $survey_id);
+                }
             }
             return ClientResponse::responseSuccess('Thêm mới thành công', $survey);
         } catch (\Exception $ex) {
@@ -245,10 +247,12 @@ class SurveyController extends Controller
             }
             $page_id = SurveyQuestion::NO_PAGE;
             $list_questions  = SurveyQuestion::getAllQuestionGroup($survey_id, $page_id)->toArray();
-            foreach ($list_questions  as  $list_question) {
-                $list_question = $list_question;
-                $list_question['survey_id'] = $survey->id;
-                self::__copySurveyQuestion($list_question, $survey_id);
+            if (count($list_questions) > 0) {
+                foreach ($list_questions  as  $list_question) {
+                    $list_question = $list_question;
+                    $list_question['survey_id'] = $survey->id;
+                    self::__copySurveyQuestion($list_question, $survey_id);
+                }
             }
             return ClientResponse::responseSuccess('Thêm mới thành công', $survey);
         } catch (\Exception $ex) {
@@ -265,10 +269,12 @@ class SurveyController extends Controller
             unset($survey_question['updated_at']);
             unset($survey_question['background']);
             $result = SurveyQuestion::createSurveyQuestion($survey_question);
-            foreach ($list_question_groups as  $value) {
-                $value['page_id'] =  $result->id;
-                $value['survey_id'] =  $survey_question['survey_id'];
-                self::__copyQuestion($value, $value['id']);
+            if (count($list_question_groups) > 0) {
+                foreach ($list_question_groups as  $value) {
+                    $value['page_id'] =  $result->id;
+                    $value['survey_id'] =  $survey_question['survey_id'];
+                    self::__copyQuestion($value, $value['id']);
+                }
             }
         } else {
             $result = self::__copyQuestion($survey_question, $survey_question['id']);
