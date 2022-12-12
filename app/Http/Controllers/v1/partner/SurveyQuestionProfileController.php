@@ -37,9 +37,16 @@ class SurveyQuestionProfileController extends Controller
                 case QuestionTypeProfile::FULLNAME:
                 case QuestionTypeProfile::FAMILY_PEOPLE:
                 case QuestionTypeProfile::YEAR_OF_BIRTH:
+                    $data_response = $value;
+                    $datas[] = $data_response;
+                    break;
                 case QuestionTypeProfile::IS_KEY_SHOPPER:
                 case QuestionTypeProfile::HAS_CHILDREN:
                     $data_response = $value;
+                    $data_response['answers'] = [
+                        ["value" => 1, "name" => "Có"],
+                        ["value" => 2, "name" => "Không"],
+                    ];
                     $datas[] = $data_response;
                     break;
                 case QuestionTypeProfile::PROVINCE:
