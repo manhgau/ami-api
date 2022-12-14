@@ -42,7 +42,7 @@ class SurveyPartnerInputLineController extends Controller
                     $input['answer_type']   = $survey_question->question_type;
                     $input['created_by']   = $partner->id ?? 0;
                     $input['answer_score']   = $request->answer_score ?? 0;
-                    if (!$request->all()) {
+                    if ($request->skipped) {
                         $input['skipped']   = SurveyPartnerInputLine::SKIP;
                         $result = SurveyPartnerInputLine::create($input);
                         if (!$result) {

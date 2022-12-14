@@ -26,17 +26,20 @@ class SurveyPartnerInput extends Model
         'created_at',
         'updated_at',
     ];
-    const STATUS_NEW = 'new';
-    const STATUS_DONE = 'done';
-    const SKIP = 1;
-    const NOT_SKIP = 0;
+    const STATUS_NEW        = 'new';
+    const STATUS_DONE       = 'done';
+    const SKIP              = 1;
+    const NOT_SKIP          = 0;
 
-    const CLOSED  = 'closed';
-    const COMPLETED  = 'completed';
-    const NOT_COMPLETED  = 'not_completed';
+    const CLOSED            = 'closed';
+    const COMPLETED         = 'completed';
+    const NOT_COMPLETED     = 'not_completed';
 
-    const ANYNOMOUS_TRUE                     = 1;
-    const ANYNOMOUS_FALSE                    = 0;
+    const PARTNER           = 'partner';
+    const OTHER             = 'other';
+
+    const ANYNOMOUS_TRUE    = 1;
+    const ANYNOMOUS_FALSE   = 0;
 
     public static  function updateSurveyPartnerInput($data, $id)
     {

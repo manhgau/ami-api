@@ -16,6 +16,7 @@ use App\Models\PersonalIncomeLevels;
 use App\Models\Province;
 use App\Models\QuestionTypeProfile;
 use App\Models\Survey;
+use App\Models\SurveyPartnerInput;
 use App\Models\SurveyProfileInputs;
 use App\Models\SurveyProfileQuestions;
 use Illuminate\Http\Request;
@@ -121,7 +122,7 @@ class SurveyQuestionProfileController extends Controller
                         return ClientResponse::responseError('Không có Khảo sát phù hợp');
                     }
                     $survey_profile_id = $survey_detail->survey_profile_id;
-                    if ($option == 1) {
+                    if ($option == SurveyPartnerInput::PARTNER) {
                         $input = PartnerProfile::getPartnerProfileDetail($partner_id);
                         $input['partner_id'] = $partner_id;
                         $input['survey_id'] = $survey_id;
@@ -150,7 +151,67 @@ class SurveyQuestionProfileController extends Controller
         }
     }
 
-    private function __answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id, $is_partner_profile)
+    public function answerSurveyQuestionProfile(Request $request)
+    {
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $partner_id = $partner->id ?? 0;
+                    $phone = $partner->phone;
+                    $survey_profile_id = $request->survey_profile_id;
+                    $question_id = $request->question_id;
+                    $profile_type = $request->profile_type;
+                    $value_answer = $request->value_answer;
+                    $is_partner_profile = 1;
+                    $result = $this->__answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id = null, $is_partner_profile, $phone);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    return ClientResponse::responseSuccess('OK', $result);
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
+    }
+
+    public function answerQuestionProfileBySurvey(Request $request)
+    {
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $phone = $partner->phone;
+                    $survey_id = $request->survey_id;
+                    $survey_detail = Survey::getDetailSurvey($survey_id);
+                    if (!$survey_detail) {
+                        return ClientResponse::responseError('Không có Khảo sát phù hợp');
+                    }
+                    $survey_profile_id = $survey_detail->survey_profile_id;
+                    $question_id = $request->question_id;
+                    $profile_type = $request->profile_type;
+                    $value_answer = $request->value_answer;
+                    $is_partner_profile = 0;
+                    $result = $this->__answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id = null, $survey_id, $is_partner_profile, $phone);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    return ClientResponse::responseSuccess('OK', $result);
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
+    }
+
+    private function __answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id, $is_partner_profile, $phone)
     {
         //$is_partner_profile kiểm tra xem có update profile ko
         try {
@@ -234,6 +295,7 @@ class SurveyQuestionProfileController extends Controller
             $input[$profile_type] = $value_answer;
             $input['survey_profile_id'] = $survey_profile_id;
             $input['partner_id'] = $partner_id;
+            $input['phone'] = $phone;
             $input['survey_id'] = $survey_id;
             $model = SurveyProfileInputs::getSurveyProfileInputDetail($survey_profile_id, $survey_id, $partner_id);
             $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
@@ -253,64 +315,6 @@ class SurveyQuestionProfileController extends Controller
             return $result;
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
-        }
-    }
-
-    public function answerSurveyQuestionProfile(Request $request)
-    {
-        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
-        if ($tokenInfo) {
-            $partner = $tokenInfo->partner;
-            if ($partner) {
-                try {
-                    $partner_id = $partner->id ?? 0;
-                    $survey_profile_id = $request->survey_profile_id;
-                    $question_id = $request->question_id;
-                    $profile_type = $request->profile_type;
-                    $value_answer = $request->value_answer;
-                    $is_partner_profile = 1;
-                    $result = $this->__answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id = null, $is_partner_profile);
-                    if (!$result) {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    }
-                    return ClientResponse::responseSuccess('OK', $result);
-                } catch (\Exception $ex) {
-                    return ClientResponse::responseError($ex->getMessage());
-                }
-            }
-        } else {
-            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
-        }
-    }
-
-    public function answerQuestionProfileBySurvey(Request $request)
-    {
-        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
-        if ($tokenInfo) {
-            $partner = $tokenInfo->partner;
-            if ($partner) {
-                try {
-                    $survey_id = $request->survey_id;
-                    $survey_detail = Survey::getDetailSurvey($survey_id);
-                    if (!$survey_detail) {
-                        return ClientResponse::responseError('Không có Khảo sát phù hợp');
-                    }
-                    $survey_profile_id = $survey_detail->survey_profile_id;
-                    $question_id = $request->question_id;
-                    $profile_type = $request->profile_type;
-                    $value_answer = $request->value_answer;
-                    $is_partner_profile = 0;
-                    $result = $this->__answerQuestionProfile($survey_profile_id, $question_id, $profile_type,  $value_answer, $partner_id = null, $survey_id, $is_partner_profile);
-                    if (!$result) {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    }
-                    return ClientResponse::responseSuccess('OK', $result);
-                } catch (\Exception $ex) {
-                    return ClientResponse::responseError($ex->getMessage());
-                }
-            }
-        } else {
-            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
         }
     }
 }

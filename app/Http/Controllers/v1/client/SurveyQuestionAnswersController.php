@@ -92,17 +92,21 @@ class SurveyQuestionAnswersController extends Controller
     public function creatQuestionAnswersDropdown(Request $request)
     {
         try {
+            $survey_id = $request->survey_id;
             $question_id = $request->question_id;
+            SurveyQuestionAnswer::deletedeleteAllSurveyQuestionsAnswer($survey_id, $question_id);
             $question_answer_number = SurveyQuestionAnswer::select()->where('question_id', $question_id)->where(['deleted' => SurveyQuestionAnswer::NOT_DELETED])->count();
             $input['survey_id'] = $request->survey_id;
             $input['sequence'] = $request->sequence;
             $input['value'] = $request->value;
             $input['question_id'] =  $question_id;
             $arr = [];
-            foreach ($request->option    as $key => $value) {
-                $input['sequence'] = $question_answer_number + $key + 1;
-                $input['value'] = $value;
-                $arr[] = $input;
+            if (is_array($request->option) && count($request->option)) {
+                foreach ($request->option    as $key => $value) {
+                    $input['sequence'] = $question_answer_number + $key + 1;
+                    $input['value'] = $value;
+                    $arr[] = $input;
+                }
             }
             $data = SurveyQuestionAnswer::insert($arr);
             if (!$data) {

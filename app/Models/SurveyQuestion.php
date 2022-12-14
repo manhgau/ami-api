@@ -171,6 +171,7 @@ class SurveyQuestion extends Model
                 'a.name_level_2',
                 'a.name_level_3',
                 'a.background_id',
+                'a.logic',
                 'b.image as background',
             )
             ->where('a.deleted', self::NOT_DELETED)
