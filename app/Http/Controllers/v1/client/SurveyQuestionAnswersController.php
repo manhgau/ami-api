@@ -33,7 +33,7 @@ class SurveyQuestionAnswersController extends Controller
             $question_survey = SurveyQuestion::where('id', $question_id)->where('deleted',  SurveyQuestion::NOT_DELETED)->first();
             $input['survey_id'] = $request->survey_id;
             $input['sequence'] = $request->sequence;
-            $input['value'] = $request->value;
+            $input['value'] = ucfirst($request->value);
             $input['question_id'] =  $question_id;
             if ($question_survey->question_type == QuestionType::MULTI_FACTOR_MATRIX) {
                 $input['value_type'] = $request->value_type;
@@ -66,6 +66,7 @@ class SurveyQuestionAnswersController extends Controller
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
             $input = $request->all();
+            $request->value ? $input['value'] = ucfirst($request->value) : "";
             if ($survey->state == Survey::STATUS_ON_PROGRESS) {
                 SurveyQuestionAnswer::updateSurveyQuestionAnswer(['deleted' => SurveyQuestionAnswer::DELETED], $answer_id);
                 $input['question_id'] =  $question_answer->question_id;
@@ -94,7 +95,7 @@ class SurveyQuestionAnswersController extends Controller
         try {
             $survey_id = $request->survey_id;
             $question_id = $request->question_id;
-            SurveyQuestionAnswer::deletedeleteAllSurveyQuestionsAnswer($survey_id, $question_id);
+            SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $question_id);
             $question_answer_number = SurveyQuestionAnswer::select()->where('question_id', $question_id)->where(['deleted' => SurveyQuestionAnswer::NOT_DELETED])->count();
             $input['survey_id'] = $request->survey_id;
             $input['sequence'] = $request->sequence;
@@ -104,7 +105,7 @@ class SurveyQuestionAnswersController extends Controller
             if (is_array($request->option) && count($request->option)) {
                 foreach ($request->option    as $key => $value) {
                     $input['sequence'] = $question_answer_number + $key + 1;
-                    $input['value'] = $value;
+                    $input['value'] = ucfirst($value);
                     $arr[] = $input;
                 }
             }

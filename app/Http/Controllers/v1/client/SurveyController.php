@@ -43,6 +43,8 @@ class SurveyController extends Controller
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
             $input['user_id'] = $user_id;
+            $input['title'] = ucfirst($request->title);
+            $request->description ? $input['description'] = ucfirst($request->description) : "";
             $input['id'] = CFunction::generateUuid();
             $input['created_by'] = $user_id;
             $input['start_time'] = Carbon::now();
@@ -120,17 +122,10 @@ class SurveyController extends Controller
             $data = $request->all();
             $request->real_end_time ? $data['real_end_time'] = FormatDate::formatDate($request->real_end_time) : null;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+            $request->description ? $data['description'] = ucfirst($request->description) : "";
+            $request->title ? $data['title'] = ucfirst($request->title) : "";
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;
-            $texts = '';
-            if ($request->note) {
-                foreach ($data['note'] as $key => $value) {
-                    $typeProfile = QuestionTypeProfile::getTypeProfile();
-                    $string = '<span><strong>' . $typeProfile[$value['key']] . ': </strong>' . json_encode($value['value'], JSON_UNESCAPED_UNICODE) . '</span><br>';
-                    $texts = $texts . $string;
-                }
-                $data['note'] = $texts;
-            }
             $update_survey = Survey::updateSurvey($data, $request->survey_id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -197,7 +192,7 @@ class SurveyController extends Controller
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
             $input['user_id'] = $user_id;
-            $input['title'] = $request->title ?? $survey_template->title . ' copy';
+            $input['title'] = ucfirst($request->title) ?? $survey_template->title . ' copy';
             $input['active'] = Survey::ACTIVE;
             $input['id'] = CFunction::generateUuid();
             $input['start_time'] = Carbon::now();
