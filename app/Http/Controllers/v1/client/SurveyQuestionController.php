@@ -34,6 +34,8 @@ class SurveyQuestionController extends Controller
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
             }
             $survey_id = $request->survey_id;
+            $input['title'] = ucfirst($request->title);
+            $request->description ? $input['description'] = ucfirst($request->description) : "";
             $input['created_by'] = $user_id;
             $input['survey_id'] = $survey_id;
             $count_questions = SurveyQuestion::countSequence($survey_id, SurveyQuestion::NO_PAGE);
@@ -133,6 +135,8 @@ class SurveyQuestionController extends Controller
             }
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $input = $request->all();
+            $request->description ? $input['description'] = ucfirst($request->description) : "";
+            $request->title ? $input['title'] = ucfirst($request->title) : "";
             $input['updated_by'] = $user_id;
             $update_survey = SurveyQuestion::updateSurveyQuestion($input, $request->question_id);
             if (!$update_survey) {
