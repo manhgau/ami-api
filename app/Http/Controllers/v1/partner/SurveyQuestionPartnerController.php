@@ -31,8 +31,15 @@ class SurveyQuestionPartnerController extends Controller
                     if (!SurveyPartner::checkSurveyPartner($survey_id, $partner_id)) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
+                    $list_answer_logic = SurveyQuestionAnswer::getLogicAnswer($survey_id);
+                    $logic_comes = [];
+                    if (is_array($list_answer_logic) && count($list_answer_logic) > 0) {
+                        foreach ($list_answer_logic as $key => $value) {
+                            $logic_comes[$key] = $value['logic_come'];
+                        }
+                    }
                     $survey_setup = Survey::getSetupSurvey($survey_id);
-                    $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page,  $survey_setup->is_random);
+                    $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page,  $survey_setup->is_random, $logic_comes);
                     $lists = RemoveData::removeUnusedData($lists);
                     if (!$lists) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');

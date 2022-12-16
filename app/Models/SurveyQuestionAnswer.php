@@ -26,12 +26,18 @@ class SurveyQuestionAnswer extends Model
     const STATUS_INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+    const NOT_LOGIC  = 0;
 
     protected $hidden = ['deleted', 'created_at', 'updated_at', 'updated_by', 'created_by'];
 
     public static  function SurveyQuestionAnswer($data)
     {
         return self::create($data);
+    }
+
+    public static  function getLogicAnswer($survey_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('logic_come', '<>', self::NOT_LOGIC)->get()->toArray();
     }
 
     public static  function deleteAllSurveyQuestionsAnswer($survey_id, $question_id = null)

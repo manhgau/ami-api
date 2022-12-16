@@ -9,6 +9,7 @@ use App\Helpers\Context;
 use App\Models\QuestionType;
 use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
+use App\Models\SurveyQuestionAnswer;
 
 class SurveyPartnerInputLineAnynomousController extends Controller
 {
@@ -26,10 +27,11 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                 return ClientResponse::responseError($errorString);
             }
             $question_id = $request->question_id ?? 0;
+            $survey_id = $request->survey_id ?? 0;
             $input['question_id']   = $question_id;
-            $input['survey_id']     = $request->survey_id;
+            $input['survey_id']     = $survey_id;
             $input['partner_input_id']   = (int)$request->partner_input_id;
-            $survey_question = SurveyQuestion::getDetailSurveyQuestion($question_id);
+            $survey_question = SurveyQuestion::checkQuestionOfSurvey($survey_id, $question_id);
             $input['question_sequence']     = $survey_question->sequence;
             $input['answer_type']   = $survey_question->question_type;
             $input['answer_score']   = $request->answer_score ?? 0;
@@ -49,6 +51,10 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     }
                     $target_ids = $request->suggested_answer_id;
                     if (is_array($target_ids)) {
+                        if ($survey_question->logic == SurveyQuestion::LOGIC && $survey_question->is_multiple == SurveyQuestion::NOT_MULTIPLE) {
+                            $logic_come = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($target_ids[0])->logic_come;
+                            $question_logic = SurveyQuestion::getQuestionByLogic($survey_id,  $logic_come);
+                        }
                         foreach ($target_ids  as $key =>  $value) {
                             $input['suggested_answer_id'] = $value;
                             $data_input[$key] = $input;
@@ -152,6 +158,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     return ClientResponse::responseError('question type không hợp lệ', $input['answer_type']);
                     break;
             }
+            $question_logic ? $result = $question_logic : $result = $result;
             $result = SurveyPartnerInputLine::insert($data_input);
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');

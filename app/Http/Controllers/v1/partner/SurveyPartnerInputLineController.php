@@ -7,9 +7,11 @@ use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Context;
 use App\Helpers\FormatDate;
+use App\Helpers\LogicQuestionAnswer;
 use App\Models\QuestionType;
 use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
+use App\Models\SurveyQuestionAnswer;
 
 class SurveyPartnerInputLineController extends Controller
 {
@@ -31,10 +33,11 @@ class SurveyPartnerInputLineController extends Controller
                         return ClientResponse::responseError($errorString);
                     }
                     $question_id = $request->question_id ?? 0;
+                    $survey_id = $request->survey_id ?? 0;
                     $input['question_id']   = $question_id;
-                    $input['survey_id']     = $request->survey_id;
+                    $input['survey_id']     = $survey_id;
                     $input['partner_input_id']   = $request->partner_input_id;
-                    $survey_question = SurveyQuestion::checkQuestionOfSurvey($input['survey_id'], $question_id);
+                    $survey_question = SurveyQuestion::checkQuestionOfSurvey($survey_id, $question_id);
                     if (!$survey_question) {
                         return ClientResponse::responseError('Khảo sát không có câu hỏi này');
                     }
@@ -42,7 +45,7 @@ class SurveyPartnerInputLineController extends Controller
                     $input['answer_type']   = $survey_question->question_type;
                     $input['created_by']   = $partner->id ?? 0;
                     $input['answer_score']   = $request->answer_score ?? 0;
-                    if ($request->skipped) {
+                    if (!$request->all()) {
                         $input['skipped']   = SurveyPartnerInputLine::SKIP;
                         $result = SurveyPartnerInputLine::create($input);
                         if (!$result) {
@@ -73,7 +76,12 @@ class SurveyPartnerInputLineController extends Controller
                                 return ClientResponse::responseError($errorString);
                             }
                             $target_ids = $request->suggested_answer_id;
+
                             if (is_array($target_ids)) {
+                                if ($survey_question->logic == SurveyQuestion::LOGIC && $survey_question->is_multiple == SurveyQuestion::NOT_MULTIPLE) {
+                                    $logic_come = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($target_ids[0])->logic_come;
+                                    $question_logic = SurveyQuestion::getQuestionByLogic($survey_id,  $logic_come);
+                                }
                                 foreach ($target_ids  as $key => $value) {
                                     $input['suggested_answer_id'] = $value;
                                     $data_input[$key] = $input;
@@ -220,6 +228,7 @@ class SurveyPartnerInputLineController extends Controller
                         ],
                         $question_id
                     );
+                    $question_logic ? $result = $question_logic : $result = $result;
                     return ClientResponse::responseSuccess('Trả lời thành công', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
