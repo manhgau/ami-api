@@ -245,6 +245,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
                 Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
                 Route::post('/mapping-uid-fcmtoken', [MappingUidFcmTokenController::class, 'mappingUidFcmToken']);
+                Route::post('/upload-avatar', [PartnerAuthController::class, 'updateAvatar']);
             });
         });
 
