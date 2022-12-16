@@ -44,8 +44,7 @@ class SurveyPartnerInputAnynomousController extends Controller
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            $survey->view = $survey->view + 1;
-            $survey->save();
+            Survey::updateSurvey(['view' => $survey->view + 1], $request->survey_id);
             return ClientResponse::responseSuccess('Thêm mới thành công', $result);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());

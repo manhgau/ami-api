@@ -126,6 +126,7 @@ class SurveyController extends Controller
             $request->title ? $data['title'] = ucfirst($request->title) : "";
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;
+            $data['updated_at'] = Carbon::now();
             $update_survey = Survey::updateSurvey($data, $request->survey_id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');

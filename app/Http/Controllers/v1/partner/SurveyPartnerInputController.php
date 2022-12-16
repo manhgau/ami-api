@@ -79,16 +79,15 @@ class SurveyPartnerInputController extends Controller
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
                     $survey_partner = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
-                    $survey_partner->number_of_respone_partner = $survey_partner->number_of_respone_partner + 1;
-                    $survey_partner->save();
+                    SurveyPartner::updateSurveyPartner(['number_of_respone_partner' =>  $survey_partner->number_of_respone_partner + 1], $partner_input_id);
                     $survey = Survey::getDetailSurvey($survey_id);
                     $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id);
                     if ($count_survey_input < $survey->number_of_respone) {
-                        $survey->number_of_response = $survey->number_of_response + 1;
+                        $data_survey['number_of_response'] = $survey->number_of_response + 1;
                     } else {
-                        $survey->state = Survey::STATUS_COMPLETED;
+                        $data_survey['state'] = Survey::STATUS_COMPLETED;
                     }
-                    $survey->save();
+                    Survey::updateSurvey($data_survey, $survey_id);
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($survey_id, $partner_id);
                     if ($count_survey_partner_input <= $survey->attempts_limit_max && $count_survey_partner_input >= $survey->attempts_limit_min) {
                         $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
@@ -226,8 +225,10 @@ class SurveyPartnerInputController extends Controller
                     $partner_profile = $partner->profile;
                     $survey_id = $request->survey_id;
                     $survey_detail = Survey::getDetailSurvey($survey_id);
-                    $survey_detail->view  = $survey_detail->view + 1;
-                    $survey_detail->save();
+                    if (!$survey_detail) {
+                        return ClientResponse::responseError('Không có bản ghi phù hợp');
+                    }
+                    Survey::updateSurvey(['view' => $survey_detail->view + 1], $survey_id);
                     $number_of_response = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_FALSE);
                     if ($number_of_response >= $survey_detail->limmit_of_response) {
                         return ClientResponse::response(ClientResponse::$limmit_of_response, 'Khảo sát đã đạt lượt phản hồ giới hạn');
