@@ -15,7 +15,10 @@ use App\Helpers\Common\CFunction;
 use DB;
 use App\Helpers\Context;
 use App\Helpers\FormatDate;
+use App\Helpers\FtpSv;
 use App\Helpers\JWT;
+use App\Models\AppSetting;
+use App\Models\SurveyPartnerInput;
 
 class AuthController extends Controller
 {
@@ -315,10 +318,12 @@ class AuthController extends Controller
         if ($tokenInfo) {
             $partner = $tokenInfo->partner;
             if ($partner) {
-                return ClientResponse::responseSuccess('Thông tin tài khoản', [
-                    'user'      =>  $partner,
-                    'profile'   =>  $partner->profile
-                ]);
+                $partner->count_survey = SurveyPartnerInput::countPartnerInput($partner->id);
+                $partner->profile =  $partner->profile;
+                $all_settings = AppSetting::getAllSetting();
+                $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+                $partner->profile->avatar ? $partner->profile->avatar =   $image_domain . $partner->profile->avatar : null;
+                return ClientResponse::responseSuccess('Thông tin tài khoản', $partner);
             } else {
                 return ClientResponse::responseError('Tài khoản không tồn tại');
             }
@@ -400,5 +405,34 @@ class AuthController extends Controller
     private function __logoutOtherDevices($partner_id)
     {
         PartnerAccessToken::where('partner_id', $partner_id)->delete();
+    }
+
+    public function updateAvatar(Request $request)
+    {
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+                try {
+                    $partner_id = $partner->id ?? 0;
+                    if ($file = $request->file('avatar')) {
+                        $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
+                        $path = env('FTP_PATH') . FtpSv::AVATAR_PARTNER;
+                        $image = FtpSv::upload($file, $name, $path, FtpSv::AVATAR_PARTNER);
+                        $update_image = PartnerProfile::updatePartnerProfile(['avatar' => $image], $partner_id);
+                        if (!$update_image) {
+                            return ClientResponse::responseError('Đã có lỗi xảy ra');
+                        }
+                        $all_settings = AppSetting::getAllSetting();
+                        $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+                        return ClientResponse::responseSuccess('OK', $image_domain .  $image);
+                    }
+                } catch (\Exception $ex) {
+                    return ClientResponse::responseError($ex->getMessage());
+                }
+            }
+        } else {
+            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+        }
     }
 }

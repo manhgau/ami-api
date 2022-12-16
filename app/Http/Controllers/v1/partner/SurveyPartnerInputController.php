@@ -106,7 +106,7 @@ class SurveyPartnerInputController extends Controller
                         $input_log['object_id '] = $survey_id;
                         PartnerPointLog::create($input_log);
                     }
-                    return ClientResponse::responseSuccess('Cập nhập thành công', $result);
+                    return ClientResponse::responseSuccess('Cập nhập thành công', true);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
                 }
@@ -206,8 +206,8 @@ class SurveyPartnerInputController extends Controller
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            Survey::updateSurvey(['skip_count' => $survey->$survey + 1], $survey_id);
-            SurveyQuestion::updateSurveyQuestion(['skip_count' => $question->$survey + 1], $question_id);
+            Survey::updateSurvey(['skip_count' => $survey->skip_count + 1], $survey_id);
+            SurveyQuestion::updateSurveyQuestion(['skip_count' => $question->skip_count + 1], $question_id);
             return ClientResponse::responseSuccess('OK');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());

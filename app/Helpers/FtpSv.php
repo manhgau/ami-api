@@ -9,6 +9,7 @@ class FtpSv
 {
     const LOGO_FOLDER                          = 'uploads/user/logo';
     const AVATAR_FOLDER                        = 'uploads/user/avatar';
+    const AVATAR_PARTNER                       = 'uploads/partner';
     const BACKGROUND_SURVEY_FOLDER             = 'uploads/survey/background';
     const BACKGROUND_QUESTION_FOLDER           = 'uploads/question/background';
     public static function upload($file, $file_name, $ftpPath, $temp_path)

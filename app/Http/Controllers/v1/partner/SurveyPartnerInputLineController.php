@@ -58,7 +58,7 @@ class SurveyPartnerInputLineController extends Controller
                             ],
                             $question_id
                         );
-                        return ClientResponse::responseSuccess('Trả lời thành công', $result);
+                        return ClientResponse::responseSuccess('Bỏ qua thành công', true);
                     }
                     // to do ....   
                     $data_input = [];
@@ -228,7 +228,7 @@ class SurveyPartnerInputLineController extends Controller
                         ],
                         $question_id
                     );
-                    $question_logic ? $result = $question_logic : $result = $result;
+                    $result = $question_logic ?? $result;
                     return ClientResponse::responseSuccess('Trả lời thành công', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
