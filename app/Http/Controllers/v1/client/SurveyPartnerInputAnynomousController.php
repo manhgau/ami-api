@@ -79,7 +79,14 @@ class SurveyPartnerInputAnynomousController extends Controller
             if (!$survey_setup) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page,  $survey_setup->is_random);
+            $list_answer_logic = SurveyQuestionAnswer::getLogicAnswer($survey_id);
+            $logic_comes = [];
+            if (is_array($list_answer_logic) && count($list_answer_logic) > 0) {
+                foreach ($list_answer_logic as $key => $value) {
+                    $logic_comes[$key] = $value['logic_come'];
+                }
+            }
+            $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page,  $survey_setup->is_random,  $logic_comes);
             $lists = RemoveData::removeUnusedData($lists);
             if (!$lists) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
