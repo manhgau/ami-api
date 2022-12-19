@@ -41,13 +41,13 @@ class SurveyPartnerController extends Controller
                         if ($value->end_time <= $time_now) {
                             $value->status = SurveyPartner::CLOSED;
                         } else {
-                            if ($value->number_of_respone == $value->limmit_of_response) {
+                            if ($value->number_of_response == $value->limmit_of_response) {
                                 $value->status = SurveyPartner::COMPLETED;
                             } else {
                                 $value->status = SurveyPartner::NOT_COMPLETED;
                             }
                         }
-                        if ($value->is_answer_single == Survey::ANSWER_SINGLE && $value->number_of_respone_partner == Survey::ANSWER_SINGLE) {
+                        if ($value->is_answer_single == Survey::ANSWER_SINGLE && $value->number_of_response_partner == Survey::ANSWER_SINGLE) {
                             $value->status = SurveyPartner::COMPLETED;
                         }
                         $array[$key] = $value;

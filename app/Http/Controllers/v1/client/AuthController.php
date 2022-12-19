@@ -391,7 +391,7 @@ class AuthController extends Controller
                     $user_package = UserPackage::getPackageUser($user_id, $time_now);
                     if ($user_package['add_logo']) {
                         $path = env('FTP_PATH') . FtpSv::LOGO_FOLDER;
-                        $image = FtpSv::upload($file, $name, $path, $request->template_id, FtpSv::LOGO_FOLDER);
+                        $image = FtpSv::upload($file, $name, $path, FtpSv::LOGO_FOLDER);
                         $update_image = User::updateProfile([User::LOGO => $image], $user_id);
                         if (!$update_image) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -400,7 +400,7 @@ class AuthController extends Controller
                     return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
                 } else {
                     $path = env('FTP_PATH') . FtpSv::AVATAR_FOLDER;
-                    $image = FtpSv::upload($file, $name, $path, $request->template_id, FtpSv::AVATAR_FOLDER);
+                    $image = FtpSv::upload($file, $name, $path, FtpSv::AVATAR_FOLDER);
                     $update_image = User::updateProfile([User::AVATAR => $image], $user_id);
                     if (!$update_image) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');

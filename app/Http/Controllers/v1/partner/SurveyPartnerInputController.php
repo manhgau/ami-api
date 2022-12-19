@@ -13,7 +13,6 @@ use App\Models\PartnerProfile;
 use App\Models\Survey;
 use App\Models\SurveyPartner;
 use App\Models\SurveyPartnerInput;
-use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
 use Carbon\Carbon;
 
@@ -79,10 +78,10 @@ class SurveyPartnerInputController extends Controller
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
                     $survey_partner = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
-                    SurveyPartner::updateSurveyPartner(['number_of_respone_partner' =>  $survey_partner->number_of_respone_partner + 1], $partner_input_id);
+                    SurveyPartner::updateSurveyPartner(['number_of_response_partner' =>  $survey_partner->number_of_response_partner + 1], $partner_input_id);
                     $survey = Survey::getDetailSurvey($survey_id);
                     $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id);
-                    if ($count_survey_input < $survey->number_of_respone) {
+                    if ($count_survey_input < $survey->number_of_response) {
                         $data_survey['number_of_response'] = $survey->number_of_response + 1;
                     } else {
                         $data_survey['state'] = Survey::STATUS_COMPLETED;
@@ -140,13 +139,13 @@ class SurveyPartnerInputController extends Controller
                         if ($value->end_time <= $time_now) {
                             $value->status = SurveyPartner::CLOSED;
                         } else {
-                            if ($value->number_of_respone == $value->limmit_of_response) {
+                            if ($value->number_of_response == $value->limmit_of_response) {
                                 $value->status = SurveyPartner::COMPLETED;
                             } else {
                                 $value->status = SurveyPartner::NOT_COMPLETED;
                             }
                         }
-                        if ($value->is_answer_single == Survey::ANSWER_SINGLE && $value->number_of_respone_partner == Survey::ANSWER_SINGLE) {
+                        if ($value->is_answer_single == Survey::ANSWER_SINGLE && $value->number_of_response_partner == Survey::ANSWER_SINGLE) {
                             $value->status = SurveyPartner::COMPLETED;
                         }
                         $array[$key] = $value;

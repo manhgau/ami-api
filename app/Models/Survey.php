@@ -25,7 +25,7 @@ class Survey extends Model
         'real_end_time',
         'question_layout',
         'progression_mode',
-        'number_of_respone',
+        'number_of_response',
         'point',
         'is_attempts_limited',
         'attempts_limit_min',
@@ -64,7 +64,7 @@ class Survey extends Model
             'question_count',
             'start_time',
             'real_end_time',
-            'number_of_respone',
+            'number_of_response',
             'created_at',
             'updated_at',
         )
