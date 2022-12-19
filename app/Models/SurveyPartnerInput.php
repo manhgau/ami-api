@@ -96,9 +96,9 @@ class SurveyPartnerInput extends Model
                 'b.attempts_limit_min',
                 'b.attempts_limit_max',
                 'b.is_answer_single',
-                'c.number_of_respone_partner',
+                'c.number_of_response_partner',
                 'b.limmit_of_response',
-                'b.number_of_respone',
+                'b.number_of_response',
             )
             ->where('a.partner_id', $partner_id)
             ->where('b.start_time', '<', $time_now)
@@ -115,15 +115,15 @@ class SurveyPartnerInput extends Model
         if ($status == self::COMPLETED) {
             $query->where(function ($query) {
                 $query->orwhere(function ($query) {
-                    $query->where('b.end_time', '>', Carbon::now())->whereColumn('b.number_of_respone', '=', 'b.limmit_of_response');
+                    $query->where('b.end_time', '>', Carbon::now())->whereColumn('b.number_of_response', '=', 'b.limmit_of_response');
                 });
                 $query->orwhere(function ($query) {
-                    $query->where('b.end_time', '>', Carbon::now())->where('b.is_answer_single', Survey::ANSWER_SINGLE)->where('c.number_of_respone_partner', '=', 1);
+                    $query->where('b.end_time', '>', Carbon::now())->where('b.is_answer_single', Survey::ANSWER_SINGLE)->where('c.number_of_response_partner', '=', 1);
                 });
             });
         }
         if ($status == self::NOT_COMPLETED) {
-            $query->where('b.end_time', '>', Carbon::now())->where('b.is_answer_single', Survey::ANSWER_MULTIPLE)->whereColumn('b.number_of_respone', '<', 'b.limmit_of_response');
+            $query->where('b.end_time', '>', Carbon::now())->where('b.is_answer_single', Survey::ANSWER_MULTIPLE)->whereColumn('b.number_of_response', '<', 'b.limmit_of_response');
         }
         return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
