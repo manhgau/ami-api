@@ -80,39 +80,49 @@ class SurveyQuestionController extends Controller
         try {
             $question_id = $request->question_id;
             if (empty($detail)) {
-                $detail = SurveyQuestion::getDetailSurveyQuestion($question_id);
-                if (!$detail) {
-                    return ClientResponse::responseError('Không có bản ghi phù hợp');
-                }
-                $all_settings = AppSetting::getAllSetting();
-                $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
-                $detail->background ? $detail->background = $image_domain . $detail->background : null;
-                $random =  $detail->validation_random;
-                switch ($detail->question_type) { // question_id 
-                    case QuestionType::MULTI_FACTOR_MATRIX:
-                        $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->orWhere('matrix_question_id', $detail->id)->get();
-                        break;
-                    case QuestionType::MULTI_CHOICE:
-                    case QuestionType::MULTI_CHOICE_DROPDOWN:
-                    case QuestionType::YES_NO:
-                        $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->get();
-                        break;
-                    case QuestionType::DATETIME_DATE:
-                    case QuestionType::DATETIME_DATE_RANGE:
-                    case QuestionType::QUESTION_ENDED_SHORT_TEXT:
-                    case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                    case QuestionType::NUMBER:
-                    case QuestionType::RATING_STAR:
-                    case QuestionType::RANKING:
-                    case QuestionType::GROUP:
-                        $detail->answers = [];
-                        break;
-                    default:
-                        return ClientResponse::responseError('question type không hợp lệ', $detail->question_type);
-                        break;
-                }
+                $detail = self::__getDetailSurveyQuestion($question_id);
             }
             return ClientResponse::responseSuccess('OK', $detail);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    private function __getDetailSurveyQuestion($question_id)
+    {
+        try {
+            $detail = SurveyQuestion::getDetailSurveyQuestion($question_id);
+            if (!$detail) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            $all_settings = AppSetting::getAllSetting();
+            $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+            $detail->background ? $detail->background = $image_domain . $detail->background : null;
+            $random =  $detail->validation_random;
+            switch ($detail->question_type) { // question_id 
+                case QuestionType::MULTI_FACTOR_MATRIX:
+                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->orWhere('matrix_question_id', $detail->id)->get();
+                    break;
+                case QuestionType::MULTI_CHOICE:
+                case QuestionType::MULTI_CHOICE_DROPDOWN:
+                case QuestionType::YES_NO:
+                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->get();
+                    break;
+                case QuestionType::DATETIME_DATE:
+                case QuestionType::DATETIME_DATE_RANGE:
+                case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+                case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                case QuestionType::NUMBER:
+                case QuestionType::RATING_STAR:
+                case QuestionType::RANKING:
+                case QuestionType::GROUP:
+                    $detail->answers = [];
+                    break;
+                default:
+                    return ClientResponse::responseError('question type không hợp lệ', $detail->question_type);
+                    break;
+            }
+            return $detail;
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
@@ -129,16 +139,115 @@ class SurveyQuestionController extends Controller
                 $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
-            $survey_user = SurveyQuestion::getDetailSurveyQuestion($request->question_id);
+            $survey_id = $request->survey_id;
+            $question_id = $request->question_id;
+            $input = $request->all();
+            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+            $survey = Survey::getDetailSurvey($survey_id);
+            $survey_user = SurveyQuestion::getDetailSurveyQuestion($question_id);
             if (!$survey_user) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $input = $request->all();
+            if ($request->question_type && $survey->state == Survey::STATUS_DRAFT) {
+                if (($request->question_type  == QuestionType::MULTI_CHOICE && $survey_user->question_type ==  QuestionType::MULTI_CHOICE_DROPDOWN)
+                    || ($request->question_type  == QuestionType::MULTI_CHOICE_DROPDOWN && $survey_user->question_type ==  QuestionType::MULTI_CHOICE)
+                ) {
+                    $input['updated_by'] = $user_id;
+                    $update_question = SurveyQuestion::updateSurveyQuestion($input,  $question_id);
+                    if (!$update_question) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    $detail = self::__getDetailSurveyQuestion($question_id);
+                    return ClientResponse::responseSuccess('Update thành công', $detail);
+                } else {
+                    SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $question_id);
+                    switch ($request->question_type) { // question_id 
+                        case QuestionType::MULTI_FACTOR_MATRIX:
+                            $input['is_page'] = SurveyQuestion::NO_PAGE;
+                            $data_insert = [
+                                [
+                                    "survey_id" => $survey_id,
+                                    "question_id" => $question_id,
+                                    "sequence" => 1,
+                                    "value_type" => QuestionType::MATRIX_VALUE_ROW,
+                                    "value" => "Hàng 1"
+                                ],
+                                [
+                                    "survey_id" => $survey_id,
+                                    "question_id" => $question_id,
+                                    "sequence" => 2,
+                                    "value_type" => QuestionType::MATRIX_VALUE_ROW,
+                                    "value" => "Hàng 2"
+                                ],
+                                [
+                                    "survey_id" => $survey_id,
+                                    "matrix_question_id" => $question_id,
+                                    "sequence" => 1,
+                                    "value_type" => QuestionType::MATRIX_VALUE_COLUMN,
+                                    "value" => "Cột 1"
+                                ],
+                                [
+                                    "survey_id" => $survey_id,
+                                    "matrix_question_id" => $question_id,
+                                    "sequence" => 2,
+                                    "value_type" => QuestionType::MATRIX_VALUE_COLUMN,
+                                    "value" => "Cột 2"
+                                ]
+
+                            ];
+                            SurveyQuestionAnswer::insert($data_insert);
+                            break;
+                        case QuestionType::MULTI_CHOICE:
+                        case QuestionType::MULTI_CHOICE_DROPDOWN:
+                        case QuestionType::YES_NO:
+                            $input['is_page'] = SurveyQuestion::NO_PAGE;
+                            $data_insert = [
+                                [
+                                    "survey_id" => "ee45ffa6-57a7-45a6-9f6a-528a22ab7d99",
+                                    "question_id" => $question_id,
+                                    "sequence" => 1,
+                                    "value" => "Lựa chọn 1"
+                                ],
+                                [
+                                    "survey_id" => "ee45ffa6-57a7-45a6-9f6a-528a22ab7d99",
+                                    "question_id" => $question_id,
+                                    "sequence" => 2,
+                                    "value" => "Lựa chọn 2"
+                                ]
+
+                            ];
+                            SurveyQuestionAnswer::insert($data_insert);
+                            break;
+                        case QuestionType::DATETIME_DATE:
+                        case QuestionType::DATETIME_DATE_RANGE:
+                        case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+                        case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                        case QuestionType::NUMBER:
+                        case QuestionType::RATING_STAR:
+                        case QuestionType::RANKING:
+                            $input['is_page'] = SurveyQuestion::NO_PAGE;
+                            break;
+                        case QuestionType::GROUP:
+                            $input['is_page'] = SurveyQuestion::IS_PAGE;
+
+                            break;
+                        default:
+                            return ClientResponse::responseError('question type không hợp lệ', $request->question_type);
+                            break;
+                    }
+                    $input['updated_by'] = $user_id;
+                    $update_question = SurveyQuestion::updateSurveyQuestion($input,  $question_id);
+                    if (!$update_question) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    $detail = self::__getDetailSurveyQuestion($question_id);
+                    return ClientResponse::responseSuccess('Update thành công', $detail);
+                }
+            }
             $request->description ? $input['description'] = ucfirst($request->description) : "";
             $request->title ? $input['title'] = ucfirst($request->title) : "";
             $input['updated_by'] = $user_id;
-            $update_survey = SurveyQuestion::updateSurveyQuestion($input, $request->question_id);
+            $update_survey = SurveyQuestion::updateSurveyQuestion($input, $question_id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
