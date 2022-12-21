@@ -34,6 +34,8 @@ class SurveyPartnerInputLineController extends Controller
                     }
                     $question_id = $request->question_id ?? 0;
                     $survey_id = $request->survey_id ?? 0;
+                    $partner_input_id = $request->partner_input_id ?? 0;
+                    SurveyPartnerInputLine::deletePartnerInputLine($survey_id, $partner_input_id, $question_id);
                     $input['question_id']   = $question_id;
                     $input['survey_id']     = $survey_id;
                     $input['partner_input_id']   = $request->partner_input_id;

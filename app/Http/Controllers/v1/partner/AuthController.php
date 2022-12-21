@@ -413,23 +413,6 @@ class AuthController extends Controller
         if ($tokenInfo) {
             $partner = $tokenInfo->partner;
             if ($partner) {
-                // try {
-                //     $partner_id = $partner->id ?? 0;
-                //     if ($file = $request->file('avatar')) {
-                //         $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
-                //         $path = env('FTP_PATH') . FtpSv::AVATAR_PARTNER;
-                //         $image = FtpSv::upload($file, $name, $path, FtpSv::AVATAR_PARTNER);
-                //         $update_image = PartnerProfile::updatePartnerProfile(['avatar' => $image], $partner_id);
-                //         if (!$update_image) {
-                //             return ClientResponse::responseError('Đã có lỗi xảy ra');
-                //         }
-                //         $all_settings = AppSetting::getAllSetting();
-                //         $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
-                //         return ClientResponse::responseSuccess('OK', $image_domain .  $image);
-                //     }
-                // } catch (\Exception $ex) {
-                //     return ClientResponse::responseError($ex->getMessage());
-                // }
                 try {
                     $validator = Validator::make($request->all(), [
                         'avatar' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048',

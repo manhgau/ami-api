@@ -38,6 +38,7 @@ class SurveyQuestionController extends Controller
             $request->description ? $input['description'] = ucfirst($request->description) : "";
             $input['created_by'] = $user_id;
             $input['survey_id'] = $survey_id;
+            $request->page_id ?  $input['sequence'] = self::__getDetailSurveyQuestion($request->page_id)->sequence . '.' . $input['sequence']  : $input['sequence'];
             $count_questions = SurveyQuestion::countSequence($survey_id, SurveyQuestion::NO_PAGE);
             $input_survey['question_count'] =   $count_questions + 1;
             Survey::updateSurvey($input_survey,  $survey_id);
@@ -65,6 +66,20 @@ class SurveyQuestionController extends Controller
                 $value['group_question'] = $group_question;
                 $datas[$key]  = $value;
             }
+            if (!$datas) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            return ClientResponse::responseSuccess('OK', $datas);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function getListQuestionLogic(Request $request)
+    {
+        try {
+            $survey_id = $request->survey_id;
+            $datas = SurveyQuestion::getListQuestionLogic($survey_id);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

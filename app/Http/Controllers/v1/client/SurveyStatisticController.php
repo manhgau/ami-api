@@ -105,7 +105,7 @@ class SurveyStatisticController extends Controller
             $filter['family_peoples'] = $request->family_peoples ?? null;
             $filter['has_children'] = $request->has_children ?? null;
             $filter['is_key_shopper'] = $request->is_key_shopper ?? null;
-            $datas = SurveyQuestion::getListQuestion($survey_id, $perPage, $page);
+            $datas = SurveyQuestion::getListQuestion($survey_id, $perPage, $page, $logic_comes = null);
             $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');

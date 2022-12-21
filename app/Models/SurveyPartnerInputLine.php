@@ -57,4 +57,10 @@ class SurveyPartnerInputLine extends Model
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)
             ->where('skipped', 0)->where('partner_input_id', $partner_input_id)->count();
     }
+
+    public static  function deletePartnerInputLine($survey_id, $partner_input_id, $question_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)
+            ->where('question_id', $question_id)->where('partner_input_id', $partner_input_id)->delete();
+    }
 }
