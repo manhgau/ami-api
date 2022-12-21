@@ -98,6 +98,32 @@ class SurveyQuestion extends Model
             ->get();
     }
 
+    public static  function getListQuestionLogic($survey_id)
+    {
+        return self::select(
+            'id',
+            'survey_id',
+            'sequence',
+            'title',
+            'description',
+            'question_type',
+            'skip_count',
+            'view',
+            'type_ranking',
+            'is_multiple',
+            'validation_random',
+            'is_time',
+            'format_date_time',
+            'is_page',
+            'page_id'
+        )
+            ->where('deleted', self::NOT_DELETED)
+            ->where('survey_id', $survey_id)
+            ->where('question_type', '<>', QuestionType::GROUP)
+            ->orderBy('sequence', 'asc')
+            ->get();
+    }
+
     public static  function getAllQuestion($survey_id, $page_id)
     {
         return self::select('id', 'sequence')
@@ -117,9 +143,9 @@ class SurveyQuestion extends Model
             ->get();
     }
 
-    public static  function listGroupQuestions($survey_id, $page_id)
+    public static  function listGroupQuestions($survey_id, $page_id, $logic_comes = null)
     {
-        return  DB::table('survey_questions  as a')
+        $query =  DB::table('survey_questions  as a')
             ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
             ->select(
                 'a.id',
@@ -142,12 +168,15 @@ class SurveyQuestion extends Model
             )
             ->where('a.deleted', self::NOT_DELETED)
             ->where('a.survey_id', $survey_id)
-            ->where('a.page_id', $page_id)
-            ->orderBy('a.sequence', 'asc')
+            ->where('a.page_id', $page_id);
+        if ($logic_comes != null) {
+            $query = $query->whereNotIn('a.id', $logic_comes);
+        }
+        return $query->orderBy('a.sequence', 'asc')
             ->get();
     }
 
-    public static  function getListQuestion($survey_id, $perPage, $page, $random, $logic_comes)
+    public static  function getListQuestion($survey_id, $perPage, $page, $random, $logic_comes = null)
     {
         $query = DB::table('survey_questions  as a')
             ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
@@ -178,8 +207,10 @@ class SurveyQuestion extends Model
             )
             ->where('a.deleted', self::NOT_DELETED)
             ->where('a.survey_id', $survey_id)
-            ->whereNotIn('a.id', $logic_comes)
             ->where('a.page_id', self::NO_PAGE);
+        if ($logic_comes != null) {
+            $query = $query->whereNotIn('a.id', $logic_comes);
+        }
         if ($random == 1) {
             $query = $query->inRandomOrder();
         } else {

@@ -51,58 +51,7 @@ class SurveyQuestionPartnerController extends Controller
                         $value->background ? $value->background = $image_domain . $value->background : null;
                         if ($value->question_type == QuestionType::GROUP) {
 
-                            $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
-                            $list_question = [];
-                            foreach ($question_group as $cat => $item) {
-                                $item->background ? $item->background = $image_domain . $item->background : null;
-                                $list_question  = self::__getAnswer($cat, $item, $list_question);
-                            }
-                            $value->group_question = $list_question;
-                            $datas[$key] = $value;
-                        } else {
-                            $datas  = self::__getAnswer($key, $value, $datas);
-                        }
-                    }
-                    $lists['data'] = $datas;
-                    return ClientResponse::responseSuccess('OK', $lists);
-                } catch (\Exception $ex) {
-                    return ClientResponse::responseError($ex->getMessage());
-                }
-            } else {
-                return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
-            }
-        }
-    }
-
-    public function getSurveyQuestionByLogic(Request $request)
-    {
-
-        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
-        if ($tokenInfo) {
-            $partner = $tokenInfo->partner;
-            if ($partner) {
-                try {
-                    $survey_id = $request->survey_id;
-                    $perPage = $request->per_page ?? 20;
-                    $page = $request->current_page ?? 1;
-                    $partner_id = $partner->id ?? 0;
-                    if (!SurveyPartner::checkSurveyPartner($survey_id, $partner_id)) {
-                        return ClientResponse::responseError('Không có bản ghi phù hợp');
-                    }
-                    $survey_setup = Survey::getSetupSurvey($survey_id);
-                    $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page,  $survey_setup->is_random);
-                    $lists = RemoveData::removeUnusedData($lists);
-                    if (!$lists) {
-                        return ClientResponse::responseError('Không có bản ghi phù hợp');
-                    }
-                    $datas = [];
-                    $all_settings = AppSetting::getAllSetting();
-                    $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
-                    foreach ($lists['data'] as $key => $value) {
-                        $value->background ? $value->background = $image_domain . $value->background : null;
-                        if ($value->question_type == QuestionType::GROUP) {
-
-                            $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
+                            $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id, $logic_comes);
                             $list_question = [];
                             foreach ($question_group as $cat => $item) {
                                 $item->background ? $item->background = $image_domain . $item->background : null;

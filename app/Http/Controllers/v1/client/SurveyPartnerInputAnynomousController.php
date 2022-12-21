@@ -98,7 +98,7 @@ class SurveyPartnerInputAnynomousController extends Controller
                 $value->background ? $value->background = $image_domain . $value->background : null;
                 if ($value->question_type == QuestionType::GROUP) {
 
-                    $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
+                    $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id, $logic_comes);
                     $list_question = [];
                     foreach ($question_group as $cat => $item) {
                         $item->background ? $item->background = $image_domain . $item->background : null;
