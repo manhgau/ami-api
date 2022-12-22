@@ -38,7 +38,6 @@ class SurveyQuestionController extends Controller
             $request->description ? $input['description'] = ucfirst($request->description) : "";
             $input['created_by'] = $user_id;
             $input['survey_id'] = $survey_id;
-            $request->page_id ?  $input['sequence'] = self::__getDetailSurveyQuestion($request->page_id)->sequence . '.' . $input['sequence']  : $input['sequence'];
             $count_questions = SurveyQuestion::countSequence($survey_id, SurveyQuestion::NO_PAGE);
             $input_survey['question_count'] =   $count_questions + 1;
             Survey::updateSurvey($input_survey,  $survey_id);
