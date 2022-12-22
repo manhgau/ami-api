@@ -357,10 +357,9 @@ class SurveyQuestionController extends Controller
             if (!$survey_question) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            $count_questions = SurveyQuestion::countSequence($request->survey_id, $survey_question->page_id);
             $survey_question = json_decode(json_encode($survey_question), true);
             $survey_question['title'] = $survey_question['title'] . '_copy';
-            $survey_question['sequence'] = $count_questions + 1;
+            $survey_question['sequence'] = $survey_question['sequence'] . '.' . 1;
             if ($survey_question['question_type'] == QuestionType::GROUP) {
                 $list_question_groups = SurveyQuestion::getAllQuestionGroup($survey_question['survey_id'], $survey_question['id']);
                 unset($survey_question['id']);
@@ -382,7 +381,15 @@ class SurveyQuestionController extends Controller
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            return ClientResponse::responseSuccess('Copy thành công', $result);
+            $list = SurveyQuestion::getAllQuestion($request->survey_id, $survey_question['page_id']);
+            $data = [];
+            foreach ($list as $key => $value) {
+                $input['question_id'] = $value->id;
+                $input['sequence'] = $key + 1;
+                $data[] = $input;
+            }
+            self::__arrangeQuestion($data);
+            return ClientResponse::responseSuccess('Copy thành công', self::__getDetailSurveyQuestion($result['id']));
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
