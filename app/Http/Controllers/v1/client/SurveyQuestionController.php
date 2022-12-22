@@ -78,11 +78,23 @@ class SurveyQuestionController extends Controller
     {
         try {
             $survey_id = $request->survey_id;
-            $datas = SurveyQuestion::getListQuestionLogic($survey_id);
+            $datas = SurveyQuestion::getListSurveyQuestion($survey_id);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            return ClientResponse::responseSuccess('OK', $datas);
+            $data = [];
+            foreach ($datas as $value) {
+                if ($value['is_page'] == SurveyQuestion::IS_PAGE) {
+                    $group_question = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
+                    foreach ($group_question as $item) {
+                        $item->sequence_group = $value->sequence;
+                        array_push($data, $item);
+                    }
+                } else {
+                    array_push($data, $value);
+                }
+            }
+            return ClientResponse::responseSuccess('OK', $data);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

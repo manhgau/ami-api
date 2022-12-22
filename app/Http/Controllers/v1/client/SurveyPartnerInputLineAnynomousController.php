@@ -7,6 +7,8 @@ use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Context;
 use App\Models\QuestionType;
+use App\Models\Survey;
+use App\Models\SurveyPartnerInput;
 use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
@@ -158,8 +160,8 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     return ClientResponse::responseError('question type không hợp lệ', $input['answer_type']);
                     break;
             }
-            $question_logic ? $result = $question_logic : $result = $result;
             $result = SurveyPartnerInputLine::insert($data_input);
+            $question_logic ? $result = $question_logic : $result = $result;
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
@@ -170,6 +172,28 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                 $question_id
             );
             return ClientResponse::responseSuccess('Trả lời thành công', $result);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function exitSurvey(Request $request)
+    {
+        try {
+            $survey_id = $request->survey_id;
+            $question_id = $request->question_id;
+            $partner_input_id = $request->partner_input_id;
+            $input_update['end_datetime'] =   time();
+            $input_update['skip'] =  SurveyPartnerInput::SKIP;
+            $survey = Survey::getDetailSurvey($survey_id);
+            $question = SurveyQuestion::getDetailSurveyQuestion($question_id);
+            $result = SurveyPartnerInput::updateSurveyPartnerInput($input_update, $partner_input_id);
+            if (!$result) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            Survey::updateSurvey(['skip_count' => $survey->skip_count + 1], $survey_id);
+            SurveyQuestion::updateSurveyQuestion(['skip_count' => $question->skip_count + 1], $question_id);
+            return ClientResponse::responseSuccess('OK');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
