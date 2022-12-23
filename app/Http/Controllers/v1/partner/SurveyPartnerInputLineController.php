@@ -101,26 +101,6 @@ class SurveyPartnerInputLineController extends Controller
                             $input['value_rating_ranking'] = $request->value_rating_ranking;
                             $input['value_rating_ranking'] ? $input['value_level_ranking'] = SurveyQuestion::getNameLevelRanking($question_id)[$request->value_rating_ranking] : '';
                             $data_input = $input;
-                            dd($data_input);
-                            break;
-                        case QuestionType::DATETIME_DATE_RANGE:
-                            $validator = Validator::make($request->all(), [
-                                'value_date_start' => [
-                                    $survey_question->validation_required ? 'required' : '',
-                                    'date'
-                                ],
-                                'value_date_end' => [
-                                    $survey_question->validation_required ? 'required' : '',
-                                    'date'
-                                ],
-                            ]);
-                            if ($validator->fails()) {
-                                $errorString = implode(",", $validator->messages()->all());
-                                return ClientResponse::response(ClientResponse::$validator_value, $errorString);
-                            }
-                            $input['value_date_start'] = $request->value_date_start ?? '';
-                            $input['value_date_end'] = $request->value_date_end ?? '';
-                            $data_input = $input;
                             break;
                         case QuestionType::DATETIME_DATE:
                             $validator = Validator::make($request->all(), [
@@ -133,8 +113,10 @@ class SurveyPartnerInputLineController extends Controller
                                 $errorString = implode(",", $validator->messages()->all());
                                 return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                             }
-                            $input['value_date'] = FormatDate::formatDate($request->value_date) ?? '';
-                            $data_input = $input;
+                            if ($request->all()) {
+                                $input['value_date'] = FormatDate::formatDate($request->value_date);
+                                $data_input = $input;
+                            }
                             break;
                         case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                             $validator = Validator::make($request->all(), [
