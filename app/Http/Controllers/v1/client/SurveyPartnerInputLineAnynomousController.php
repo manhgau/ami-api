@@ -161,7 +161,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     break;
             }
             $result = SurveyPartnerInputLine::insert($data_input);
-            $question_logic ? $result = $question_logic : $result = $result;
+            $result = $question_logic ?? $result;
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
