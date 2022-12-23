@@ -98,10 +98,10 @@ class SurveyPartnerInputLineController extends Controller
                                 $errorString = implode(",", $validator->messages()->all());
                                 return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                             }
-
                             $input['value_rating_ranking'] = $request->value_rating_ranking;
-                            $input['value_level_ranking'] = SurveyQuestion::getNameLevelRanking($question_id)[$request->value_rating_ranking];
+                            $input['value_rating_ranking'] ? $input['value_level_ranking'] = SurveyQuestion::getNameLevelRanking($question_id)[$request->value_rating_ranking] : '';
                             $data_input = $input;
+                            dd($data_input);
                             break;
                         case QuestionType::DATETIME_DATE_RANGE:
                             $validator = Validator::make($request->all(), [

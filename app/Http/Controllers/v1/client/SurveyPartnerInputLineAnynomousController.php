@@ -95,7 +95,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     }
 
                     $input['value_rating_ranking'] = $request->value_rating_ranking;
-                    $input['value_level_ranking'] = SurveyQuestion::getNameLevelRanking($question_id)[$request->value_rating_ranking];
+                    $input['value_rating_ranking'] ? $input['value_level_ranking'] = SurveyQuestion::getNameLevelRanking($question_id)[$request->value_rating_ranking] : '';
                     $data_input = $input;
                     break;
                 case QuestionType::DATETIME_DATE_RANGE:
