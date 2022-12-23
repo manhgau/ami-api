@@ -54,14 +54,19 @@ class SurveyPartnerInputAnynomousController extends Controller
     public function updateAnswerSurveyAnynomous(Request $request)
     {
         try {
-
+            $survey_id = $request->survey_id;
+            $survey = Survey::getDetailSurvey($survey_id);
+            if (!$survey) {
+                return ClientResponse::responseError('Không tồn tại khảo sát này');
+            }
             $partner_input_id = $request->partner_input_id;
-            $input_update['start_datetime'] =  Carbon::now();
+            $input_update['end_datetime'] =   time();
             $input_update['state'] =  SurveyPartnerInput::STATUS_DONE;
             $result = SurveyPartnerInput::updateSurveyPartnerInput($input_update, $partner_input_id);
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
+            Survey::updateSurvey(['number_of_response' => $survey->number_of_response + 1], $survey_id);
             return ClientResponse::responseSuccess('Cập nhập thành công', $result);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());

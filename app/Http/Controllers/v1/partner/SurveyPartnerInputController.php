@@ -43,6 +43,7 @@ class SurveyPartnerInputController extends Controller
                     $input['survey_id'] = $request->survey_id;
                     $input['state'] = SurveyPartnerInput::STATUS_NEW;
                     $input['start_datetime'] =  time();
+                    $input['is_answer'] =  $request->option;
                     $survey = Survey::getDetailSurvey($request->survey_id);
                     if (!$survey || $survey->state != Survey::STATUS_ON_PROGRESS) {
                         return ClientResponse::responseError('Khảo sát không tồn tại hoặc đã đóng');
@@ -80,8 +81,8 @@ class SurveyPartnerInputController extends Controller
                     $survey_partner = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
                     SurveyPartner::updateSurveyPartner(['number_of_response_partner' =>  $survey_partner->number_of_response_partner + 1], $partner_input_id);
                     $survey = Survey::getDetailSurvey($survey_id);
-                    $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id);
-                    if ($count_survey_input < $survey->number_of_response) {
+                    $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_FALSE);
+                    if (($count_survey_input < $survey->limmit_of_response) || $survey->limmit_of_response == 0) {
                         $data_survey['number_of_response'] = $survey->number_of_response + 1;
                     } else {
                         $data_survey['state'] = Survey::STATUS_COMPLETED;
@@ -229,7 +230,7 @@ class SurveyPartnerInputController extends Controller
                     }
                     Survey::updateSurvey(['view' => $survey_detail->view + 1], $survey_id);
                     $number_of_response = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_FALSE);
-                    if ($number_of_response >= $survey_detail->limmit_of_response) {
+                    if (($number_of_response >= $survey_detail->limmit_of_response) && $survey_detail->limmit_of_response != 0) {
                         return ClientResponse::response(ClientResponse::$limmit_of_response, 'Khảo sát đã đạt lượt phản hồ giới hạn');
                     }
                     $result = SurveyPartnerInput::checkPartnerInput($partner_id, $survey_id);

@@ -13,10 +13,12 @@ class SurveyPartnerInput extends Model
         'survey_id',
         'partner_id',
         'start_datetime',
+        'end_datetime',
         'deadline',
         'state',
         'phone',
         'fullname',
+        'is_answer',
         'is_anynomous',
         'a_partner_id',
         'ip',
@@ -52,8 +54,7 @@ class SurveyPartnerInput extends Model
         if ($is_anynomous != null) {
             $query = $query->where('is_anynomous', $is_anynomous);
         }
-        $query = $query->count();
-        return $query;
+        return $query->count();
     }
 
     public static  function countSurveyPartnerInput($survey_id, $partner_id)
@@ -153,7 +154,7 @@ class SurveyPartnerInput extends Model
 
     public static  function checkPartnerInput($partner_id, $survey_id)
     {
-        return self::where('partner_id', $partner_id)->where('survey_id', $survey_id)->where('state', self::STATUS_DONE)->count();
+        return self::where('partner_id', $partner_id)->where('survey_id', $survey_id)->where('state', self::STATUS_DONE)->where('is_answer', self::PARTNER)->count();
     }
 
     public static  function getDiagramSurvey($survey_id, $filter)
