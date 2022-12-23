@@ -201,12 +201,14 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                     }
                     $data = $request->all();
-                    if (is_array($data)) {
+                    if (is_array($data) &&  count($data) > 0) {
                         foreach ($data  as $key => $value) {
-                            foreach ($value['matrix_row_id'] as $item) {
-                                $input['matrix_row_id'] = $item;
-                                $input['matrix_column_id'] = $value['matrix_column_id'];
-                                $data_input[] = $input;
+                            if (is_array($value['matrix_column_id']) &&  count($value['matrix_column_id']) > 0) {
+                                foreach ($value['matrix_column_id'] as $item) {
+                                    $input['matrix_column_id'] = $item;
+                                    $input['matrix_row_id'] = $value['matrix_row_id'];
+                                    $data_input[] = $input;
+                                }
                             }
                         }
                     }
