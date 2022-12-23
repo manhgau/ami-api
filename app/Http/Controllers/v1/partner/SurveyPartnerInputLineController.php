@@ -46,21 +46,6 @@ class SurveyPartnerInputLineController extends Controller
                     $input['answer_type']   = $survey_question->question_type;
                     $input['created_by']   = $partner->id ?? 0;
                     $input['answer_score']   = $request->answer_score ?? 0;
-                    if (!$request->all()) {
-                        $input['skipped']   = SurveyPartnerInputLine::SKIP;
-                        $result = SurveyPartnerInputLine::create($input);
-                        if (!$result) {
-                            return ClientResponse::responseError('Đã có lỗi xảy ra');
-                        }
-                        SurveyQuestion::updateSurveyQuestion(
-                            [
-                                "skip_count" => $survey_question->skip_count + 1,
-                                "view" => $survey_question->view + 1,
-                            ],
-                            $question_id
-                        );
-                        return ClientResponse::responseSuccess('Bỏ qua thành công', true);
-                    }
                     // to do ....   
                     $data_input = [];
                     switch ($input['answer_type']) {
@@ -219,6 +204,21 @@ class SurveyPartnerInputLineController extends Controller
                         default:
                             return ClientResponse::responseError('question type không hợp lệ', $input['answer_type']);
                             break;
+                    }
+                    if (!$request->all()) {
+                        $input['skipped']   = SurveyPartnerInputLine::SKIP;
+                        $result = SurveyPartnerInputLine::create($input);
+                        if (!$result) {
+                            return ClientResponse::responseError('Đã có lỗi xảy ra');
+                        }
+                        SurveyQuestion::updateSurveyQuestion(
+                            [
+                                "skip_count" => $survey_question->skip_count + 1,
+                                "view" => $survey_question->view + 1,
+                            ],
+                            $question_id
+                        );
+                        return ClientResponse::responseSuccess('Bỏ qua thành công', true);
                     }
                     $result = SurveyPartnerInputLine::insert($data_input);
                     if (!$result) {
