@@ -14,6 +14,7 @@ class ClientResponse
     public static $required_login_code = 401;     //Unauthorized
     public static $user_not_active = 402;     //TK chưa kích hoạt
     public static $required_refresh_token = 403;     //user phải gọi refresh token
+    public static $validator_value = 405;     //user phải gọi refresh token
     public static $client_auth_owner_survey = 407;     //Khảo sát không phải của bạn
     public static $survey_user_number = 406;     //Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát
     public static $add_logo = 408;     //Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này
