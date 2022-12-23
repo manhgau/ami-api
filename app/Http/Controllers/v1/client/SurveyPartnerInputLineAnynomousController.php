@@ -5,7 +5,6 @@ namespace App\Http\Controllers\v1\client;
 use Illuminate\Http\Request;
 use Validator;
 use App\Helpers\ClientResponse;
-use App\Helpers\Context;
 use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
@@ -37,6 +36,21 @@ class SurveyPartnerInputLineAnynomousController extends Controller
             $input['question_sequence']     = $survey_question->sequence;
             $input['answer_type']   = $survey_question->question_type;
             $input['answer_score']   = $request->answer_score ?? 0;
+            if (!$request->all()) {
+                $input['skipped']   = SurveyPartnerInputLine::SKIP;
+                $result = SurveyPartnerInputLine::create($input);
+                if (!$result) {
+                    return ClientResponse::responseError('Đã có lỗi xảy ra');
+                }
+                SurveyQuestion::updateSurveyQuestion(
+                    [
+                        "skip_count" => $survey_question->skip_count + 1,
+                        "view" => $survey_question->view + 1,
+                    ],
+                    $question_id
+                );
+                return ClientResponse::responseSuccess('Bỏ qua thành công', true);
+            }
             $data_input = [];
             switch ($input['answer_type']) {
                 case QuestionType::MULTI_CHOICE:
@@ -129,6 +143,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                     }
                     $input['value_text_box'] = $request->value_text_box ?? '';
+                    $data_input = $input;
                     break;
                 case QuestionType::NUMBER:
                     $validator = Validator::make($request->all(), [
