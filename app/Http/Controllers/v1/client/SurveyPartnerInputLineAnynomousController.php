@@ -33,6 +33,9 @@ class SurveyPartnerInputLineAnynomousController extends Controller
             $input['survey_id']     = $survey_id;
             $input['partner_input_id']   = (int)$request->partner_input_id;
             $survey_question = SurveyQuestion::checkQuestionOfSurvey($survey_id, $question_id);
+            if (!$survey_question) {
+                return ClientResponse::responseError('Không tồn tại câu hỏi khảo sát');
+            }
             $input['question_sequence']     = $survey_question->sequence;
             $input['answer_type']   = $survey_question->question_type;
             $input['answer_score']   = $request->answer_score ?? 0;
@@ -144,13 +147,10 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     $data_input = $input;
                     break;
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
-                case QuestionType::QUESTION_ENDED_LONG_TEXT:
                     $validator = Validator::make($request->all(), [
                         'value_text_box' => [
                             $survey_question->validation_required ? 'required' : '',
                             'string',
-                            $survey_question->validation_required ? 'max:' . $survey_question->validation_length_max : '',
-                            $survey_question->validation_required ? 'min:' . $survey_question->validation_length_min : ''
                         ],
                     ]);
                     if ($validator->fails()) {
@@ -158,6 +158,20 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                     }
                     $input['value_text_box'] = $request->value_text_box ?? '';
+                    $data_input = $input;
+                    break;
+                case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                    $validator = Validator::make($request->all(), [
+                        'value_char_box' => [
+                            $survey_question->validation_required ? 'required' : '',
+                            'string',
+                        ],
+                    ]);
+                    if ($validator->fails()) {
+                        $errorString = implode(",", $validator->messages()->all());
+                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
+                    }
+                    $input['value_char_box'] = $request->value_char_box ?? '';
                     $data_input = $input;
                     break;
                 case QuestionType::NUMBER:
