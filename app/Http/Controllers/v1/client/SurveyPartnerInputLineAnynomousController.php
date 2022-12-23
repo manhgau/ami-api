@@ -191,17 +191,25 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     $data_input = $input;
                     break;
                 case QuestionType::MULTI_FACTOR_MATRIX:
+                    $validator = Validator::make($request->all(), [
+                        'input' => [
+                            $survey_question->validation_required ? 'required' : '',
+                        ],
+                    ]);
+                    if ($validator->fails()) {
+                        $errorString = implode(",", $validator->messages()->all());
+                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
+                    }
                     $data = $request->all();
                     if (is_array($data)) {
-                        foreach ($data  as  $key => $value) {
-                            $input['matrix_row_id'] = $value['matrix_row_id'];
-                            $input['matrix_column_id'] = $value['matrix_column_id'];
-                            $data_input[$key] = $input;
+                        foreach ($data  as $key => $value) {
+                            foreach ($value['matrix_row_id'] as $item) {
+                                $input['matrix_row_id'] = $item;
+                                $input['matrix_column_id'] = $value['matrix_column_id'];
+                                $data_input[] = $input;
+                            }
                         }
                     }
-                    break;
-                default:
-                    return ClientResponse::responseError('question type không hợp lệ', $input['answer_type']);
                     break;
             }
             $result = SurveyPartnerInputLine::insert($data_input);
