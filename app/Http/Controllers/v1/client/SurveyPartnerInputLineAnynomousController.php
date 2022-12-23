@@ -95,6 +95,21 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     $input['value_rating_ranking'] = $request->value_rating_ranking;
                     $data_input = $input;
                     break;
+                case QuestionType::RANKING:
+                    $validator = Validator::make($request->all(), [
+                        'value_rating_ranking' => [
+                            $survey_question->validation_required ? 'required' : '',
+                        ],
+                    ]);
+                    if ($validator->fails()) {
+                        $errorString = implode(",", $validator->messages()->all());
+                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
+                    }
+
+                    $input['value_rating_ranking'] = $request->value_rating_ranking;
+                    $input['value_level_ranking'] = SurveyQuestion::getNameLevelRanking($question_id)[$request->value_rating_ranking];
+                    $data_input = $input;
+                    break;
                 case QuestionType::DATETIME_DATE_RANGE:
                     $validator = Validator::make($request->all(), [
                         'value_date_start' => [
