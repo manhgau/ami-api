@@ -26,7 +26,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
             ]);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
-                return ClientResponse::responseError($errorString);
+                return ClientResponse::response(ClientResponse::$validator_value, $errorString);
             }
             $question_id = $request->question_id ?? 0;
             $survey_id = $request->survey_id ?? 0;
@@ -49,7 +49,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     ]);
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
-                        return ClientResponse::responseError($errorString);
+                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                     }
                     $target_ids = $request->suggested_answer_id;
                     if (is_array($target_ids)) {
@@ -74,7 +74,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     ]);
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
-                        return ClientResponse::responseError($errorString);
+                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                     }
 
                     $input['suggested_answer_id'] = $request->suggested_answer_id;
@@ -94,7 +94,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     ]);
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
-                        return ClientResponse::responseError($errorString);
+                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                     }
                     $input['value_date_start'] = $request->value_date_start ?? '';
                     $input['value_date_end'] = $request->value_date_end ?? '';
@@ -109,7 +109,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     ]);
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
-                        return ClientResponse::responseError($errorString);
+                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                     }
                     $input['value_date'] = $request->value_date ?? '';
                     $data_input = $input;
@@ -126,7 +126,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     ]);
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
-                        return ClientResponse::responseError($errorString);
+                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                     }
                     $input['value_text_box'] = $request->value_text_box ?? '';
                     break;
@@ -141,7 +141,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     ]);
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
-                        return ClientResponse::responseError($errorString);
+                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                     }
                     $input['value_number'] = (int)$request->value_number ?? '';
                     $data_input = $input;
