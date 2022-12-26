@@ -69,6 +69,7 @@ class SurveyQuestionAnswersController extends Controller
             $request->value ? $input['value'] = ucfirst($request->value) : "";
             if ($survey->state == Survey::STATUS_ON_PROGRESS) {
                 SurveyQuestionAnswer::updateSurveyQuestionAnswer(['deleted' => SurveyQuestionAnswer::DELETED], $answer_id);
+                $input['survey_id'] =  $question_answer->survey_id;
                 $input['question_id'] =  $question_answer->question_id;
                 $input['matrix_question_id'] =  $question_answer->matrix_question_id;
                 $input['value_type'] =  $question_answer->value_type;
