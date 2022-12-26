@@ -45,11 +45,17 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                 case QuestionType::MULTI_CHOICE:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
                 case QuestionType::YES_NO:
-                    $validator = Validator::make($request->all(), [
-                        'suggested_answer_id' => [
-                            $survey_question->validation_required ? 'required' : '',
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'suggested_answer_id' => [
+                                $survey_question->validation_required ? 'required' : '',
+                            ],
                         ],
-                    ]);
+                        [
+                            'suggested_answer_id.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
+                        ]
+                    );
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
@@ -67,14 +73,17 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     }
                     break;
                 case QuestionType::RATING_STAR:
-                    $validator = Validator::make($request->all(), [
-                        'suggested_answer_id' => [
-                            $survey_question->validation_required ? 'required' : '',
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'value_rating_ranking' => [
+                                $survey_question->validation_required ? 'required' : '',
+                            ],
                         ],
-                        'value_rating_ranking' => [
-                            $survey_question->validation_required ? 'required' : '',
-                        ],
-                    ]);
+                        [
+                            'value_rating_ranking.required' => 'Đây là một câu hỏi bắt buộc.', // custom message    
+                        ]
+                    );
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
@@ -85,11 +94,17 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     $data_input = $input;
                     break;
                 case QuestionType::RANKING:
-                    $validator = Validator::make($request->all(), [
-                        'value_rating_ranking' => [
-                            $survey_question->validation_required ? 'required' : '',
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'value_rating_ranking' => [
+                                $survey_question->validation_required ? 'required' : '',
+                            ],
                         ],
-                    ]);
+                        [
+                            'value_rating_ranking.required' => 'Đây là một câu hỏi bắt buộc.', // custom message 
+                        ]
+                    );
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
@@ -100,12 +115,18 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     $data_input = $input;
                     break;
                 case QuestionType::DATETIME_DATE:
-                    $validator = Validator::make($request->all(), [
-                        'value_date' => [
-                            $survey_question->validation_required ? 'required' : '',
-                            'date'
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'value_date' => [
+                                $survey_question->validation_required ? 'required' : '',
+                                'date'
+                            ],
                         ],
-                    ]);
+                        [
+                            'value_date.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
+                        ]
+                    );
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
@@ -116,12 +137,19 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     }
                     break;
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
-                    $validator = Validator::make($request->all(), [
-                        'value_text_box' => [
-                            $survey_question->validation_required ? 'required' : '',
-                            'string',
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'value_text_box' => [
+                                $survey_question->validation_required ? 'required' : '',
+                                'string',
+                            ],
                         ],
-                    ]);
+                        [
+                            'value_text_box.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
+                            'value_text_box.string' => 'Câu hỏi nhận dữ liệu kiểu chuỗi.', // custom message     
+                        ]
+                    );
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
@@ -130,12 +158,19 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     $data_input = $input;
                     break;
                 case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                    $validator = Validator::make($request->all(), [
-                        'value_char_box' => [
-                            $survey_question->validation_required ? 'required' : '',
-                            'string',
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'value_char_box' => [
+                                $survey_question->validation_required ? 'required' : '',
+                                'string',
+                            ],
                         ],
-                    ]);
+                        [
+                            'value_char_box.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
+                            'value_char_box.string' => 'Câu hỏi nhận dữ liệu kiểu chuỗi.', // custom message     
+                        ]
+                    );
 
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
@@ -145,14 +180,21 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     $data_input = $input;
                     break;
                 case QuestionType::NUMBER:
-                    $validator = Validator::make($request->all(), [
-                        'value_number' => [
-                            'integer',
-                            $survey_question->validation_required ? 'required' : '',
-                            'max:' . $survey_question->validation_length_max,
-                            'min:' . $survey_question->validation_length_min
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'value_number' => [
+                                'integer',
+                                $survey_question->validation_required ? 'required' : '',
+                                // 'max:' . $survey_question->validation_length_max,
+                                // 'min:' . $survey_question->validation_length_min
+                            ],
                         ],
-                    ]);
+                        [
+                            'value_number.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
+                            'value_number.integer' => 'Câu hỏi nhận dữ liệu kiểu số.', // custom message     
+                        ]
+                    );
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
@@ -161,11 +203,17 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     $data_input = $input;
                     break;
                 case QuestionType::MULTI_FACTOR_MATRIX:
-                    $validator = Validator::make($request->all(), [
-                        'input' => [
-                            $survey_question->validation_required ? 'required' : '',
+                    $validator = Validator::make(
+                        $request->all(),
+                        [
+                            'input' => [
+                                $survey_question->validation_required ? 'required' : '',
+                            ],
                         ],
-                    ]);
+                        [
+                            'input.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
+                        ]
+                    );
                     if ($validator->fails()) {
                         $errorString = implode(",", $validator->messages()->all());
                         return ClientResponse::response(ClientResponse::$validator_value, $errorString);
