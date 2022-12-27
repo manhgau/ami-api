@@ -128,7 +128,7 @@ class SurveyQuestionProfileController extends Controller
                         $input['partner_id'] = $partner_id;
                         $input['survey_id'] = $survey_id;
                         $input['survey_profile_id'] = $survey_profile_id;
-                        $model = SurveyProfileInputs::getSurveyProfileInputDetail($survey_profile_id, $survey_id, $partner_id);
+                        $model = SurveyProfileInputs::getSurveyProfileInputDetail($survey_profile_id, $partner_input_id = null, $survey_id, $partner_id);
                         if ($model) {
                             $result = $model->update($input);
                         } else {
