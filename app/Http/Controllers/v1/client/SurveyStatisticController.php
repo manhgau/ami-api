@@ -112,14 +112,14 @@ class SurveyStatisticController extends Controller
             }
             $question = [];
             foreach ($datas['data'] as $key => $value) {
-                if ($value['question_type'] == QuestionType::GROUP) {
+                if ($value->question_type == QuestionType::GROUP) {
 
-                    $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value['id']);
+                    $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
                     $list_question = [];
                     foreach ($question_group as $cat => $item) {
                         $list_question[$cat] = self::__getDataQuestions($item, $survey_id, $list_question, $filter);
                     }
-                    $value['group_question'] = $list_question;
+                    $value->group_question = $list_question;
                     $datas['data'][$key] = $value;
                 } else {
                     $datas['data'][$key] = self::__getDataQuestions($value, $survey_id, $question, $filter);
@@ -135,14 +135,15 @@ class SurveyStatisticController extends Controller
     {
         $query = SurveyPartnerInput::getStatisticQuestionsSurvey(
             $survey_id,
-            $value['id'],
+            $value->id,
             $filter
         );
         $question = $value;
         $group = $query->get()->groupBy('skipped');
-        $question['number_of_response'] =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]->groupBy('partner_id')) : 0;
-        $question['number_of_skip'] = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_id')) : 0;
-        $question['view'] =  $question['number_of_response'] + $question['number_of_skip'];
+        dd($group[SurveyPartnerInput::NOT_SKIP]);
+        $question->number_of_response =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]->groupBy('partner_id')) : 0;
+        $question->number_of_skip = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_id')) : 0;
+        $question->view =  $question->number_of_response + $question->number_of_skip;
         return $question;
     }
 
@@ -167,6 +168,7 @@ class SurveyStatisticController extends Controller
                 return ClientResponse::responseError('Không có bản ghi nào phù hợp');
             }
             $query = SurveyPartnerInput::getStatisticSurvey($survey_id, $filter);
+            dd($query->get());
             if ($query->count() == 0) {
                 $survey_detail['number_of_response'] =  0;
                 $survey_detail['number_of_skip'] = 0;
