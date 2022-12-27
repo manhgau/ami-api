@@ -225,20 +225,38 @@ class SurveyQuestionController extends Controller
                             break;
                         case QuestionType::MULTI_CHOICE:
                         case QuestionType::MULTI_CHOICE_DROPDOWN:
-                        case QuestionType::YES_NO:
                             $input['is_page'] = SurveyQuestion::NO_PAGE;
                             $data_insert = [
                                 [
-                                    "survey_id" => "ee45ffa6-57a7-45a6-9f6a-528a22ab7d99",
+                                    "survey_id" => $survey_id,
                                     "question_id" => $question_id,
                                     "sequence" => 1,
                                     "value" => "Lựa chọn 1"
                                 ],
                                 [
-                                    "survey_id" => "ee45ffa6-57a7-45a6-9f6a-528a22ab7d99",
+                                    "survey_id" => $survey_id,
                                     "question_id" => $question_id,
                                     "sequence" => 2,
                                     "value" => "Lựa chọn 2"
+                                ]
+
+                            ];
+                            SurveyQuestionAnswer::insert($data_insert);
+                            break;
+                        case QuestionType::YES_NO:
+                            $input['is_page'] = SurveyQuestion::NO_PAGE;
+                            $data_insert = [
+                                [
+                                    "survey_id" => $survey_id,
+                                    "question_id" => $question_id,
+                                    "sequence" => 1,
+                                    "value" => "Yes"
+                                ],
+                                [
+                                    "survey_id" => $survey_id,
+                                    "question_id" => $question_id,
+                                    "sequence" => 2,
+                                    "value" => "No"
                                 ]
 
                             ];
