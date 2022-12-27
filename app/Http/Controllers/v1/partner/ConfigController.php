@@ -29,24 +29,16 @@ class ConfigController extends Controller
         //
 
         //version
-        $settings->newest_version = floatval(1.0);
-        $is_force_update = 0;
-        $is_update = 0;
-        $review_app = 0;
-        $version = $request->version;
-        $arr_os = ConstValue::$arr_os;
-        $os = request()->header('os', '');
-        $platform = request()->header('platform', '');
-        $version_now = isset($arr_os[$os]) ? $arr_os[$os] : 0;
-
-        if ($version_now > 0 && version_compare($version_now, $version) > 0) {
-            $msg = ConstValue::$message_update_version;
-            $is_update = 0;
-            $is_force_update = 1;
-        }
-        $settings->is_force_update = $is_force_update;
-        $settings->is_update = $is_update;
-        $settings->in_review = $review_app;
+        $newest_version = [
+            'android_apps'  =>  '1.0.0',
+            'ios_apps'  =>  '1.0.0',
+        ];
+        $force_update_version  = [
+            'android_apps'  =>  '1.0.0',
+            'ios_apps'  =>  '1.0.0',
+        ];
+        $settings->newest_version = $newest_version;
+        $settings->force_update_version = $force_update_version;
         //END version
 
         return ClientResponse::responseSuccess($msg, $settings);
