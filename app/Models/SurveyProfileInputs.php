@@ -9,6 +9,7 @@ class SurveyProfileInputs extends Model
 
     protected $fillable = [
         'survey_profile_id',
+        'partner_input_id',
         'id',
         'partner_id',
         'survey_id',
@@ -31,11 +32,14 @@ class SurveyProfileInputs extends Model
 
 
 
-    public static  function getSurveyProfileInputDetail($survey_profile_id, $survey_id = null, $partner_id)
+    public static  function getSurveyProfileInputDetail($survey_profile_id, $survey_id = null, $partner_input_id = null, $partner_id)
     {
         $query = self::where('survey_profile_id', $survey_profile_id)->where('partner_id', $partner_id);
         if ($survey_id != null) {
             $query->where('survey_id', $survey_id);
+        }
+        if ($partner_input_id != null) {
+            $query->where('partner_input_id', $partner_input_id);
         }
         return $query->first();
     }

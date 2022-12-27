@@ -193,13 +193,14 @@ class SurveyPartnerInput extends Model
     {
         $query = DB::table('survey_partner_inputs')
             ->join('surveys', 'surveys.id', '=', 'survey_partner_inputs.survey_id')
-            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->leftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
             ->select(
                 'survey_partner_inputs.start_datetime',
                 'survey_partner_inputs.end_datetime',
                 'survey_partner_inputs.skip',
                 'survey_partner_inputs.state'
             )
+            //->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_inputs.survey_id', $survey_id);
         $query = self::__filterTarget($query, $filter);
         return $query;
@@ -209,12 +210,14 @@ class SurveyPartnerInput extends Model
     {
         $query = DB::table('survey_partner_inputs')
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
-            ->leftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->leftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
             ->select(
                 'survey_partner_inputs.partner_id',
-                'survey_partner_input_lines.skipped'
+                'survey_partner_input_lines.skipped',
+                'survey_partner_input_lines.question_id'
             )
             ->where('survey_partner_input_lines.question_id', $question_id)
+            //->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_inputs.survey_id', $survey_id);
         $query = self::__filterTarget($query, $filter);
         return $query;
@@ -224,10 +227,11 @@ class SurveyPartnerInput extends Model
     {
         $query = DB::table('survey_partner_inputs')
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
-            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->leftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
             ->select(DB::raw('count(*) as total , survey_partner_input_lines.suggested_answer_id'))
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
+            //->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->groupBy('suggested_answer_id')->get();
@@ -246,12 +250,13 @@ class SurveyPartnerInput extends Model
     {
         $query = DB::table('survey_partner_inputs')
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
-            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->leftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
             ->select(
                 'survey_partner_input_lines.value_rating_ranking',
                 'survey_partner_input_lines.answer_type',
                 'survey_partner_input_lines.question_sequence'
             )
+            //->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
@@ -272,13 +277,14 @@ class SurveyPartnerInput extends Model
     {
         $query = DB::table('survey_partner_inputs')
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
-            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->leftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
             ->select(
                 'survey_partner_input_lines.value_rating_ranking',
                 'survey_partner_input_lines.answer_type',
                 'survey_partner_input_lines.question_sequence',
                 'survey_partner_input_lines.value_level_ranking'
             )
+            //->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
@@ -303,7 +309,7 @@ class SurveyPartnerInput extends Model
     {
         $query = DB::table('survey_partner_inputs')
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
-            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->leftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
             ->select(
                 'survey_partner_input_lines.question_sequence',
                 'survey_partner_input_lines.answer_type',
@@ -315,6 +321,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.value_date_end',
                 'survey_partner_input_lines.created_at'
             )
+            //->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
@@ -362,7 +369,7 @@ class SurveyPartnerInput extends Model
     {
         $query = DB::table('survey_partner_inputs')
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
-            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->leftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
             ->join('survey_question_answers', 'survey_question_answers.id', '=', 'survey_partner_input_lines.matrix_column_id')
             ->select(
                 'survey_partner_input_lines.id as lines_id',
@@ -370,6 +377,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.matrix_column_id',
                 'survey_question_answers.value as name_answer_column'
             )
+            //->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);

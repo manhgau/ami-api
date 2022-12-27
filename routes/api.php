@@ -278,7 +278,7 @@ Route::group(['prefix' => 'v1'], function () {
                     ], function ($router) {
                         Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
                         Route::get('/question/profile', [SurveyQuestionProfileController::class, 'getQuestionProfileBySurvey']);
-                        Route::post('/question/profile/{question_id}', [SurveyQuestionProfileController::class, 'answerQuestionProfileBySurvey']);
+                        Route::post('/{partner_input_id}/question/profile/{question_id}', [SurveyQuestionProfileController::class, 'answerQuestionProfileBySurvey']);
                         Route::post('/', [SurveyPartnerInputController::class, 'answerSurvey']);
                         Route::post('/{partner_input_id}/update', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
                         Route::post('/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);

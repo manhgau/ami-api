@@ -140,9 +140,13 @@ class SurveyStatisticController extends Controller
         );
         $question = $value;
         $group = $query->get()->groupBy('skipped');
-        dd($group[SurveyPartnerInput::NOT_SKIP]);
-        $question->number_of_response =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]->groupBy('partner_id')) : 0;
-        $question->number_of_skip = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_id')) : 0;
+        if ($filter['is_anynomous'] == 1) {
+            $question->number_of_response =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]) : 0;
+            $question->number_of_skip = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]) : 0;
+        } else {
+            $question->number_of_response =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]->groupBy('partner_id')) : 0;
+            $question->number_of_skip = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_id')) : 0;
+        }
         $question->view =  $question->number_of_response + $question->number_of_skip;
         return $question;
     }
@@ -168,7 +172,6 @@ class SurveyStatisticController extends Controller
                 return ClientResponse::responseError('Không có bản ghi nào phù hợp');
             }
             $query = SurveyPartnerInput::getStatisticSurvey($survey_id, $filter);
-            dd($query->get());
             if ($query->count() == 0) {
                 $survey_detail['number_of_response'] =  0;
                 $survey_detail['number_of_skip'] = 0;
@@ -182,6 +185,7 @@ class SurveyStatisticController extends Controller
             $survey_detail['number_of_skip'] = array_key_exists(SurveyPartnerInput::SKIP, json_decode($number_of_skip, true)) ? count($number_of_skip[SurveyPartnerInput::SKIP]) : 0;
             $completion_rate = ($survey_detail['number_of_response'] / ($survey_detail['number_of_response'] + $survey_detail['number_of_skip'])) * 100;
             $survey_detail['completion_rate'] = round($completion_rate, 2);
+            $query = $query->where('survey_partner_inputs.state', SurveyPartnerInput::STATUS_DONE);
             $average_time = ($query->avg('end_datetime') - $query->avg('start_datetime'));
             $hours = floor(($average_time) / (60 * 60));
             $minutes = floor(($average_time  - $hours * 60 * 60) / 60);
