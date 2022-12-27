@@ -209,7 +209,7 @@ class SurveyPartnerInput extends Model
     {
         $query = DB::table('survey_partner_inputs')
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
-            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->leftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
             ->select(
                 'survey_partner_inputs.partner_id',
                 'survey_partner_input_lines.skipped'

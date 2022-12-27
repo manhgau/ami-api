@@ -100,7 +100,6 @@ class SurveyQuestionAnswersController extends Controller
             if ($survey->state == Survey::STATUS_DRAFT) {
                 SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $question_id);
             }
-            SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $question_id);
             $question_answer_number = SurveyQuestionAnswer::select()->where('question_id', $question_id)->where(['deleted' => SurveyQuestionAnswer::NOT_DELETED])->count();
             $input['survey_id'] = $request->survey_id;
             $input['sequence'] = $request->sequence;
