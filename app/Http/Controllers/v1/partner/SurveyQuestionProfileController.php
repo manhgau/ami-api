@@ -30,8 +30,8 @@ class SurveyQuestionProfileController extends Controller
     {
         $lists = SurveyProfileQuestions::getSurveyQuestionProfile($survey_profile_id, $perPage, $page);
         $lists = RemoveData::removeUnusedData($lists);
-        if (!$lists) {
-            return ClientResponse::responseError('Không có bản ghi phù hợp');
+        if (count($lists['data']) == 0) {
+            return null;
         }
         $datas = [];
         foreach ($lists['data'] as  $value) {
@@ -137,7 +137,7 @@ class SurveyQuestionProfileController extends Controller
                         if (!$result) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
                         }
-                        return ClientResponse::responseSuccess('OK', $result);
+                        return ClientResponse::responseSuccess('OK', null);
                     }
                     $perPage = $request->per_page ?? 10;
                     $page = $request->current_page ?? 1;
