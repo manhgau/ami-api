@@ -393,11 +393,11 @@ class SurveyPartnerInput extends Model
             $input['name_answer_row'] = $answers_value[$value->matrix_row_id];
             $result[$key] = $input;
         }
-        $result = $result->groupBy('name_answer_column');
+        $result = $result->groupBy('name_answer_row');
         foreach ($result as $k => $item) {
-            $group_item = $item->groupBy('name_answer_row');
+            $group_item = $item->groupBy('name_answer_column');
             foreach ($group_item as $key => $value) {
-                $data['name_answer_row'] = $key;
+                $data['name_answer_column'] = $key;
                 $data['number_partner_answer'] = count($value);
                 $group_item[$key] = $data;
             }

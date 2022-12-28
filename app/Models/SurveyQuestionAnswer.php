@@ -52,7 +52,7 @@ class SurveyQuestionAnswer extends Model
 
     public static  function getAllSurveyQuestionAnswer($id,  $random = 0)
     {
-        $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'value', 'value_type')
+        $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'logic_come', 'value', 'value_type')
             ->where('question_id', $id)
             ->where('deleted', self::NOT_DELETED)
             ->orderBy('sequence', 'asc');
