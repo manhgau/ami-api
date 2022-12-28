@@ -24,7 +24,7 @@ class SurveyStatisticController extends Controller
             $limit = $request->limit;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
@@ -58,7 +58,7 @@ class SurveyStatisticController extends Controller
             $survey_id = $request->survey_id;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
@@ -95,7 +95,7 @@ class SurveyStatisticController extends Controller
             $survey_id = $request->survey_id;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
@@ -157,7 +157,7 @@ class SurveyStatisticController extends Controller
             $survey_id = $request->survey_id;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
@@ -200,13 +200,13 @@ class SurveyStatisticController extends Controller
     public function getSurveyStatisticDetail(Request $request)
     {
         try {
-            $perPage = $request->per_page ?? 5;
+            $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
             $survey_id = $request->survey_id;
             $question_id = $request->question_id;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time . '' . '23:59:59') ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
