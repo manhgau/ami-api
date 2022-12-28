@@ -214,7 +214,8 @@ class SurveyPartnerInput extends Model
             ->select(
                 'survey_partner_inputs.partner_id',
                 'survey_partner_input_lines.skipped',
-                'survey_partner_input_lines.question_id'
+                'survey_partner_input_lines.question_id',
+                'survey_partner_input_lines.partner_input_id',
             )
             ->where('survey_partner_input_lines.question_id', $question_id)
             //->where('survey_partner_inputs.state', self::STATUS_DONE)

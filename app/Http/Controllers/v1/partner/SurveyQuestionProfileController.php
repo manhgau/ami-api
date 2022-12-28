@@ -123,6 +123,9 @@ class SurveyQuestionProfileController extends Controller
                         return ClientResponse::responseError('Không có Khảo sát phù hợp');
                     }
                     $survey_profile_id = $survey_detail->survey_profile_id;
+                    if (!$survey_profile_id) {
+                        return ClientResponse::responseSuccess('OK', null);
+                    }
                     if ($option == SurveyPartnerInput::PARTNER) {
                         $input = PartnerProfile::getPartnerProfileDetail($partner_id);
                         $input['partner_id'] = $partner_id;

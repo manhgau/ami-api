@@ -72,9 +72,9 @@ class SurveyQuestion extends Model
     }
 
 
-    public static  function getListSurveyQuestion($survey_id)
+    public static  function getListSurveyQuestion($survey_id, $question_id = null)
     {
-        return self::select(
+        $query =  self::select(
             'id',
             'survey_id',
             'sequence',
@@ -93,9 +93,12 @@ class SurveyQuestion extends Model
         )
             ->where('deleted', self::NOT_DELETED)
             ->where('survey_id', $survey_id)
-            ->where('page_id', self::NO_PAGE)
-            ->orderBy('sequence', 'asc')
-            ->get();
+            ->where('page_id', self::NO_PAGE);
+        if ($question_id != null) {
+
+            $query->where('id', '<>', $question_id);
+        }
+        return $query->orderBy('sequence', 'asc')->get();
     }
 
     public static  function getListQuestionLogic($survey_id)
