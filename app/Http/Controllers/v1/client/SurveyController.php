@@ -234,9 +234,9 @@ class SurveyController extends Controller
             $survey_detail = json_decode(json_encode($survey_detail), true);
             $survey_detail['title'] = $survey_detail['title'] . '_copy';
             $survey_detail['id'] = CFunction::generateUuid();
-            unset($survey_detail['created_at']);
-            unset($survey_detail['updated_at']);
-            unset($survey_detail['background']);
+            $survey_detail['state'] = Survey::STATUS_DRAFT;
+            $survey_detail['start_time'] = Carbon::now();
+            $survey_detail = RemoveData::removeUnusedDataCopySurvey($survey_detail);
             $survey = Survey::create($survey_detail);
             if (!$survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');

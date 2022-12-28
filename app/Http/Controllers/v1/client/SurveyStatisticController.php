@@ -140,13 +140,8 @@ class SurveyStatisticController extends Controller
         );
         $question = $value;
         $group = $query->get()->groupBy('skipped');
-        if ($filter['is_anynomous'] == 1) {
-            $question->number_of_response =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]) : 0;
-            $question->number_of_skip = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]) : 0;
-        } else {
-            $question->number_of_response =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]->groupBy('partner_id')) : 0;
-            $question->number_of_skip = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_id')) : 0;
-        }
+        $question->number_of_response =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]->groupBy('partner_input_id')) : 0;
+        $question->number_of_skip = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_input_id')) : 0;
         $question->view =  $question->number_of_response + $question->number_of_skip;
         return $question;
     }
