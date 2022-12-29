@@ -166,6 +166,7 @@ Route::group(['prefix' => 'v1'], function () {
                                 Route::get('/', [SurveyQuestionAnswersController::class, 'getListAnswers']);
                                 Route::post('/dropdown', [SurveyQuestionAnswersController::class, 'creatQuestionAnswersDropdown']);
                                 Route::post('/{answer_id}/update', [SurveyQuestionAnswersController::class, 'updateQuestionAnswers']);
+                                Route::post('/{answer_id}/update/logic', [SurveyQuestionAnswersController::class, 'updateLogicQuestionAnswers']);
                             });
                         });
                     });

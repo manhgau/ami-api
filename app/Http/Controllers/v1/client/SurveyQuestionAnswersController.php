@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\client;
 
 use App\Helpers\ClientResponse;
+use App\Helpers\Context;
 use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyQuestion;
@@ -60,6 +61,7 @@ class SurveyQuestionAnswersController extends Controller
         try {
             $answer_id = $request->answer_id;
             $survey_id = $request->survey_id;
+            $question_id = $request->question_id;
             $survey = Survey::getDetailSurvey($survey_id);
             $question_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($answer_id);
             if (!$question_answer) {
@@ -68,6 +70,17 @@ class SurveyQuestionAnswersController extends Controller
             $input = $request->all();
             $request->value ? $input['value'] = ucfirst($request->value) : "";
             if ($survey->state == Survey::STATUS_ON_PROGRESS) {
+                if ($request->deleted && $request->deleted  == 1) {
+                    $result = SurveyQuestionAnswer::updateSurveyQuestionAnswer($input, $answer_id);
+                    $list = SurveyQuestionAnswer::getAllAnswer($question_id);
+                    foreach ($list as $key => $value) {
+                        $update_anser = SurveyQuestionAnswer::updateSurveyQuestionAnswer(['sequence' => $key + 1], $value['id']);
+                    }
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    return ClientResponse::responseSuccess('Xóa thành công', $result);
+                }
                 SurveyQuestionAnswer::updateSurveyQuestionAnswer(['deleted' => SurveyQuestionAnswer::DELETED], $answer_id);
                 $input['survey_id'] =  $question_answer->survey_id;
                 $input['question_id'] =  $question_answer->question_id;
@@ -80,6 +93,36 @@ class SurveyQuestionAnswersController extends Controller
                 }
                 return ClientResponse::responseSuccess('Cập nhập thành công', $result);
             }
+            if ($request->deleted && $request->deleted  == 1) {
+                SurveyQuestionAnswer::destroy($answer_id);
+                $list = SurveyQuestionAnswer::getAllAnswer($question_id);
+                foreach ($list as $key => $value) {
+                    $update_anser = SurveyQuestionAnswer::updateSurveyQuestionAnswer(['sequence' => $key + 1], $value['id']);
+                }
+            } else {
+                $update_anser = SurveyQuestionAnswer::updateSurveyQuestionAnswer($input, $answer_id);
+                if (!$update_anser) {
+                    return ClientResponse::responseError('Đã có lỗi xảy ra');
+                }
+            }
+            $question_answer_detail = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($answer_id);
+            return ClientResponse::responseSuccess('Cập nhập thành công', $question_answer_detail);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function updateLogicQuestionAnswers(Request $request)
+    {
+        try {
+            $answer_id = $request->answer_id;
+            $survey_id = $request->survey_id;
+            $survey = Survey::getDetailSurvey($survey_id);
+            $question_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($answer_id);
+            if (!$question_answer && !$survey) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            $input = $request->all();
             $update_anser = SurveyQuestionAnswer::updateSurveyQuestionAnswer($input, $answer_id);
             if (!$update_anser) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');

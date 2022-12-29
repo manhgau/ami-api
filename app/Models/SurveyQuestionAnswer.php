@@ -69,7 +69,7 @@ class SurveyQuestionAnswer extends Model
 
     public static  function getAllAnswer($question_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)->orWhere('matrix_question_id', $question_id)->get()->toArray();
+        return self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)->orWhere('matrix_question_id', $question_id)->orderBy('sequence', 'asc')->get()->toArray();
     }
 
     public static  function getDetailSurveyQuestionAnswer($id)
