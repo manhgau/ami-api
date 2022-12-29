@@ -93,6 +93,7 @@ class SurveyQuestionController extends Controller
                         array_push($data, $item);
                     }
                 } else {
+                    $value->sequence_group = 0;
                     array_push($data, $value);
                 }
             }
