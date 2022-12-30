@@ -149,11 +149,13 @@ class SurveyPartnerInputLineController extends Controller
                                     'value_text_box' => [
                                         $survey_question->validation_required ? 'required' : '',
                                         'string',
+                                        'max:255'
                                     ],
                                 ],
                                 [
                                     'value_text_box.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
                                     'value_text_box.string' => 'Câu hỏi nhận dữ liệu kiểu chuỗi.', // custom message     
+                                    'value_text_box.max' => 'Số ký tự không vượt quá 255 ký tự.', // custom message       
                                 ]
                             );
                             if ($validator->fails()) {
@@ -170,11 +172,13 @@ class SurveyPartnerInputLineController extends Controller
                                     'value_char_box' => [
                                         $survey_question->validation_required ? 'required' : '',
                                         'string',
+                                        'max:1000'
                                     ],
                                 ],
                                 [
                                     'value_char_box.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
-                                    'value_char_box.string' => 'Câu hỏi nhận dữ liệu kiểu chuỗi.', // custom message     
+                                    'value_char_box.string' => 'Câu hỏi nhận dữ liệu kiểu chuỗi.', // custom message   
+                                    'value_char_box.max' => 'Số ký tự không vượt quá 1000 ký tự.', // custom message      
                                 ]
                             );
                             if ($validator->fails()) {

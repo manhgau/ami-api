@@ -120,7 +120,7 @@ class SurveyController extends Controller
             $request->real_end_time ? $data['real_end_time'] = FormatDate::formatDate($request->real_end_time) : null;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $request->description ? $data['description'] = ucfirst($request->description) : "";
-            $request->title ? $data['title'] = ucfirst($request->title) : "";
+            $request->title ? $data['title'] = ucfirst($request->title . ' ') : "";
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;
             $data['updated_at'] = Carbon::now();
