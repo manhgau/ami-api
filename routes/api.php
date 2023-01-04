@@ -249,6 +249,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
                 Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
                 Route::post('/mapping-uid-fcmtoken', [MappingUidFcmTokenController::class, 'mappingUidFcmToken']);
+                Route::get('/check-fcmtoken', [MappingUidFcmTokenController::class, 'checkFcmToken']);
                 Route::post('/upload-avatar', [PartnerAuthController::class, 'updateAvatar']);
             });
         });
@@ -265,7 +266,6 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/{survey_profile_id}/profile/question/{question_id}', [SurveyQuestionProfileController::class, 'answerSurveyQuestionProfile']);
                 Route::group([
                     'middleware' => 'partner_profile',
-
                 ], function ($router) {
                     Route::get('/get-list', [SurveyPartnerController::class, 'getlistSurveyPartner']);
                     Route::get('/get-detail/{survey_partner_id}', [SurveyPartnerController::class, 'getDetailSurveyPartner']);
