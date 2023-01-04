@@ -292,7 +292,7 @@ class SurveyQuestionController extends Controller
                 }
             }
             $request->description ? $input['description'] = ucfirst($request->description) : "";
-            $request->title ? $input['title'] = ucfirst($request->title . ' ') : "";
+            $request->title ? $input['title'] = ucfirst($request->title) : "";
             $input['updated_by'] = $user_id;
             $update_survey = SurveyQuestion::updateSurveyQuestion($input, $question_id);
             if (!$update_survey) {
