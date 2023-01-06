@@ -102,7 +102,6 @@ class SurveyController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'string|max:255',
-                'description' => 'string|max:255',
                 'survey_id' => 'string|exists:App\Models\Survey,id',
             ]);
             if ($validator->fails()) {
