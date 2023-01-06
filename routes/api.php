@@ -239,6 +239,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/check-register', [PartnerAuthController::class, 'checkRegister']);
             Route::post('/register', [PartnerAuthController::class, 'register']);
             Route::post('/forgot-password', [PartnerAuthController::class, 'forgotPassword']);
+            Route::post('/forgot-password/validate-otp', [PartnerAuthController::class, 'forgotPasswordCheckOtp']);
             Route::post('/reset-password', [PartnerAuthController::class, 'resetPassword']);
 
             Route::group([

@@ -18,6 +18,7 @@ use App\Helpers\FormatDate;
 use App\Helpers\FtpSv;
 use App\Helpers\JWT;
 use App\Models\AppSetting;
+use App\Models\OtpLog;
 use App\Models\SurveyPartnerInput;
 
 class AuthController extends Controller
@@ -163,6 +164,32 @@ class AuthController extends Controller
         } else {
             return ClientResponse::responseError('Tài khoản không tồn tại');
         }
+    }
+
+    public function forgotPasswordCheckOtp(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'phone' => 'required',
+                'otp' => 'required',
+            ],
+            [
+                'phone.required' => 'Vui lòng nhập số điện thoại.',
+                'otp.required' => 'Vui lòng nhập mã otp.',
+            ]
+        );
+        if ($validator->fails()) {
+            $errorString = implode(",", $validator->messages()->all());
+            return ClientResponse::response(ClientResponse::$validator_value, $errorString);
+        }
+        $phone = $request->phone;
+        $otp = $request->otp;
+        $check = OtpLog::validateOtpByPhone($phone, $otp);
+        if (!$check) {
+            return ClientResponse::responseError('Otp không hợp lệ');
+        }
+        return ClientResponse::responseSuccess('Otp hợp lệ');
     }
 
     public function resetPassword(Request $request)
