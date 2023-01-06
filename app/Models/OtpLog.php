@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: nguyenpv
@@ -28,4 +29,11 @@ class OtpLog extends Model
         'updated_at',
         'note',
     ];
+
+    public static function validateOtpByPhone($phone, $otp)
+    {
+        return self::where('phone', $phone)->where('otp', $otp)
+            ->where('expire_at', '>', time())
+            ->orderBy('id', 'desc')->exists();
+    }
 }
