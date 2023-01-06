@@ -209,104 +209,109 @@ Route::group(['prefix' => 'v1'], function () {
 
     //partner (app)
     Route::group([
-        'prefix' => 'partner'
+        'middleware' => 'partner_log_request',
+
     ], function ($router) {
-        Route::get('/settings', [PartnerConfigController::class, 'settings']);
-        Route::get('province', [PartnerProvinceController::class, 'getProvince']);
-        Route::get('district/{province_code}', [DistrictController::class, 'getDistrict']);
-        Route::get('ward/{district_code}', [WardController::class, 'getWard']);
-        //
-        Route::get('job-status', [JobStatusController::class, 'getJobStatus']);
-        Route::get('job-type', [JobTypeCotroller::class, 'getJobType']);
-        Route::get('business-scope', [BusinessScopeCotroller::class, 'getBusinessScope']);
-        Route::get('academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
-        //
-        Route::get('family-income-level', [FamilyIncomeLevelsController::class, 'getFamilyIncomeLevels']);
-        Route::get('children-age-range', [ChildrenAgeRangesController::class, 'getChildrenAgeRanges']);
-        Route::get('personal-income-level', [PersonalIncomeLevelsController::class, 'getPersonalIncomeLevels']);
-        Route::get('gender', [GendersController::class, 'getGenders']);
-        Route::get('family-people', [NumberOfFamilyController::class, 'getFamilyPeople']);
-        Route::get('year-of-birth', [YearOfBirthController::class, 'getYearOfBirth']);
-        Route::get('marital-status', [MaritalStatusController::class, 'getMaritalStatus']);
-        //auth
         Route::group([
-            'prefix' => 'auth'
-
+            'prefix' => 'partner'
         ], function ($router) {
-            Route::post('/login', [PartnerAuthController::class, 'login']);
-            Route::post('/logout', [PartnerAuthController::class, 'logout']);
-            Route::post('/refresh', [PartnerAuthController::class, 'refresh']);
-            Route::post('/check-register', [PartnerAuthController::class, 'checkRegister']);
-            Route::post('/register', [PartnerAuthController::class, 'register']);
-            Route::post('/forgot-password', [PartnerAuthController::class, 'forgotPassword']);
-            Route::post('/forgot-password/validate-otp', [PartnerAuthController::class, 'forgotPasswordCheckOtp']);
-            Route::post('/reset-password', [PartnerAuthController::class, 'resetPassword']);
-
+            Route::get('/settings', [PartnerConfigController::class, 'settings']);
+            Route::get('province', [PartnerProvinceController::class, 'getProvince']);
+            Route::get('district/{province_code}', [DistrictController::class, 'getDistrict']);
+            Route::get('ward/{district_code}', [WardController::class, 'getWard']);
+            //
+            Route::get('job-status', [JobStatusController::class, 'getJobStatus']);
+            Route::get('job-type', [JobTypeCotroller::class, 'getJobType']);
+            Route::get('business-scope', [BusinessScopeCotroller::class, 'getBusinessScope']);
+            Route::get('academic-level', [AcademicLevelCotroller::class, 'getAcademicLevel']);
+            //
+            Route::get('family-income-level', [FamilyIncomeLevelsController::class, 'getFamilyIncomeLevels']);
+            Route::get('children-age-range', [ChildrenAgeRangesController::class, 'getChildrenAgeRanges']);
+            Route::get('personal-income-level', [PersonalIncomeLevelsController::class, 'getPersonalIncomeLevels']);
+            Route::get('gender', [GendersController::class, 'getGenders']);
+            Route::get('family-people', [NumberOfFamilyController::class, 'getFamilyPeople']);
+            Route::get('year-of-birth', [YearOfBirthController::class, 'getYearOfBirth']);
+            Route::get('marital-status', [MaritalStatusController::class, 'getMaritalStatus']);
+            //auth
             Route::group([
-                'middleware' => 'partner_auth',
+                'prefix' => 'auth'
 
             ], function ($router) {
-                Route::get('/profile', [PartnerAuthController::class, 'profile']);
-                Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
-                Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
-                Route::post('/mapping-uid-fcmtoken', [MappingUidFcmTokenController::class, 'mappingUidFcmToken']);
-                Route::get('/check-fcmtoken', [MappingUidFcmTokenController::class, 'checkFcmToken']);
-                Route::post('/upload-avatar', [PartnerAuthController::class, 'updateAvatar']);
-            });
-        });
+                Route::post('/login', [PartnerAuthController::class, 'login']);
+                Route::post('/logout', [PartnerAuthController::class, 'logout']);
+                Route::post('/refresh', [PartnerAuthController::class, 'refresh']);
+                Route::post('/check-register', [PartnerAuthController::class, 'checkRegister']);
+                Route::post('/register', [PartnerAuthController::class, 'register']);
+                Route::post('/forgot-password', [PartnerAuthController::class, 'forgotPassword']);
+                Route::post('/forgot-password/validate-otp', [PartnerAuthController::class, 'forgotPasswordCheckOtp']);
+                Route::post('/reset-password', [PartnerAuthController::class, 'resetPassword']);
 
-        Route::group([
-            'prefix' => 'survey'
-        ], function ($router) {
-            Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
-            Route::group([
-                'middleware' => 'partner_auth',
-
-            ], function ($router) {
-                Route::get('/{survey_profile_id}/profile/question', [SurveyQuestionProfileController::class, 'getSurveyQuestionProfile']);
-                Route::post('/{survey_profile_id}/profile/question/{question_id}', [SurveyQuestionProfileController::class, 'answerSurveyQuestionProfile']);
                 Route::group([
-                    'middleware' => 'partner_profile',
+                    'middleware' => 'partner_auth',
+
                 ], function ($router) {
-                    Route::get('/get-list', [SurveyPartnerController::class, 'getlistSurveyPartner']);
-                    Route::get('/get-detail/{survey_partner_id}', [SurveyPartnerController::class, 'getDetailSurveyPartner']);
-                    Route::get('/save/{survey_partner_id}', [SurveyPartnerController::class, 'saveSurveyPartner']);
-                    Route::get('/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
-                    Route::get('/input/{survey_partner_input_id}', [SurveyPartnerInputController::class, 'getDetailSurveyPartnerInput']);
-                    Route::get('{survey_id}/input/check', [SurveyPartnerInputController::class, 'checkPartnerInput']);
-                    Route::get('{survey_id}/setup', [SurveyPartnerController::class, 'getSetupSurvey']);
+                    Route::get('/profile', [PartnerAuthController::class, 'profile']);
+                    Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
+                    Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
+                    Route::post('/mapping-uid-fcmtoken', [MappingUidFcmTokenController::class, 'mappingUidFcmToken']);
+                    Route::get('/check-fcmtoken', [MappingUidFcmTokenController::class, 'checkFcmToken']);
+                    Route::post('/upload-avatar', [PartnerAuthController::class, 'updateAvatar']);
+                });
+            });
+
+            Route::group([
+                'prefix' => 'survey'
+            ], function ($router) {
+                Route::get('/question-type', [SurveyController::class, 'getQuestionType']);
+                Route::group([
+                    'middleware' => 'partner_auth',
+
+                ], function ($router) {
+                    Route::get('/{survey_profile_id}/profile/question', [SurveyQuestionProfileController::class, 'getSurveyQuestionProfile']);
+                    Route::post('/{survey_profile_id}/profile/question/{question_id}', [SurveyQuestionProfileController::class, 'answerSurveyQuestionProfile']);
                     Route::group([
-                        'prefix' => '/{survey_id}/input'
+                        'middleware' => 'partner_profile',
                     ], function ($router) {
-                        Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
-                        Route::get('/question/profile', [SurveyQuestionProfileController::class, 'getQuestionProfileBySurvey']);
-                        Route::post('/{partner_input_id}/question/profile/{question_id}', [SurveyQuestionProfileController::class, 'answerQuestionProfileBySurvey']);
-                        Route::post('/', [SurveyPartnerInputController::class, 'answerSurvey']);
-                        Route::post('/{partner_input_id}/update', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
-                        Route::post('/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
-                        Route::get('/{partner_input_id}/question/{question_id}/exit', [SurveyPartnerInputController::class, 'exitSurvey']);
+                        Route::get('/get-list', [SurveyPartnerController::class, 'getlistSurveyPartner']);
+                        Route::get('/get-detail/{survey_partner_id}', [SurveyPartnerController::class, 'getDetailSurveyPartner']);
+                        Route::get('/save/{survey_partner_id}', [SurveyPartnerController::class, 'saveSurveyPartner']);
+                        Route::get('/input', [SurveyPartnerInputController::class, 'getlistSurveyPartnerInput']);
+                        Route::get('/input/{survey_partner_input_id}', [SurveyPartnerInputController::class, 'getDetailSurveyPartnerInput']);
+                        Route::get('{survey_id}/input/check', [SurveyPartnerInputController::class, 'checkPartnerInput']);
+                        Route::get('{survey_id}/setup', [SurveyPartnerController::class, 'getSetupSurvey']);
+                        Route::group([
+                            'prefix' => '/{survey_id}/input'
+                        ], function ($router) {
+                            Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
+                            Route::get('/question/profile', [SurveyQuestionProfileController::class, 'getQuestionProfileBySurvey']);
+                            Route::post('/{partner_input_id}/question/profile/{question_id}', [SurveyQuestionProfileController::class, 'answerQuestionProfileBySurvey']);
+                            Route::post('/', [SurveyPartnerInputController::class, 'answerSurvey']);
+                            Route::post('/{partner_input_id}/update', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
+                            Route::post('/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
+                            Route::get('/{partner_input_id}/question/{question_id}/exit', [SurveyPartnerInputController::class, 'exitSurvey']);
+                        });
                     });
                 });
             });
-        });
 
-        //end auth
-        //required login
-        Route::group([
-            'middleware' => 'partner_auth',
-
-        ], function ($router) {
+            //end auth
+            //required login
             Route::group([
-                'prefix' => 'notification',
+                'middleware' => 'partner_auth',
 
             ], function ($router) {
                 Route::group([
-                    'middleware' => 'partner_profile',
+                    'prefix' => 'notification',
 
                 ], function ($router) {
-                    Route::get('/', [NotificationsFirebasePartnerController::class, 'getListNotificationPartner']);
-                    Route::get('/type', [NotificationsFirebasePartnerController::class, 'getNotficationType']);
-                    Route::get('/{notification_partner_id}', [NotificationsFirebasePartnerController::class, 'getDetailNotificationPartner']);
+                    Route::group([
+                        'middleware' => 'partner_profile',
+
+                    ], function ($router) {
+                        Route::get('/', [NotificationsFirebasePartnerController::class, 'getListNotificationPartner']);
+                        Route::get('/type', [NotificationsFirebasePartnerController::class, 'getNotficationType']);
+                        Route::get('/{notification_partner_id}', [NotificationsFirebasePartnerController::class, 'getDetailNotificationPartner']);
+                    });
                 });
             });
         });
