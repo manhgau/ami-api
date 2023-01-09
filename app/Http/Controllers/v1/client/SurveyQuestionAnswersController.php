@@ -62,6 +62,7 @@ class SurveyQuestionAnswersController extends Controller
             $answer_id = $request->answer_id;
             $survey_id = $request->survey_id;
             $question_id = $request->question_id;
+            $value_type = $request->value_type ?? null;
             $survey = Survey::getDetailSurvey($survey_id);
             $question_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($answer_id);
             if (!$question_answer) {
@@ -72,7 +73,7 @@ class SurveyQuestionAnswersController extends Controller
             if ($survey->state == Survey::STATUS_ON_PROGRESS) {
                 if ($request->deleted && $request->deleted  == 1) {
                     $result = SurveyQuestionAnswer::updateSurveyQuestionAnswer($input, $answer_id);
-                    $list = SurveyQuestionAnswer::getAllAnswer($question_id);
+                    $list = SurveyQuestionAnswer::getAllAnswer($question_id, $value_type);
                     foreach ($list as $key => $value) {
                         $update_anser = SurveyQuestionAnswer::updateSurveyQuestionAnswer(['sequence' => $key + 1], $value['id']);
                     }
@@ -95,7 +96,7 @@ class SurveyQuestionAnswersController extends Controller
             }
             if ($request->deleted && $request->deleted  == 1) {
                 SurveyQuestionAnswer::destroy($answer_id);
-                $list = SurveyQuestionAnswer::getAllAnswer($question_id);
+                $list = SurveyQuestionAnswer::getAllAnswer($question_id, $value_type);
                 foreach ($list as $key => $value) {
                     $update_anser = SurveyQuestionAnswer::updateSurveyQuestionAnswer(['sequence' => $key + 1], $value['id']);
                 }
