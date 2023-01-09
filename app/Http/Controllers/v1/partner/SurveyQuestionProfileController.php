@@ -359,7 +359,7 @@ class SurveyQuestionProfileController extends Controller
                 }
             }
             return [
-                'code' => false,
+                'code' => true,
                 'status' =>  $result,
             ];
         } catch (\Exception $ex) {

@@ -250,12 +250,16 @@ Route::group(['prefix' => 'v1'], function () {
                     'middleware' => 'partner_auth',
 
                 ], function ($router) {
-                    Route::get('/profile', [PartnerAuthController::class, 'profile']);
-                    Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
                     Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
                     Route::post('/mapping-uid-fcmtoken', [MappingUidFcmTokenController::class, 'mappingUidFcmToken']);
                     Route::get('/check-fcmtoken', [MappingUidFcmTokenController::class, 'checkFcmToken']);
-                    Route::post('/upload-avatar', [PartnerAuthController::class, 'updateAvatar']);
+                    Route::group([
+                        'middleware' => 'partner_profile',
+                    ], function ($router) {
+                        Route::get('/profile', [PartnerAuthController::class, 'profile']);
+                        Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
+                        Route::post('/upload-avatar', [PartnerAuthController::class, 'updateAvatar']);
+                    });
                 });
             });
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class PartnerProfile extends Model
 {
@@ -58,5 +59,41 @@ class PartnerProfile extends Model
             'is_key_shopper',
         )
             ->where('partner_id', $partner_id)->first()->toArray();
+    }
+
+    public static  function getPartnerProfile($partner_id)
+    {
+        return  DB::table('partner_profiles as a')
+            ->leftJoin('districts as b', 'b.code', '=', 'a.district_code')
+            ->leftJoin('genders as c', 'c.id', '=', 'a.gender')
+            ->leftJoin('provinces as d', 'd.code', '=', 'a.province_code')
+            ->leftJoin('job_types as e', 'e.id', '=', 'a.job_type_id')
+            ->leftJoin('academic_levels as f', 'f.id', '=', 'a.academic_level_id')
+            ->leftJoin('marital_status as g', 'g.id', '=', 'a.marital_status_id')
+            ->leftJoin('personal_income_levels as h', 'h.id', '=', 'a.personal_income_level_id')
+            ->leftJoin('family_income_levels as i', 'i.id', '=', 'a.family_income_level_id')
+            ->select(
+                'a.id',
+                'a.partner_id',
+                'a.fullname',
+                'a.avatar',
+                'a.phone',
+                'a.point',
+                'a.point_tpr',
+                'a.kpi_point',
+                'a.kpi_point_tpr',
+                'a.family_people',
+                'a.has_children',
+                'a.is_key_shopper',
+                'b.name as district_name',
+                'c.name as gender_name',
+                'd.name as province_name',
+                'e.name as job_type_name',
+                'f.name as academic_level_name',
+                'g.name as .marital_status_name',
+                'h.name as personal_income_level_name',
+                'i.name as family_income_level_name',
+            )
+            ->where('partner_id', $partner_id)->first();
     }
 }

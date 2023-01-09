@@ -346,7 +346,7 @@ class AuthController extends Controller
             $partner = $tokenInfo->partner;
             if ($partner) {
                 $partner->count_survey = SurveyPartnerInput::countPartnerInput($partner->id);
-                $partner->profile =  $partner->profile;
+                $partner->profile =  PartnerProfile::getPartnerProfile($partner->id);
                 $all_settings = AppSetting::getAllSetting();
                 $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
                 $partner->profile->avatar ? $partner->profile->avatar =   $image_domain . $partner->profile->avatar : null;
