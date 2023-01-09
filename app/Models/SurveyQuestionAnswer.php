@@ -67,9 +67,14 @@ class SurveyQuestionAnswer extends Model
         return self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)->orderBy('sequence', 'asc')->get();
     }
 
-    public static  function getAllAnswer($question_id)
+    public static  function getAllAnswer($question_id, $value_type = null)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)->orWhere('matrix_question_id', $question_id)->orderBy('sequence', 'asc')->get()->toArray();
+        $query = self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)
+            ->orWhere('matrix_question_id', $question_id);
+        if ($value_type != null) {
+            $query = $query->where('value_type', $value_type);
+        };
+        return  $query->orderBy('sequence', 'asc')->get()->toArray();
     }
 
     public static  function getDetailSurveyQuestionAnswer($id)
