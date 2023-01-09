@@ -53,13 +53,15 @@ class SurveyQuestionAnswer extends Model
     public static  function getAllSurveyQuestionAnswer($id,  $random = 0)
     {
         $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'logic_come', 'value', 'value_type')
-            ->where('question_id', $id)
             ->where('deleted', self::NOT_DELETED)
-            ->orderBy('sequence', 'asc');
+            ->where(function ($query) use ($id) {
+                $query->where('question_id', $id)
+                    ->orWhere('matrix_question_id', $id);
+            });
         if ($random == 1) {
             $query = $query->inRandomOrder();
         }
-        return $query;
+        return $query->orderBy('sequence', 'asc');
     }
 
     public static  function getAnswerMatrixRow($question_id)
@@ -69,8 +71,11 @@ class SurveyQuestionAnswer extends Model
 
     public static  function getAllAnswer($question_id, $value_type = null)
     {
-        $query = self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)
-            ->orWhere('matrix_question_id', $question_id);
+        $query = self::where('deleted', self::NOT_DELETED)
+            ->where(function ($query) use ($question_id) {
+                $query->where('question_id', $question_id)
+                    ->orWhere('matrix_question_id', $question_id);
+            });
         if ($value_type != null) {
             $query = $query->where('value_type', $value_type);
         };

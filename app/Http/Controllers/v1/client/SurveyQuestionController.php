@@ -130,7 +130,7 @@ class SurveyQuestionController extends Controller
             $random =  $detail->validation_random;
             switch ($detail->question_type) { // question_id 
                 case QuestionType::MULTI_FACTOR_MATRIX:
-                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->orWhere('matrix_question_id', $detail->id)->get();
+                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->get();
                     break;
                 case QuestionType::MULTI_CHOICE:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
