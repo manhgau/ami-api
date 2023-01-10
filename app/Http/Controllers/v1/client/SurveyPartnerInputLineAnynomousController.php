@@ -207,20 +207,23 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     $data_input = $input;
                     break;
                 case QuestionType::MULTI_FACTOR_MATRIX:
-                    $validator = Validator::make(
-                        $request->all(),
-                        [
-                            'input' => [
-                                $survey_question->validation_required ? 'required' : '',
+                    $list_answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id)->where("value_type", 'row')->get();
+                    foreach ($list_answers as $key => $value) {
+                        $validator = Validator::make(
+                            $request->all(),
+                            [
+                                'input_' . $value['id'] => [
+                                    $survey_question->validation_required ? 'required' : '',
+                                ],
                             ],
-                        ],
-                        [
-                            'input.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
-                        ]
-                    );
-                    if ($validator->fails()) {
-                        $errorString = implode(",", $validator->messages()->all());
-                        return ClientResponse::response(ClientResponse::$validator_value, $errorString);
+                            [
+                                'input_' . $value['id'] . '.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
+                            ]
+                        );
+                        if ($validator->fails()) {
+                            $errorString = implode(",", $validator->messages()->all());
+                            return ClientResponse::response(ClientResponse::$validator_value, $errorString);
+                        }
                     }
                     $data = $request->all();
                     if (is_array($data) &&  count($data) > 0) {

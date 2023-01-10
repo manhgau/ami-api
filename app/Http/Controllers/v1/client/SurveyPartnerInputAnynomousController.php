@@ -132,7 +132,7 @@ class SurveyPartnerInputAnynomousController extends Controller
         switch ($value->question_type) { // question_id 
             case QuestionType::MULTI_FACTOR_MATRIX:
                 $data_response = $value;
-                $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->orWhere('matrix_question_id', $value->id)->get();
+                $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
                 $datas[$key] = $data_response;
                 break;
             case QuestionType::MULTI_CHOICE:
