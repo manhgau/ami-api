@@ -183,7 +183,6 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::group([
                     'prefix' => '/{survey_id}/anynomous'
                 ], function ($router) {
-                    Route::get('/', [SurveyPartnerInputAnynomousController::class, 'getSetupSurvey']);
                     Route::post('/', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
                     Route::post('/{partner_input_id}/update', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
                     Route::post('line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
