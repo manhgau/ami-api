@@ -350,7 +350,7 @@ class AuthController extends Controller
                 $all_settings = AppSetting::getAllSetting();
                 $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
                 $partner->profile->avatar ? $partner->profile->avatar =   $image_domain . $partner->profile->avatar : null;
-                $partner->profile->year_of_birth ? $partner->profile->year_of_birth = date_format(date_create($partner->profile->year_of_birth), 'd/m/Y') : null;
+                $partner->profile->year_of_birth ? $partner->profile->year_of_birth = date_format(date_create($partner->profile->year_of_birth), 'd-m-Y') : null;
                 return ClientResponse::responseSuccess('Thông tin tài khoản', $partner);
             } else {
                 return ClientResponse::responseError('Tài khoản không tồn tại');
