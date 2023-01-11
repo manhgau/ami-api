@@ -271,7 +271,7 @@ Route::group(['prefix' => 'v1'], function () {
 
                 ], function ($router) {
                     Route::get('/{survey_profile_id}/profile/question', [SurveyQuestionProfileController::class, 'getSurveyQuestionProfile']);
-                    Route::post('/{survey_profile_id}/profile/question/{question_id}', [SurveyQuestionProfileController::class, 'answerSurveyQuestionProfile']);
+                    Route::post('/{survey_profile_id}/profile/question', [SurveyQuestionProfileController::class, 'answerSurveyQuestionProfile']);
                     Route::group([
                         'middleware' => 'partner_profile',
                     ], function ($router) {
@@ -287,7 +287,7 @@ Route::group(['prefix' => 'v1'], function () {
                         ], function ($router) {
                             Route::get('/question', [SurveyQuestionPartnerController::class, 'getSurveyQuestion']);
                             Route::get('/question/profile', [SurveyQuestionProfileController::class, 'getQuestionProfileBySurvey']);
-                            Route::post('/{partner_input_id}/question/profile/{question_id}', [SurveyQuestionProfileController::class, 'answerQuestionProfileBySurvey']);
+                            Route::post('/{partner_input_id}/question/profile', [SurveyQuestionProfileController::class, 'answerQuestionProfileBySurvey']);
                             Route::post('/', [SurveyPartnerInputController::class, 'answerSurvey']);
                             Route::post('/{partner_input_id}/update', [SurveyPartnerInputController::class, 'updateAnswerSurvey']);
                             Route::post('/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
