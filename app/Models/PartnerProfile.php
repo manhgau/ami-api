@@ -77,6 +77,7 @@ class PartnerProfile extends Model
                 'a.partner_id',
                 'a.fullname',
                 'a.avatar',
+                'a.year_of_birth',
                 'a.phone',
                 'a.point',
                 'a.point_tpr',
