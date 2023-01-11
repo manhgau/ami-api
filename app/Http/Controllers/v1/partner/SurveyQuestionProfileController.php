@@ -164,17 +164,40 @@ class SurveyQuestionProfileController extends Controller
                 try {
                     $partner_id = $partner->id ?? 0;
                     $phone = $partner->phone;
-                    $survey_profile_id = $request->survey_profile_id;
-                    $partner_input_id = $request->partner_input_id ?? 0;
-                    $question_id = $request->question_id;
-                    $profile_type = $request->profile_type;
-                    $value_answer = $request->value_answer;
-                    $is_partner_profile = 1;
-                    $result = $this->__answerQuestionProfile($survey_profile_id, $partner_input_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id = null, $is_partner_profile, $phone);
-                    if ($result['code'] == false) {
-                        return ClientResponse::response(ClientResponse::$validator_value, $result['status']);
+                    $data = $request->all();
+                    foreach ($data as $key => $value) {
+                        $input[$value['profile_type']] = $value['value_answer'];
+                        switch ($value['profile_type']) {
+                            case QuestionTypeProfile::FULLNAME:
+                                $input[$value['profile_type']] = $value['value_answer'];
+                                break;
+                            case QuestionTypeProfile::YEAR_OF_BIRTH:
+                                $input[$value['profile_type']] = FormatDate::formatDate($value['value_answer']);
+                                break;
+                            case QuestionTypeProfile::IS_KEY_SHOPPER:
+                            case QuestionTypeProfile::HAS_CHILDREN:
+                            case QuestionTypeProfile::PROVINCE:
+                            case QuestionTypeProfile::GENDER:
+                            case QuestionTypeProfile::MARITAL_STATUS:
+                            case QuestionTypeProfile::JOB_TYPE:
+                            case QuestionTypeProfile::PERSONAL_INCOME_LEVEL:
+                            case QuestionTypeProfile::FAMILY_INCOME_LEVEL:
+                            case QuestionTypeProfile::ACADEMIC_LEVEL:
+                            case QuestionTypeProfile::FAMILY_PEOPLE:
+                                $input[$value['profile_type']] = (int)$value['value_answer'];
+                                break;
+                            default:
+                                return ClientResponse::responseError('profile type không hợp lệ', $value['profile_type']);
+                                break;
+                        }
                     }
-                    return ClientResponse::responseSuccess('OK', $result['status']);
+                    $input['phone'] = $phone;
+                    $input['partner_id'] = $partner_id;
+                    $result =  PartnerProfile::create($input);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    return ClientResponse::responseSuccess('OK', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
                 }
@@ -191,7 +214,6 @@ class SurveyQuestionProfileController extends Controller
             $partner = $tokenInfo->partner;
             if ($partner) {
                 try {
-                    $phone = $partner->phone;
                     $survey_id = $request->survey_id;
                     $survey_detail = Survey::getDetailSurvey($survey_id);
                     if (!$survey_detail) {
@@ -199,171 +221,47 @@ class SurveyQuestionProfileController extends Controller
                     }
                     $survey_profile_id = $survey_detail->survey_profile_id;
                     $partner_input_id = $request->partner_input_id ?? 0;
-                    $question_id = $request->question_id;
-                    $profile_type = $request->profile_type;
-                    $value_answer = $request->value_answer;
-                    $is_partner_profile = 0;
-                    $result = $this->__answerQuestionProfile($survey_profile_id, $partner_input_id,  $question_id, $profile_type,  $value_answer, $partner_id = null, $survey_id, $is_partner_profile, $phone);
-                    if ($result['code'] == false) {
-                        return ClientResponse::response(ClientResponse::$validator_value, $result['status']);
+                    $data = $request->all();
+                    foreach ($data as $key => $value) {
+                        $input[$value['profile_type']] = $value['value_answer'];
+                        switch ($value['profile_type']) {
+                            case QuestionTypeProfile::FULLNAME:
+                                $input[$value['profile_type']] = $value['value_answer'];
+                                break;
+                            case QuestionTypeProfile::YEAR_OF_BIRTH:
+                                $input[$value['profile_type']] = FormatDate::formatDate($value['value_answer']);
+                                break;
+                            case QuestionTypeProfile::IS_KEY_SHOPPER:
+                            case QuestionTypeProfile::HAS_CHILDREN:
+                            case QuestionTypeProfile::PROVINCE:
+                            case QuestionTypeProfile::GENDER:
+                            case QuestionTypeProfile::MARITAL_STATUS:
+                            case QuestionTypeProfile::JOB_TYPE:
+                            case QuestionTypeProfile::PERSONAL_INCOME_LEVEL:
+                            case QuestionTypeProfile::FAMILY_INCOME_LEVEL:
+                            case QuestionTypeProfile::ACADEMIC_LEVEL:
+                            case QuestionTypeProfile::FAMILY_PEOPLE:
+                                $input[$value['profile_type']] = (int)$value['value_answer'];
+                                break;
+                            default:
+                                return ClientResponse::responseError('profile type không hợp lệ', $value['profile_type']);
+                                break;
+                        }
                     }
-                    return ClientResponse::responseSuccess('OK', $result['status']);
+                    $input['survey_id'] = $survey_id;
+                    $input['survey_profile_id'] = $survey_profile_id;
+                    $input['partner_input_id'] = $partner_input_id;
+                    $result =  SurveyProfileInputs::create($input);
+                    if (!$result) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    return ClientResponse::responseSuccess('OK', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
                 }
             }
         } else {
             return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
-        }
-    }
-
-    private function __answerQuestionProfile($survey_profile_id, $partner_input_id, $question_id, $profile_type,  $value_answer, $partner_id, $survey_id, $is_partner_profile, $phone)
-    {
-        //$is_partner_profile kiểm tra xem có update profile ko
-        try {
-            $question_detail = SurveyProfileQuestions::getSurveyQuestionProfileDetail($survey_profile_id, $question_id);
-            if (!$question_detail) {
-                return ClientResponse::responseError('Không có bản ghi phù hợp');
-            }
-            switch ($question_detail->profile_type) {
-                case QuestionTypeProfile::FULLNAME:
-                    $validator = Validator::make(
-                        [
-                            'value_answer' => $value_answer,
-                            'profile_type' => $profile_type
-                        ],
-                        [
-                            'value_answer' => [
-                                $question_detail->validation_required ? 'required' : '',
-                                'string',
-                            ],
-                        ],
-                        [
-                            'value_answer.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
-                        ]
-                    );
-                    if ($validator->fails()) {
-                        $errorString = implode(",", $validator->messages()->all());
-                        return [
-                            'code' => false,
-                            'status' =>  $errorString,
-                        ];
-                    }
-                    $input[$profile_type] = $value_answer;
-                    break;
-                case QuestionTypeProfile::FAMILY_PEOPLE:
-                    $validator = Validator::make(
-                        [
-                            'value_answer' => $value_answer,
-                            'profile_type' => $profile_type
-                        ],
-                        [
-                            'value_answer' => [
-                                $question_detail->validation_required ? 'required' : '',
-                                'integer',
-                            ],
-                        ],
-                        [
-                            'value_answer.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
-                            'value_answer.integer' => 'Câu hỏi nhận dữ liệu kiểu số.', // custom message     
-                        ]
-                    );
-                    if ($validator->fails()) {
-                        $errorString = implode(",", $validator->messages()->all());
-                        return [
-                            'code' => false,
-                            'status' =>  $errorString,
-                        ];
-                    }
-                    $input[$profile_type] = $value_answer;
-                    break;
-                case QuestionTypeProfile::YEAR_OF_BIRTH:
-                    $validator = Validator::make(
-                        [
-                            'value_answer' => $value_answer,
-                            'profile_type' => $profile_type
-                        ],
-                        [
-                            'value_answer' => [
-                                $question_detail->validation_required ? 'required' : '',
-                                'date',
-                            ],
-                        ],
-                        [
-                            'value_answer.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
-                        ]
-                    );
-                    if ($validator->fails()) {
-                        $errorString = implode(",", $validator->messages()->all());
-                        return [
-                            'code' => false,
-                            'status' =>  $errorString,
-                        ];
-                    }
-                    $input[$profile_type] = FormatDate::formatDate($value_answer);
-                    break;
-                case QuestionTypeProfile::IS_KEY_SHOPPER:
-                case QuestionTypeProfile::HAS_CHILDREN:
-                case QuestionTypeProfile::PROVINCE:
-                case QuestionTypeProfile::GENDER:
-                case QuestionTypeProfile::MARITAL_STATUS:
-                case QuestionTypeProfile::JOB_TYPE:
-                case QuestionTypeProfile::PERSONAL_INCOME_LEVEL:
-                case QuestionTypeProfile::FAMILY_INCOME_LEVEL:
-                case QuestionTypeProfile::ACADEMIC_LEVEL:
-                    $validator = Validator::make(
-                        [
-                            'value_answer' => $value_answer,
-                            'profile_type' => $profile_type
-                        ],
-                        [
-                            'value_answer' => [
-                                $question_detail->validation_required ? 'required' : '',
-                            ],
-                        ],
-                        [
-                            'value_answer.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
-                        ]
-                    );
-                    if ($validator->fails()) {
-                        $errorString = implode(",", $validator->messages()->all());
-                        return [
-                            'code' => false,
-                            'status' =>  $errorString,
-                        ];
-                    }
-                    $input[$profile_type] = $value_answer;
-                    break;
-                default:
-                    return ClientResponse::responseError('profile type không hợp lệ', $question_detail->profile_type);
-                    break;
-            }
-            $input['survey_profile_id'] = $survey_profile_id;
-            $input['partner_input_id'] = (int)$partner_input_id;
-            $input['partner_id'] = $partner_id;
-            $input['phone'] = $phone;
-            $input['survey_id'] = $survey_id;
-            $model = SurveyProfileInputs::getSurveyProfileInputDetail($survey_profile_id, $survey_id, $partner_input_id, $partner_id);
-            $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
-            if ($is_partner_profile == 1) {
-                if ($model_profile) {
-                    $result = $model_profile->update($input);
-                } else {
-                    $result =  PartnerProfile::create($input);
-                }
-            } else {
-                if ($model) {
-                    $result = $model->update($input);
-                } else {
-                    $result = SurveyProfileInputs::create($input);
-                }
-            }
-            return [
-                'code' => true,
-                'status' =>  $result,
-            ];
-        } catch (\Exception $ex) {
-            return ClientResponse::responseError($ex->getMessage());
         }
     }
 }
