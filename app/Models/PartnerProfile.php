@@ -82,6 +82,7 @@ class PartnerProfile extends Model
                 'a.point_tpr',
                 'a.kpi_point',
                 'a.kpi_point_tpr',
+                'a.addrees',
                 'a.family_people',
                 'a.has_children',
                 'a.is_key_shopper',

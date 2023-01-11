@@ -191,12 +191,13 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                                 'integer',
                                 $survey_question->validation_required ? 'required' : '',
                                 // 'max:' . $survey_question->validation_length_max,
-                                // 'min:' . $survey_question->validation_length_min
+                                'min:0'
                             ],
                         ],
                         [
                             'value_number.required' => 'Đây là một câu hỏi bắt buộc.', // custom message
                             'value_number.integer' => 'Câu hỏi nhận dữ liệu kiểu số.', // custom message     
+                            'value_number.min' => 'Giá trị lớn hơn 0.', // custom message     
                         ]
                     );
                     if ($validator->fails()) {
@@ -234,6 +235,8 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                                     $input['matrix_row_id'] = $value['matrix_row_id'];
                                     $data_input[] = $input;
                                 }
+                            } else {
+                                return ClientResponse::response(ClientResponse::$validator_value, 'Đây là một câu hỏi bắt buộc.');
                             }
                         }
                     }
