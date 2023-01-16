@@ -35,6 +35,7 @@ class UserPackage extends Model
                 'packages.limit_projects',
                 'packages.limit_questions',
                 'packages.add_logo',
+                'packages.data_storage',
             )
             ->where('user_packages.user_id', $user_id)
             ->where('user_packages.end_time', '>', $time_now)

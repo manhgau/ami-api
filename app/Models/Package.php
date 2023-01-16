@@ -54,6 +54,7 @@ class Package extends Model
             'limit_projects',
             'limit_questions',
             'add_logo',
+            'data_storage',
         )->where('status', self::STATUS_ACTIVE)->where('level', 0)->first();
     }
 

@@ -52,7 +52,7 @@ class Survey extends Model
     const  ANSWER_MULTIPLE = 0;
     const  ANSWER_SINGLE = 1;
 
-    public static  function getListSurvey($perPage = 10,  $page = 1, $user_id, $state = null)
+    public static  function getListSurvey($perPage = 10,  $page = 1, $user_id, $states = null)
     {
         $query =  self::select(
             'id',
@@ -72,8 +72,8 @@ class Survey extends Model
             ->where('active', self::ACTIVE)
             ->where('user_id', $user_id)
             ->orderBy('created_at', 'DESC');
-        if ($state != null) {
-            $query->where('state', $state);
+        if ($states != null) {
+            $query->whereIn('state', $states);
         }
         $query = $query->paginate($perPage, "*", "page", $page)->toArray();
         return $query;
