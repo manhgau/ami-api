@@ -60,9 +60,9 @@ class SurveyController extends Controller
         try {
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
-            $state = $request->state;
+            $states = $request->states;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $datas = Survey::getListSurvey($perPage,  $page, $user_id, $state);
+            $datas = Survey::getListSurvey($perPage,  $page, $user_id, $states);
             foreach ($datas['data'] as $key => $value) {
                 $value['start_time'] ? $value['start_time'] = date_format(date_create($value['start_time']), 'd/m/Y') : null;
                 $value['real_end_time'] ? $value['real_end_time'] = date_format(date_create($value['real_end_time']), 'd/m/Y') : null;
@@ -90,7 +90,7 @@ class SurveyController extends Controller
             $all_settings = AppSetting::getAllSetting();
             $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
             $detail->background ? $detail->background = $image_domain . $detail->background : null;
-            $detail->real_end_time = date_format(date_create($detail->real_end_time), 'm-d-Y');
+            $detail->real_end_time ? $detail->real_end_time = date_format(date_create($detail->real_end_time), 'm-d-Y') : null;
             return ClientResponse::responseSuccess('OK', $detail);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
