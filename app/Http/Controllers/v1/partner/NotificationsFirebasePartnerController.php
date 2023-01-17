@@ -65,7 +65,12 @@ class NotificationsFirebasePartnerController extends Controller
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
                     NotificationsFirebasePartners::updateNotificationPartner(['is_viewed' => NotificationsFirebasePartners::VIEW_ACTIVE], $notification_partner_id);
-                    return ClientResponse::responseSuccess('OK', $detail);
+                    $count = NotificationsFirebasePartners::countlNotificationPartner();
+                    $data = [
+                        'count' => $count,
+                        'list' => $detail,
+                    ];
+                    return ClientResponse::responseSuccess('OK', $data);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
                 }

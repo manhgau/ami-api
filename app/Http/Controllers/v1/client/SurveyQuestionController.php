@@ -29,11 +29,11 @@ class SurveyQuestionController extends Controller
                 return ClientResponse::responseError($errorString);
             }
             $input = $request->all();
+            $survey_id = $request->survey_id;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            if (CheckPackageUser::checkQuestionkPackageUser($user_id)) {
+            if (CheckPackageUser::checkQuestionkPackageUser($user_id, $survey_id)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
             }
-            $survey_id = $request->survey_id;
             $input['title'] = ucfirst($request->title);
             $request->description ? $input['description'] = ucfirst($request->description) : "";
             $input['created_by'] = $user_id;

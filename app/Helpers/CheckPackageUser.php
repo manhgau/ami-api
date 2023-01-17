@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Models\Package;
 use App\Models\Survey;
+use App\Models\SurveyQuestion;
 use App\Models\UserPackage;
 use Carbon\Carbon;
 
@@ -20,13 +21,13 @@ class CheckPackageUser
         return false;
     }
 
-    public static function checkQuestionkPackageUser($user_id)
+    public static function checkQuestionkPackageUser($user_id, $survey_id)
     {
 
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
-        $count_survey = Survey::countSurvey($user_id);
-        if ($user_package->limit_questions <= $count_survey) {
+        $count_survey_question = SurveyQuestion::countQuestionOfSurvey($survey_id);
+        if ($user_package->limit_questions <= $count_survey_question) {
             return true;
         }
         return false;
