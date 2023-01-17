@@ -27,6 +27,7 @@ class NotificationsFirebasePartners extends Model
                 'a.*',
                 'b.id as notification_id',
                 'b.title',
+                'b.notification_type',
                 'b.slug',
                 'b.description',
             )
@@ -42,6 +43,7 @@ class NotificationsFirebasePartners extends Model
                 'a.*',
                 'b.id as notification_id',
                 'b.title',
+                'b.notification_type',
                 'b.slug',
                 'b.description',
                 'b.content',
