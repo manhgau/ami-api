@@ -11,6 +11,7 @@ class QuestionTypeProfile
     const FULLNAME                                      = 'fullname';
     const YEAR_OF_BIRTH                                 = 'year_of_birth';
     const PROVINCE                                      = 'province_code';
+    const DISTRICT                                      = 'district_code';
     const GENDER                                        = 'gender';
     const MARITAL_STATUS                                = 'marital_status_id';
     const JOB_TYPE                                      = 'job_type_id';
@@ -43,7 +44,8 @@ class QuestionTypeProfile
         return [
             ['type_target' => self::FULLNAME, 'name' => 'Họ tên'],
             ['type_target' => self::YEAR_OF_BIRTH, 'name' => 'Năm sinh'],
-            ['type_target' => self::PROVINCE, 'name' => 'Địa chỉ'],
+            ['question_type_profile' => self::PROVINCE, 'name' => 'Tỉnh/Tp'],
+            ['question_type_profile' => self::DISTRICT, 'name' => 'Quận/Huyện'],
             ['type_target' => self::GENDER, 'name' => 'Giới tính'],
             ['type_target' => self::MARITAL_STATUS, 'name' => 'Hôn nhân'],
             ['type_target' => self::JOB_TYPE, 'name' => 'Nghề nghiệp'],

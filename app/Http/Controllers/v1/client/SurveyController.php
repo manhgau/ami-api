@@ -338,22 +338,23 @@ class SurveyController extends Controller
     {
         try {
             $survey_id = $request->survey_id;
-            $target_type = $request->target_type;
-            $target_values = $request->target_values;
-            $data = [];
-            foreach ($target_values as $target_value) {
-                $input['target_value'] = $target_value;
-                $input['survey_id'] = $survey_id;
-                $input['target_type'] = $target_type;
-                $data[] = $input;
+            $inputs = $request->all();
+            foreach ($inputs as $key => $value) {
+                $data = [];
+                foreach ($value['target_values'] as $target_value) {
+                    $input['target_value'] = $target_value;
+                    $input['survey_id'] = $survey_id;
+                    $input['target_type'] = $value['target_type'];
+                    $data[] = $input;
+                }
+                SurveyTargets::getSurveyTarget($survey_id, $value['target_type'])->delete();
+                $create_target = SurveyTargets::insert($data);
+                if (!$create_target) {
+                    return ClientResponse::responseError('Đã có lỗi xảy ra');
+                }
             }
-            $target_survey = SurveyTargets::getSurveyTarget($survey_id, $target_type)->delete();
-            $create_target = SurveyTargets::insert($data);
-            if (!$create_target) {
-                return ClientResponse::responseError('Đã có lỗi xảy ra');
-            }
-            $target_survey = SurveyTargets::getSurveyTarget($survey_id)->get()->groupBy('target_type');
-            return ClientResponse::responseSuccess('OK', $target_survey);
+            //$target_survey = SurveyTargets::getSurveyTarget($survey_id)->get()->groupBy('target_type');
+            return ClientResponse::responseSuccess('OK');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

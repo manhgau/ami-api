@@ -8,6 +8,7 @@ use App\Helpers\FormatDate;
 use App\Helpers\RemoveData;
 use App\Models\AcademicLevel;
 use App\Models\AppSetting;
+use App\Models\District;
 use App\Models\FamilyIncomeLevels;
 use App\Models\Gender;
 use App\Models\JobType;
@@ -54,6 +55,11 @@ class SurveyQuestionProfileController extends Controller
                 case QuestionTypeProfile::PROVINCE:
                     $data_response = $value;
                     $data_response['answers'] = Province::getAllProvince();
+                    $datas[] = $data_response;
+                    break;
+                case QuestionTypeProfile::DISTRICT:
+                    $data_response = $value;
+                    $data_response['answers'] = District::getAllDistrict();
                     $datas[] = $data_response;
                     break;
                 case QuestionTypeProfile::GENDER:
