@@ -258,7 +258,6 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                 return ClientResponse::responseSuccess('Bỏ qua thành công', true);
             }
             $result = SurveyPartnerInputLine::insert($data_input);
-            $result = $question_logic ?? $result;
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
@@ -268,6 +267,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                 ],
                 $question_id
             );
+            $result = $question_logic ?? null;
             return ClientResponse::responseSuccess('Trả lời thành công', $result);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
