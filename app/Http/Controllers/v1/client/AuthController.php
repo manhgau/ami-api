@@ -15,6 +15,7 @@ use App\Jobs\SendActiveAcountEmailJob;
 use App\Jobs\SendResetPasswordEmailJob;
 use App\Models\AppSetting;
 use App\Models\Survey;
+use App\Models\SurveyPartnerInput;
 use App\Models\UserPackage;
 use Illuminate\Support\Str;
 use App\Models\UserRefreshToken;
@@ -214,7 +215,7 @@ class AuthController extends Controller
         $user['avatar'] = $image_domain . $user['avatar'];
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
-        $user_package['number_of_projects']  = Survey::countSurvey($user_id);
+        $user_package['number_of_response']  = SurveyPartnerInput::countAllSurveyUserInput($user_id);
         $data = [
             'user_package' => $user_package,
             'user_profile' => $user,

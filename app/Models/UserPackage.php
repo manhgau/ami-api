@@ -34,6 +34,7 @@ class UserPackage extends Model
                 'packages.level',
                 'packages.limit_projects',
                 'packages.limit_questions',
+                'packages.response_limit',
                 'packages.add_logo',
                 'packages.data_storage',
             )
