@@ -255,7 +255,7 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     ],
                     $question_id
                 );
-                return ClientResponse::responseSuccess('Bỏ qua thành công', true);
+                return ClientResponse::responseSuccess('Bỏ qua thành công', null);
             }
             $result = SurveyPartnerInputLine::insert($data_input);
             if (!$result) {
