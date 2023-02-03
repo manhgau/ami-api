@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\client;
 
 use App\Helpers\CheckPackageUser;
+use App\Helpers\CheckResponseOfSurvey;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
 use App\Helpers\Context;
@@ -123,6 +124,11 @@ class SurveyController extends Controller
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;
             $data['updated_at'] = Carbon::now();
+            if ($data['limmit_of_response']) {
+                if (CheckResponseOfSurvey::checkAllResponseOfSurvey($user_id, $data['limmit_of_response']) || CheckResponseOfSurvey::checkResponseSettingOfSurvey($user_id, $data['limmit_of_response'])) {
+                    return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng giới hạn phản hồi đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
+                }
+            }
             $update_survey = Survey::updateSurvey($data, $request->survey_id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');

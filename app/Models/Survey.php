@@ -132,4 +132,9 @@ class Survey extends Model
     {
         return self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)->where('user_id', $user_id)->count();
     }
+
+    public static  function sumLimmitOfResponseSurvey($user_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)->where('user_id', $user_id)->sum('limmit_of_response');
+    }
 }
