@@ -162,7 +162,6 @@ class SurveyQuestionController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'string|max:255',
-                'description' => 'string|max:255',
             ]);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
@@ -381,8 +380,9 @@ class SurveyQuestionController extends Controller
     {
         try {
             $question_id = $request->question_id;
+            $survey_id = $request->survey_id;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            if (CheckPackageUser::checkQuestionkPackageUser($user_id)) {
+            if (CheckPackageUser::checkQuestionkPackageUser($user_id, $survey_id)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
             }
             $survey_question = SurveyQuestion::getDetailSurveyQuestion($question_id);
