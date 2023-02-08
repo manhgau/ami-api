@@ -181,7 +181,7 @@ class SurveyPartnerInputController extends Controller
                     $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $result->end_time)->timestamp;
                     $time_remaining = $timestamp - Carbon::now()->timestamp;
                     $result = json_decode(json_encode($result), true);
-                    $result['time_remaining'] = $time_remaining;
+                    $result['time_remaining'] = floor(max(0, $time_remaining) / (60 * 60 * 24));
                     return ClientResponse::responseSuccess('OK', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
