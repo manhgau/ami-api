@@ -70,7 +70,7 @@ class SurveyController extends Controller
                 $value['real_end_time'] ? $value['real_end_time'] = date_format(date_create($value['real_end_time']), 'd/m/Y') : null;
                 $value['created_at'] ? $value['created_at'] = date_format(date_create($value['created_at']), 'd/m/Y') : null;
                 $value['updated_at'] ? $value['updated_at'] = date_format(date_create($value['updated_at']), 'd/m/Y') : null;
-                $value['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['survey_id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
+                $value['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
                 $datas['data'][$key] = $value;
             }
             $datas = RemoveData::removeUnusedData($datas);
