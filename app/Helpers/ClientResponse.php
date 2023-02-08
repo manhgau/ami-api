@@ -19,6 +19,10 @@ class ClientResponse
     public static $survey_user_number = 406;     //Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát
     public static $add_logo = 408;     //Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này
     public static $app_is_maintain = 409;     //Hệ thống đang bảo trì
+
+    public static $survey_enough_responses = 301;     //Khảo sát đã thu thập đủ số phản hồi,hoặc đã đóng
+    // public static $package_limit_expires = 302;     //Hạn mức phản hồi của gói đã hết
+
     //
     public static $partner_required_fill_info = 421;
     //Partner cập nhật hồ sơ cá nhân

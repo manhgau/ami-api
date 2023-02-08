@@ -124,8 +124,8 @@ class SurveyController extends Controller
             $data['user_id'] = $user_id;
             $data['updated_by'] = $user_id;
             $data['updated_at'] = Carbon::now();
-            if ($data['limmit_of_response']) {
-                if (CheckResponseOfSurvey::checkAllResponseOfSurvey($user_id, $data['limmit_of_response']) || CheckResponseOfSurvey::checkResponseSettingOfSurvey($user_id, $data['limmit_of_response'])) {
+            if ($request->limmit_of_response_anomyous) {
+                if (!CheckResponseOfSurvey::checkAllResponseOfSurvey($user_id, $data['limmit_of_response_anomyous']) || !CheckResponseOfSurvey::checkResponseSettingOfSurvey($user_id, $data['limmit_of_response_anomyous'])) {
                     return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng giới hạn phản hồi đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
                 }
             }

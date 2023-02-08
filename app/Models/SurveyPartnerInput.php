@@ -68,7 +68,7 @@ class SurveyPartnerInput extends Model
             ->join('surveys', 'surveys.id', '=', 'survey_partner_inputs.survey_id')
             ->where('surveys.user_id', $user_id)
             ->where('survey_partner_inputs.state', self::STATUS_DONE)
-            ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE)->count();
+            ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_TRUE)->count();
     }
 
     public static  function countPartnerInput($partner_id)

@@ -183,11 +183,16 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::group([
                     'prefix' => '/{survey_id}/anynomous'
                 ], function ($router) {
-                    Route::post('/', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
-                    Route::post('/{partner_input_id}/update', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
-                    Route::post('line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
-                    Route::get('/list-question', [SurveyPartnerInputAnynomousController::class, 'getSurveyQuestion']);
-                    Route::get('/{partner_input_id}/question/{question_id}/exit', [SurveyPartnerInputLineAnynomousController::class, 'exitSurvey']);
+                    Route::group([
+                        'middleware' => 'check_response_of_survey',
+
+                    ], function ($router) {
+                        Route::post('/', [SurveyPartnerInputAnynomousController::class, 'answerSurveyAnynomous']);
+                        Route::post('/{partner_input_id}/update', [SurveyPartnerInputAnynomousController::class, 'updateAnswerSurveyAnynomous']);
+                        Route::post('line/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineAnynomousController::class, 'surveyPartnerInputLineAnynomous']);
+                        Route::get('/list-question', [SurveyPartnerInputAnynomousController::class, 'getSurveyQuestion']);
+                        Route::get('/{partner_input_id}/question/{question_id}/exit', [SurveyPartnerInputLineAnynomousController::class, 'exitSurvey']);
+                    });
                 });
             });
             //package

@@ -38,9 +38,6 @@ class SurveyQuestionController extends Controller
             $request->description ? $input['description'] = ucfirst($request->description) : "";
             $input['created_by'] = $user_id;
             $input['survey_id'] = $survey_id;
-            $count_questions = SurveyQuestion::countSequence($survey_id, SurveyQuestion::NO_PAGE);
-            $input_survey['question_count'] =   $count_questions + 1;
-            Survey::updateSurvey($input_survey,  $survey_id);
             $question_type = Str::lower($request->question_type);
             if (QuestionType::checkQuestionTypeValid($question_type) === false) {
                 return ClientResponse::responseError('Lỗi ! Không có dạng câu hỏi khảo sát này.');
@@ -49,6 +46,9 @@ class SurveyQuestionController extends Controller
             if (!$servey_question) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
+            $question_count = SurveyQuestion::countQuestionOfSurvey($survey_id);
+            $input_survey['question_count'] =   $question_count;
+            Survey::updateSurvey($input_survey,  $survey_id);
             return ClientResponse::responseSuccess('OK', $servey_question);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
@@ -360,7 +360,7 @@ class SurveyQuestionController extends Controller
                 }
             }
             SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $question_id);
-            $count_questions = SurveyQuestion::countSequence($survey_id, SurveyQuestion::NO_PAGE);
+            $count_questions = SurveyQuestion::countQuestionOfSurvey($survey_id);
             Survey::updateSurvey(["question_count" => $count_questions], $request->survey_id);
             $list = SurveyQuestion::getAllQuestion($request->survey_id, $survey_question->page_id);
             $data = [];
@@ -421,6 +421,8 @@ class SurveyQuestionController extends Controller
                 $data[] = $input;
             }
             self::__arrangeQuestion($data);
+            $count_questions = SurveyQuestion::countQuestionOfSurvey($survey_id);
+            Survey::updateSurvey(["question_count" => $count_questions], $request->survey_id);
             return ClientResponse::responseSuccess('Copy thành công', self::__getDetailSurveyQuestion($result['id']));
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());

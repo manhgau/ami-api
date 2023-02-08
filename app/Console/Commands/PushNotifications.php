@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\MappingUidFcmToken;
-use App\Models\NotificationsFirebase;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class PushNotifications extends Command
 {
@@ -13,23 +12,23 @@ class PushNotifications extends Command
 
     protected $description = '...';
 
-    public function handle(){
-        try{
+    public function handle()
+    {
+        try {
             $start_time = microtime(true);
             $this->line("Start");
             $do_something = false;
             $do_something = \App\Helpers\Firebase::notify();
-            if($do_something == true) {
+            if ($do_something == true) {
                 $this->line('Action complete');
-            }else{
+            } else {
                 $this->line('Nothing to do');
             }
             $end_time = microtime(true);
-            $this->line("Time: ".($end_time - $start_time));
+            $this->line("Time: " . ($end_time - $start_time));
             $this->line("Done");
-
-        }catch (\Exception $ex){
-
+        } catch (\Exception $ex) {
+            Log::error("#ERROR: deleteExpire:user-refresh-token " . $ex->getMessage());
         }
     }
 }
