@@ -14,7 +14,7 @@ class CheckResponseOfSurvey
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
         $sum_response_survey = SurveyPartnerInput::countAllSurveyUserInput($user_id);
-        if ($data < ($user_package->response_limit > $sum_response_survey)) {
+        if ($data < ($user_package->response_limit - $sum_response_survey)) {
             return true;
         }
         return false;
@@ -24,8 +24,8 @@ class CheckResponseOfSurvey
     {
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
-        $sum_response_survey = Survey::sumLimmitOfResponseSurvey($user_id);
-        if ($data < ($user_package->response_limit > $sum_response_survey)) {
+        $sum_response_survey = Survey::sumLimitOfResponseSurvey($user_id);
+        if ($data < ($user_package->response_limit - $sum_response_survey)) {
             return true;
         }
         return false;

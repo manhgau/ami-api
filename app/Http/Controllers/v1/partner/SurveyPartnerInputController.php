@@ -81,13 +81,13 @@ class SurveyPartnerInputController extends Controller
                     $survey_partner = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
                     SurveyPartner::updateSurveyPartner(['number_of_response_partner' =>  $survey_partner->number_of_response_partner + 1], $partner_input_id);
                     $survey = Survey::getDetailSurvey($survey_id);
-                    $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_FALSE);
-                    if (($count_survey_input < $survey->limmit_of_response) || $survey->limmit_of_response == 0) {
-                        $data_survey['number_of_response'] = $survey->number_of_response + 1;
-                    } else {
-                        $data_survey['state'] = Survey::STATUS_COMPLETED;
-                    }
-                    Survey::updateSurvey($data_survey, $survey_id);
+                    // $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_FALSE);
+                    // if (($count_survey_input < $survey->limmit_of_response) || $survey->limmit_of_response == 0) {
+                    //     $data_survey['number_of_response'] = $survey->number_of_response + 1;
+                    // } else {
+                    //     $data_survey['state'] = Survey::STATUS_COMPLETED;
+                    // }
+                    // Survey::updateSurvey($data_survey, $survey_id);
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($survey_id, $partner_id);
                     if ($count_survey_partner_input <= $survey->attempts_limit_max && $count_survey_partner_input >= $survey->attempts_limit_min) {
                         $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);

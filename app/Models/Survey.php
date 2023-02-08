@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +19,7 @@ class Survey extends Model
         'description',
         'active',
         'state',
+        'status_not_completed',
         'skip_count',
         'question_count',
         'start_time',
@@ -25,6 +27,8 @@ class Survey extends Model
         'real_end_time',
         'question_layout',
         'progression_mode',
+        'limmit_of_response',
+        'limmit_of_response_anomyous',
         'number_of_response',
         'point',
         'is_attempts_limited',
@@ -44,11 +48,18 @@ class Survey extends Model
 
     const ACTIVE = 1;
     const INACTIVE = 0;
+
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+
     const STATUS_DRAFT = 'draft';
     const STATUS_ON_PROGRESS = 'on_progress';
+    const STATUS_NOT_COMPLETED = 'not_completed';
     const STATUS_COMPLETED = 'completed';
+
+    const TIME_UP = 'time_up';
+    const LIMIT_EXPIRES = 'limit_expires';
+
     const  ANSWER_MULTIPLE = 0;
     const  ANSWER_SINGLE = 1;
 
@@ -60,11 +71,13 @@ class Survey extends Model
             'user_id',
             'description',
             'state',
+            'status_not_completed',
             'skip_count',
             'question_count',
             'start_time',
             'real_end_time',
             'number_of_response',
+            'limmit_of_response_anomyous',
             'created_at',
             'updated_at',
         )
@@ -133,8 +146,41 @@ class Survey extends Model
         return self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)->where('user_id', $user_id)->count();
     }
 
-    public static  function sumLimmitOfResponseSurvey($user_id)
+    public static  function sumLimitOfResponseSurvey($user_id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)->where('user_id', $user_id)->sum('limmit_of_response');
+    }
+
+    public static  function updateStateCompleted()
+    {
+        return self::where('deleted', self::NOT_DELETED)
+            ->where('active', self::ACTIVE)
+            ->where('end_time', '<', Carbon::now())
+            ->where('limmit_of_response_anomyous', 0)
+            ->where('state', self::STATUS_ON_PROGRESS)
+            ->update(['state' => self::STATUS_COMPLETED]);
+    }
+
+    public static  function listSurveyTimeUp()
+    {
+        return self::select('limmit_of_response_anomyous')
+            ->where('deleted', self::NOT_DELETED)
+            ->where('active', self::ACTIVE)
+            ->where('end_time', '<', Carbon::now())
+            ->where('limmit_of_response_anomyous', '>', 0)
+            ->where('state', self::STATUS_ON_PROGRESS)
+            ->limit(100)
+            ->get();
+    }
+
+    public static  function listSurvey0nProgress()
+    {
+        return self::select('limmit_of_response_anomyous')
+            ->where('deleted', self::NOT_DELETED)
+            ->where('active', self::ACTIVE)
+            ->where('end_time', '>', Carbon::now())
+            ->where('state', self::STATUS_ON_PROGRESS)
+            ->limit(100)
+            ->get();
     }
 }

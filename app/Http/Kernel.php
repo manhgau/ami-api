@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
         'partner_profile'   => \App\Http\Middleware\CheckPartnerProfile::class,
         'client_log_request'   => \App\Http\Middleware\ClientRequestLogging::class,
         'partner_log_request'   => \App\Http\Middleware\PartnerRequestLogging::class,
+        'check_response_of_survey'   => \App\Http\Middleware\CheckResponseOfSurvey::class,
 
     ];
 }
