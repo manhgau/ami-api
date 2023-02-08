@@ -123,6 +123,7 @@ class Survey extends Model
                 'a.background_id',
                 'a.is_answer_single',
                 'a.is_random',
+                'a.view',
                 'b.image as background',
             )
             ->where('a.deleted', self::NOT_DELETED)
