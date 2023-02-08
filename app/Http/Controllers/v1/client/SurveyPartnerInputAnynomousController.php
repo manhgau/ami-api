@@ -124,6 +124,7 @@ class SurveyPartnerInputAnynomousController extends Controller
             $lists['data'] = $datas;
             $survey_setup->background ? $survey_setup->background = $image_domain . $survey_setup->background : null;
             $lists['survey_setup'] = $survey_setup;
+            Survey::updateSurvey(['view' => $survey_setup->view + 1], $survey_id);
             return ClientResponse::responseSuccess('OK', $lists);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
