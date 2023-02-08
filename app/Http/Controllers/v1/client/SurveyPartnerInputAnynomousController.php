@@ -68,7 +68,7 @@ class SurveyPartnerInputAnynomousController extends Controller
             }
             $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_TRUE);
             if (($count_survey_input < $survey->limmit_of_response_anomyous) || $survey->limmit_of_response_anomyous == 0) {
-                $data_survey['limmit_of_response_anomyous'] = $survey->limmit_of_response_anomyous + 1;
+                $data_survey['number_of_response'] = $survey->number_of_response + 1;
             } else {
                 $data_survey['state'] = Survey::STATUS_COMPLETED;
             }
