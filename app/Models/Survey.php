@@ -19,6 +19,7 @@ class Survey extends Model
         'description',
         'active',
         'state',
+        'state_ami',
         'status_not_completed',
         'skip_count',
         'question_count',
@@ -71,6 +72,7 @@ class Survey extends Model
             'user_id',
             'description',
             'state',
+            'state_ami',
             'status_not_completed',
             'skip_count',
             'question_count',
@@ -157,7 +159,7 @@ class Survey extends Model
         return self::select('id', 'user_id',  'limmit_of_response_anomyous')
             ->where('deleted', self::NOT_DELETED)
             ->where('active', self::ACTIVE)
-            ->where('end_time', '<', Carbon::now())
+            ->where('real_end_time', '<', Carbon::now())
             ->where('state', self::STATUS_ON_PROGRESS)
             ->get()->toArray();
     }
@@ -167,7 +169,7 @@ class Survey extends Model
         return self::select('id', 'user_id',  'limmit_of_response_anomyous')
             ->where('deleted', self::NOT_DELETED)
             ->where('active', self::ACTIVE)
-            ->where('end_time', '>', Carbon::now())
+            ->where('real_end_time', '>', Carbon::now())
             ->where('state', self::STATUS_ON_PROGRESS)
             ->get()->toArray();
     }

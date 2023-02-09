@@ -12,6 +12,7 @@ class UpdateStateSurvey
     public static function updateStateSurvey()
     {
         $list_survey_expired = Survey::listSurveyTimeUp();
+        $list_survey_expired_app = Survey::listSurveyTimeUpApp();
         $list_survey = Survey::listSurvey0nProgress();
         if ((is_array($list_survey_expired) && count($list_survey_expired) > 0) || (is_array($list_survey) && count($list_survey) > 0)) {
             foreach ($list_survey_expired as $survey) {

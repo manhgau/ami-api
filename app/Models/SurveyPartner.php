@@ -30,7 +30,7 @@ class SurveyPartner extends Model
                 'a.id as survey_partner_id',
                 'b.id as survey_id',
                 'b.point',
-                'b.state',
+                'b.state_ami',
                 'a.is_save',
                 'a.number_of_response_partner',
                 'b.limmit_of_response',
@@ -45,6 +45,7 @@ class SurveyPartner extends Model
             )
             ->where('a.stattus', self::STATUS_ACTIVE)
             ->where('a.deleted', self::NOT_DELETED)
+            ->where('a.is_save', self::NO_SAVE)
             ->where('a.partner_id', $partner_id)
             ->where('b.start_time', '<', $time_now)
             ->where('b.end_time', '>', $time_end)
@@ -59,20 +60,19 @@ class SurveyPartner extends Model
             $query->where('b.end_time', '<', Carbon::now());
         }
         if ($status == self::ON_PROGRESS) {
-            $query->where('b.end_time', '>', Carbon::now())->where('b.state', Survey::STATUS_ON_PROGRESS);
+            $query->where('b.end_time', '>', Carbon::now())->where('b.state_ami', Survey::STATUS_ON_PROGRESS);
         }
         return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
 
     public static  function updateSurveyPartner($data, $survey_partner_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('stattus', self::STATUS_ACTIVE)->where('id', $survey_partner_id)->update($data);
+        return self::where('deleted', self::NOT_DELETED)->where('id', $survey_partner_id)->update($data);
     }
 
     public static  function checkSurveyPartner($survey_id, $partner_id)
     {
         return self::where('deleted', self::NOT_DELETED)
-            ->where('stattus', self::STATUS_ACTIVE)
             ->where('survey_id', $survey_id)
             ->where('partner_id', $partner_id)
             ->first();
@@ -87,7 +87,7 @@ class SurveyPartner extends Model
                 'b.title',
                 'b.description',
                 'b.id as survey_id',
-                'b.state',
+                'b.state_ami',
                 'a.is_save',
                 'b.point',
                 'b.start_time',
