@@ -22,12 +22,7 @@ class StaticPagesController extends Controller
 
         try {
             $slug = $request->slug;
-            $ckey  = CommonCached::cache_find_static_page_category_by_slug;
-            $datas = CommonCached::getData($ckey);
-            if (empty($datas)) {
-                $datas = StaticPages::getStaticPagesBySlug($slug);
-                CommonCached::storeData($ckey, $datas);
-            }
+            $datas = StaticPages::getStaticPagesBySlug($slug);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
