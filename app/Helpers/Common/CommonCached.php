@@ -64,6 +64,7 @@ class CommonCached
     //
     const cache_find_survey_partner                          = 'api_cached:cache_find_survey_partner';
 
+    const cache_find_static_page_category_by_slug            = "api_cached:cache_find_static_page_category_by_id:slug";
 
 
     public static function storeData($key_cache, $datas, $fast = false)

@@ -39,6 +39,7 @@ use App\Http\Controllers\v1\partner\NotificationsFirebasePartnerController;
 use App\Http\Controllers\v1\partner\NumberOfFamilyController;
 use App\Http\Controllers\v1\partner\PackageController;
 use App\Http\Controllers\v1\partner\PersonalIncomeLevelsController;
+use App\Http\Controllers\v1\partner\StaticPagesController;
 use App\Http\Controllers\v1\partner\SurveyPartnerController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputController;
 use App\Http\Controllers\v1\partner\SurveyPartnerInputLineController;
@@ -236,6 +237,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('family-people', [NumberOfFamilyController::class, 'getFamilyPeople']);
             Route::get('year-of-birth', [YearOfBirthController::class, 'getYearOfBirth']);
             Route::get('marital-status', [MaritalStatusController::class, 'getMaritalStatus']);
+            Route::get('static-page/{slug}', [StaticPagesController::class, 'getStaticPagesBySlug']);
             //auth
             Route::group([
                 'prefix' => 'auth'
