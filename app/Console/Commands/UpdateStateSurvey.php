@@ -28,7 +28,7 @@ class UpdateStateSurvey extends Command
             $this->line("Time: " . ($end_time - $start_time));
             $this->line("Done");
         } catch (\Exception $ex) {
-            Log::error("#ERROR: deleteExpire:user-refresh-token " . $ex->getMessage());
+            Log::error("#ERROR: update-state-survey " . $ex->getMessage());
         }
     }
 }
