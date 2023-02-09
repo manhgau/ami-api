@@ -11,6 +11,7 @@ use App\Helpers\RemoveData;
 use App\Models\AppSetting;
 use App\Models\Survey;
 use App\Models\SurveyPartner;
+use App\Models\SurveyPartnerInput;
 use Carbon\Carbon;
 
 class SurveyPartnerController extends Controller

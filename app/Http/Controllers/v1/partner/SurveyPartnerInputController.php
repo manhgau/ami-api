@@ -32,8 +32,8 @@ class SurveyPartnerInputController extends Controller
                         return ClientResponse::responseError($errorString);
                     }
                     $survey = Survey::getDetailSurvey($request->survey_id);
-                    if ($survey->state == Survey::STATUS_COMPLETED) {
-                        return ClientResponse::responseError('Khảo sát đã đóng');
+                    if (!$survey || $survey->state_ami != Survey::STATUS_ON_PROGRESS) {
+                        return ClientResponse::responseError('Khảo sát không tồn tại hoặc đã đóng');
                     }
                     $partner_id = $partner->id ?? 0;
                     $partner_profile = Partner::getPartnerById($partner_id);
@@ -45,9 +45,6 @@ class SurveyPartnerInputController extends Controller
                     $input['start_datetime'] =  time();
                     $input['is_answer'] =  $request->option;
                     $survey = Survey::getDetailSurvey($request->survey_id);
-                    if (!$survey || $survey->state != Survey::STATUS_ON_PROGRESS) {
-                        return ClientResponse::responseError('Khảo sát không tồn tại hoặc đã đóng');
-                    }
                     $result = SurveyPartnerInput::create($input);
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
@@ -79,15 +76,8 @@ class SurveyPartnerInputController extends Controller
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
                     $survey_partner = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
-                    SurveyPartner::updateSurveyPartner(['number_of_response_partner' =>  $survey_partner->number_of_response_partner + 1], $partner_input_id);
+                    SurveyPartner::updateSurveyPartner(['number_of_response_partner' =>  $survey_partner->number_of_response_partner + 1, 'stattus' => SurveyPartner::STATUS_INACTIVE], $survey_partner->id);
                     $survey = Survey::getDetailSurvey($survey_id);
-                    // $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_FALSE);
-                    // if (($count_survey_input < $survey->limmit_of_response) || $survey->limmit_of_response == 0) {
-                    //     $data_survey['number_of_response'] = $survey->number_of_response + 1;
-                    // } else {
-                    //     $data_survey['state'] = Survey::STATUS_COMPLETED;
-                    // }
-                    // Survey::updateSurvey($data_survey, $survey_id);
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($survey_id, $partner_id);
                     if ($count_survey_partner_input <= $survey->attempts_limit_max && $count_survey_partner_input >= $survey->attempts_limit_min) {
                         $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
