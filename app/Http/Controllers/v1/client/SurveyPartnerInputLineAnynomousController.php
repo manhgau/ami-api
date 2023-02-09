@@ -64,8 +64,10 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                     if (is_array($target_ids)) {
                         if ($survey_question->logic == SurveyQuestion::LOGIC && $survey_question->is_multiple == SurveyQuestion::NOT_MULTIPLE) {
                             $logic_come = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($target_ids[0])->logic_come;
-                            $question_logic = SurveyQuestion::getQuestionByLogic($survey_id,  $logic_come);
-                            $question_logic->answers = SurveyQuestionAnswer::getAllAnswer($logic_come);
+                            if ($logic_come) {
+                                $question_logic = SurveyQuestion::getQuestionByLogic($survey_id,  $logic_come);
+                                $question_logic->answers = SurveyQuestionAnswer::getAllAnswer($logic_come);
+                            }
                         }
                         foreach ($target_ids  as $key =>  $value) {
                             $input['suggested_answer_id'] = $value;
