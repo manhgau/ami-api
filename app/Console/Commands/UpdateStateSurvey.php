@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Survey;
-use App\Models\SurveyPartnerInput;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -17,26 +15,18 @@ class UpdateStateSurvey extends Command
     public function handle()
     {
         try {
-            Survey::updateStateCompleted();
-            $list_survey_expired = Survey::listSurveyTimeUp();
-            foreach ($list_survey_expired as $survey) {
-                $number_of_response  = SurveyPartnerInput::countSurveyInput($survey->survey_id, SurveyPartnerInput::ANYNOMOUS_TRUE);
-                if ($number_of_response < $survey->limmit_of_response_anomyous) {
-                    Survey::updateSurvey(["state" => Survey::STATUS_NOT_COMPLETED, 'status_not_completed' => Survey::TIME_UP], $survey->survey_id);
-                } else {
-                    Survey::updateSurvey(["state" => Survey::STATUS_COMPLETED], $survey->survey_id);
-                }
+            $start_time = microtime(true);
+            $this->line("Start");
+            $do_something = false;
+            $do_something = \App\Helpers\UpdateStateSurvey::updateStateSurvey();
+            if ($do_something == true) {
+                $this->line('Action complete');
+            } else {
+                $this->line('Nothing to do');
             }
-
-            // $list_survey = Survey::listSurvey0nProgress();
-            // foreach ($list_survey as $survey) {
-            //     $number_of_response  = SurveyPartnerInput::countAllSurveyUserInput($survey->user_id);
-            //     if ($number_of_response < $survey->limmit_of_response_anomyous) {
-            //         Survey::updateSurvey(["state" => Survey::STATUS_NOT_COMPLETED, 'status_not_completed' => Survey::TIME_UP], $survey->survey_id);
-            //     } else {
-            //         Survey::updateSurvey(["state" => Survey::STATUS_COMPLETED], $survey->survey_id);
-            //     }
-            // }
+            $end_time = microtime(true);
+            $this->line("Time: " . ($end_time - $start_time));
+            $this->line("Done");
         } catch (\Exception $ex) {
             Log::error("#ERROR: deleteExpire:user-refresh-token " . $ex->getMessage());
         }
