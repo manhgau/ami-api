@@ -12,7 +12,6 @@ namespace App\Http\Controllers\v1\partner;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
-use App\Helpers\Common\CommonCached;
 use App\Models\StaticPages;
 
 class StaticPagesController extends Controller

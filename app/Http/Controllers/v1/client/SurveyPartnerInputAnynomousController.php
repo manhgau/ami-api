@@ -69,9 +69,9 @@ class SurveyPartnerInputAnynomousController extends Controller
             $count_survey_input = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_TRUE);
             if ($survey->limmit_of_response_anomyous != 0 & ($count_survey_input >= $survey->limmit_of_response_anomyous)) {
                 $data_survey['state'] = Survey::STATUS_COMPLETED;
+                Survey::updateSurvey($data_survey, $survey_id);
             }
-            Survey::updateSurvey($data_survey, $survey_id);
-            return ClientResponse::responseSuccess('Cập nhập thành công', $result);
+            return ClientResponse::responseSuccess('Cập nhập thành công', true);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
