@@ -14,7 +14,11 @@ class UpdateStateSurvey
         $list_survey_expired = Survey::listSurveyTimeUp();
         $list_survey_expired_app = Survey::listSurveyTimeUpApp();
         $list_survey = Survey::listSurvey0nProgress();
-        if ((is_array($list_survey_expired) && count($list_survey_expired) > 0) || (is_array($list_survey) && count($list_survey) > 0)) {
+        if (
+            (is_array($list_survey_expired) && count($list_survey_expired) > 0) ||
+            (is_array($list_survey) && count($list_survey) > 0) ||
+            (is_array($list_survey_expired_app) && count($list_survey_expired_app) > 0)
+        ) {
             foreach ($list_survey_expired as $survey) {
                 $number_of_response_survey  = SurveyPartnerInput::countSurveyInput($survey['id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
                 if (($number_of_response_survey < $survey['limmit_of_response_anomyous']) & $survey['limmit_of_response_anomyous'] > 0) {
@@ -23,6 +27,16 @@ class UpdateStateSurvey
                     Survey::updateSurvey(["state" => Survey::STATUS_COMPLETED], $survey['id']);
                 }
             }
+
+            foreach ($list_survey_expired_app as $survey) {
+                $number_of_response_survey  = SurveyPartnerInput::countSurveyInput($survey['id'], SurveyPartnerInput::ANYNOMOUS_FALSE);
+                if (($number_of_response_survey < $survey['limmit_of_response'])) {
+                    Survey::updateSurvey(["state_ami" => Survey::STATUS_NOT_COMPLETED], $survey['id']);
+                } else {
+                    Survey::updateSurvey(["state_ami" => Survey::STATUS_COMPLETED], $survey['id']);
+                }
+            }
+
             foreach ($list_survey as $survey) {
                 $number_of_response_user  = SurveyPartnerInput::countAllSurveyUserInput($survey['user_id']);
                 $time_now = Carbon::now();

@@ -182,4 +182,14 @@ class Survey extends Model
             ->where('state', self::STATUS_ON_PROGRESS)
             ->get()->toArray();
     }
+
+    public static  function listSurveyTimeUpApp()
+    {
+        return self::select('id', 'user_id',  'limmit_of_response_anomyous')
+            ->where('deleted', self::NOT_DELETED)
+            ->where('active', self::ACTIVE)
+            ->where('end_time', '>', Carbon::now())
+            ->where('state_ami', self::STATUS_ON_PROGRESS)
+            ->get()->toArray();
+    }
 }
