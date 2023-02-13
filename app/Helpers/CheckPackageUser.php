@@ -15,19 +15,19 @@ class CheckPackageUser
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
         $count_survey = Survey::countSurvey($user_id);
-        if ($user_package->limit_projects <= $count_survey) {
+        if ($count_survey >= $user_package->limit_projects) {
             return true;
         }
         return false;
     }
 
-    public static function checkQuestionkPackageUser($user_id, $survey_id)
+    public static function checkQuestionkPackageUser($user_id, $survey_id, $number = 0)
     {
 
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
         $count_survey_question = SurveyQuestion::countQuestionOfSurvey($survey_id);
-        if ($user_package->limit_questions <= $count_survey_question) {
+        if (($count_survey_question + $number) >= $user_package->limit_questions) {
             return true;
         }
         return false;
