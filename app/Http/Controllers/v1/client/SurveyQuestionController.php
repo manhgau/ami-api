@@ -394,6 +394,9 @@ class SurveyQuestionController extends Controller
             $survey_question['sequence'] = $survey_question['sequence'] . '.' . 1;
             if ($survey_question['question_type'] == QuestionType::GROUP) {
                 $list_question_groups = SurveyQuestion::getAllQuestionGroup($survey_question['survey_id'], $survey_question['id']);
+                if (CheckPackageUser::checkQuestionkPackageUser($user_id, $survey_id, count($list_question_groups) + 1)) {
+                    return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng câu hỏi khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm câu hỏi khảo sát');
+                }
                 unset($survey_question['id']);
                 unset($survey_question['created_at']);
                 unset($survey_question['updated_at']);
