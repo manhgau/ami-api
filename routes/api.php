@@ -175,11 +175,15 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::group([
                     'prefix' => '/{survey_id}/statistic'
                 ], function ($router) {
-                    Route::post('/', [SurveyStatisticController::class, 'getStatisticSurvey']);
-                    Route::post('/list-questions', [SurveyStatisticController::class, 'getStatisticQuestionsSurvey']);
-                    Route::post('/diagram/target/{group_by}', [SurveyStatisticController::class, 'getDiagramSurvey']);
-                    Route::post('/diagram/year-of-birth', [SurveyStatisticController::class, 'getDiagramYearOfBirth']);
-                    Route::post('/question/{question_id}', [SurveyStatisticController::class, 'getSurveyStatisticDetail']);
+                    Route::group([
+                        'middleware' => 'client_auth',
+                    ], function ($router) {
+                        Route::post('/', [SurveyStatisticController::class, 'getStatisticSurvey']);
+                        Route::post('/list-questions', [SurveyStatisticController::class, 'getStatisticQuestionsSurvey']);
+                        Route::post('/diagram/target/{group_by}', [SurveyStatisticController::class, 'getDiagramSurvey']);
+                        Route::post('/diagram/year-of-birth', [SurveyStatisticController::class, 'getDiagramYearOfBirth']);
+                        Route::post('/question/{question_id}', [SurveyStatisticController::class, 'getSurveyStatisticDetail']);
+                    });
                 });
                 Route::group([
                     'prefix' => '/{survey_id}/anynomous'
