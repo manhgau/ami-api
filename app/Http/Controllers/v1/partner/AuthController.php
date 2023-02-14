@@ -31,10 +31,17 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required',
-            'password' => 'required',
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'phone' => 'required',
+                'password' => 'required',
+            ],
+            [
+                'phone.required' => 'Vui lòng nhập số điện thoại',
+                'password.required' => 'Vui lòng nhập mật khẩu',
+            ]
+        );
         if ($validator->fails()) {
             return ClientResponse::responseError('Vui lòng nhập số điện thoại và mật khẩu');
         }
@@ -87,7 +94,12 @@ class AuthController extends Controller
                 'password' => 'required|string|confirmed|min:6',
             ],
             [
-                'phone.unique' => 'Số điện thoại đã được đăng ký', // custom message
+                'phone.unique' => 'Số điện thoại đã được đăng ký',
+                'phone.required' => 'Vui lòng nhập số điện thoại',
+                'password.required' => 'Vui lòng nhập mật khẩu',
+                'password.string' => 'Mật khẩu phải là một chuỗi',
+                'password.confirmed' => 'Xác nhận mật khẩu không khớp',
+                'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
             ]
         );
         if ($validator->fails()) {
@@ -110,11 +122,23 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|unique:partners',
-            'password' => 'required|string|confirmed|min:6',
-            'otp' => 'required',
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'phone' => 'required|string|unique:partners',
+                'password' => 'required|string|confirmed|min:6',
+                'otp' => 'required',
+            ],
+            [
+                'phone.unique' => 'Số điện thoại đã được đăng ký',
+                'phone.required' => 'Vui lòng nhập số điện thoại',
+                'otp.required' => 'Vui lòng nhập otp',
+                'password.required' => 'Vui lòng nhập mật khẩu',
+                'password.string' => 'Mật khẩu phải là một chuỗi',
+                'password.confirmed' => 'Xác nhận mật khẩu không khớp',
+                'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
+            ]
+        );
         if ($validator->fails()) {
             $errorString = implode(",", $validator->messages()->all());
             return ClientResponse::responseError($errorString);
@@ -150,9 +174,15 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required',
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'phone' => 'required',
+            ],
+            [
+                'phone.required' => 'Vui lòng nhập số điện thoại',
+            ]
+        );
         if ($validator->fails()) {
             return ClientResponse::responseError('Vui lòng nhập số điện thoại');
         }
@@ -181,8 +211,8 @@ class AuthController extends Controller
                 'otp' => 'required',
             ],
             [
-                'phone.required' => 'Vui lòng nhập số điện thoại.',
-                'otp.required' => 'Vui lòng nhập mã otp.',
+                'phone.required' => 'Vui lòng nhập số điện thoại',
+                'otp.required' => 'Vui lòng nhập mã otp',
             ]
         );
         if ($validator->fails()) {
@@ -200,11 +230,22 @@ class AuthController extends Controller
 
     public function resetPassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required',
-            'password' => 'required|string|confirmed|min:6',
-            'otp' => 'required',
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'phone' => 'required',
+                'password' => 'required|string|confirmed|min:6',
+                'otp' => 'required',
+            ],
+            [
+                'phone.required' => 'Vui lòng nhập số điện thoại',
+                'otp.required' => 'Vui lòng nhập otp',
+                'password.required' => 'Vui lòng nhập mật khẩu',
+                'password.string' => 'Mật khẩu phải là một chuỗi',
+                'password.confirmed' => 'Xác nhận mật khẩu không khớp',
+                'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
+            ]
+        );
         if ($validator->fails()) {
             $errorString = implode(",", $validator->messages()->all());
             return ClientResponse::responseError($errorString);
@@ -243,9 +284,18 @@ class AuthController extends Controller
     public function changePassword(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'new_password' => 'required|string|confirmed|min:6',
-            ]);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'new_password' => 'required|string|confirmed|min:6',
+                ],
+                [
+                    'new_password.required' => 'Vui lòng nhập mật khẩu',
+                    'new_password.string' => 'Mật khẩu phải là một chuỗi',
+                    'new_password.confirmed' => 'Xác nhận mật khẩu không khớp',
+                    'new_password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
+                ]
+            );
 
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
