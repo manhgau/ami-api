@@ -80,10 +80,16 @@ class AuthController extends Controller
 
     public function checkRegister(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|unique:partners',
-            'password' => 'required|string|confirmed|min:6',
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'phone' => 'required|string|unique:partners',
+                'password' => 'required|string|confirmed|min:6',
+            ],
+            [
+                'phone.unique' => 'Số điện thoại đã được đăng ký', // custom message
+            ]
+        );
         if ($validator->fails()) {
             $errorString = implode(",", $validator->messages()->all());
             return ClientResponse::responseError($errorString);
