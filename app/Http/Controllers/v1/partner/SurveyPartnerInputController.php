@@ -127,17 +127,17 @@ class SurveyPartnerInputController extends Controller
                         $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $value->end_time)->timestamp;
                         $time_remaining = $timestamp - Carbon::now()->timestamp;
                         $value->time_remaining = floor(max(0, $time_remaining) / (60 * 60 * 24));
-                        if ($value->end_time <= $time_now) {
-                            $value->status = SurveyPartner::CLOSED;
-                        } else {
-                            if ($value->number_of_response == $value->limmit_of_response) {
-                                $value->status = SurveyPartner::COMPLETED;
-                            } else {
-                                $value->status = SurveyPartner::NOT_COMPLETED;
-                            }
+                        if (($value->end_time < $time_now) && ($value->number_of_response_partner < $value->attempts_limit_min)) {
+                            $value->status = SurveyPartnerInput::CLOSED;
                         }
-                        if ($value->is_answer_single == Survey::ANSWER_SINGLE && $value->number_of_response_partner == Survey::ANSWER_SINGLE) {
-                            $value->status = SurveyPartner::COMPLETED;
+                        if (
+                            ($value->end_time < $time_now) && ($value->number_of_response_partner >= $value->attempts_limit_min) ||
+                            ($value->state_ami == Survey::STATUS_ON_PROGRESS) && ($value->number_of_response_partner >= $value->attempts_limit_max)
+                        ) {
+                            $value->status = SurveyPartnerInput::COMPLETED;
+                        }
+                        if (($value->state_ami == Survey::STATUS_ON_PROGRESS) && ($value->number_of_response_partner < $value->attempts_limit_max)) {
+                            $value->status = SurveyPartnerInput::NOT_COMPLETED;
                         }
                         $array[$key] = $value;
                     }
