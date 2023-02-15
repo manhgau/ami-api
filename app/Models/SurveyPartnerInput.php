@@ -88,11 +88,11 @@ class SurveyPartnerInput extends Model
 
     public static  function getlistSurveyPartnerInput($perPage = 10,  $page = 1, $partner_id, $time_now, $time_end, $search = null, $status = null)
     {
-        $query =  DB::table('survey_partner_inputs as a')
-            ->join('surveys as b', 'b.id', '=', 'a.survey_id')
-            ->join('survey_partners as c', 'c.survey_id', '=', 'b.id')
+        $query =  DB::table('survey_partners as c')
+            ->join('surveys as b', 'b.id', '=', 'c.survey_id')
+            //->join('survey_partner_inputs as a', 'a.survey_id', '=', 'b.id')
             ->select(
-                'a.id',
+                //'a.id',
                 'b.title',
                 'c.is_save',
                 'c.id as survey_partner_id',
@@ -110,7 +110,7 @@ class SurveyPartnerInput extends Model
                 'b.limmit_of_response',
                 'b.number_of_response',
             )
-            ->where('a.partner_id', $partner_id)
+            ->where('c.stattus', SurveyPartner::STATUS_INACTIVE)
             ->where('b.start_time', '<', $time_now)
             ->where('b.end_time', '>', $time_end)
             ->where('c.partner_id', $partner_id)

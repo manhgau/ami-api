@@ -129,14 +129,12 @@ class SurveyPartnerInputController extends Controller
                         $value->time_remaining = floor(max(0, $time_remaining) / (60 * 60 * 24));
                         if (($value->end_time < $time_now) && ($value->number_of_response_partner < $value->attempts_limit_min)) {
                             $value->status = SurveyPartnerInput::CLOSED;
-                        }
-                        if (
+                        } elseif (
                             ($value->end_time < $time_now) && ($value->number_of_response_partner >= $value->attempts_limit_min) ||
                             ($value->state_ami == Survey::STATUS_ON_PROGRESS) && ($value->number_of_response_partner >= $value->attempts_limit_max)
                         ) {
                             $value->status = SurveyPartnerInput::COMPLETED;
-                        }
-                        if (($value->state_ami == Survey::STATUS_ON_PROGRESS) && ($value->number_of_response_partner < $value->attempts_limit_max)) {
+                        } elseif (($value->state_ami == Survey::STATUS_ON_PROGRESS) && ($value->number_of_response_partner < $value->attempts_limit_max)) {
                             $value->status = SurveyPartnerInput::NOT_COMPLETED;
                         }
                         $array[$key] = $value;
