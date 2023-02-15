@@ -98,6 +98,7 @@ class SurveyPartnerInput extends Model
                 'c.id as survey_partner_id',
                 'b.id as survey_id',
                 'b.point',
+                'b.state_ami',
                 'b.start_time',
                 'b.end_time',
                 'b.count_questions',
@@ -119,20 +120,23 @@ class SurveyPartnerInput extends Model
             $query->where('b.title', 'like', '%' . $search . '%');
         }
         if ($status == self::CLOSED) {
-            $query->where('b.end_time', '<', Carbon::now());
+            $query->where('b.end_time', '<', Carbon::now())->whereColumn('c.number_of_response_partner', '<', 'b.attempts_limit_min');
         }
         if ($status == self::COMPLETED) {
             $query->where(function ($query) {
                 $query->orwhere(function ($query) {
-                    $query->where('b.end_time', '>', Carbon::now())->whereColumn('b.number_of_response', '=', 'b.limmit_of_response');
+                    $query->where('b.state_ami', Survey::STATUS_ON_PROGRESS)->whereColumn('c.number_of_response_partner', '>=', 'b.attempts_limit_max');
                 });
                 $query->orwhere(function ($query) {
-                    $query->where('b.end_time', '>', Carbon::now())->where('b.is_answer_single', Survey::ANSWER_SINGLE)->where('c.number_of_response_partner', '=', 1);
+                    $query->where('b.end_time', '<', Carbon::now())->whereColumn('c.number_of_response_partner', '>=', 'b.attempts_limit_min');
                 });
+                // $query->orwhere(function ($query) {
+                //     $query->where('b.end_time', '>', Carbon::now())->where('b.is_answer_single', Survey::ANSWER_SINGLE)->where('c.number_of_response_partner', '=', 1);
+                // });
             });
         }
         if ($status == self::NOT_COMPLETED) {
-            $query->where('b.end_time', '>', Carbon::now())->where('b.is_answer_single', Survey::ANSWER_MULTIPLE)->whereColumn('b.number_of_response', '<', 'b.limmit_of_response');
+            $query->where('b.state_ami', Survey::STATUS_ON_PROGRESS)->whereColumn('c.number_of_response_partner', '<', 'b.attempts_limit_max');
         }
         return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
