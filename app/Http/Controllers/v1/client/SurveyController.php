@@ -77,13 +77,13 @@ class SurveyController extends Controller
                 $value['created_at'] ? $data_url['created_at'] = date_format(date_create($value['created_at']), 'd/m/Y') : null;
                 $value['updated_at'] ? $data_url['updated_at'] = date_format(date_create($value['updated_at']), 'd/m/Y') : null;
                 $data_url['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
-                $data_url['limmit_response'] = $value['limmit_of_response_anomyous'];
+                $data_url['limmit_of_response'] = $value['limmit_of_response_anomyous'];
                 $data_url['data_from'] = Survey::URL;
                 array_push($array, $data_url);
                 if ($value['is_ami'] == Survey::DATA_URL_AND_AMI) {
                     $data_ami = $data_url;
                     $value['end_time'] ? $data_ami['real_end_time'] = date_format(date_create($value['end_time']), 'd/m/Y') : null;
-                    $data_ami['limmit_response'] = $value['limmit_of_response'];
+                    $data_ami['limmit_of_response'] = $value['limmit_of_response'];
                     $data_ami['state'] = $value['state_ami'];
                     $data_ami['data_from'] = Survey::AMI;
                     $value['state_ami'] == Survey::STATUS_NOT_COMPLETED ? $data_ami['status_not_completed'] = Survey::TIME_UP : null;
