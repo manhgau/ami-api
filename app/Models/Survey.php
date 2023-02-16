@@ -21,6 +21,7 @@ class Survey extends Model
         'text_color_of_button',
         'background_id',
         'description',
+        'is_ami',
         'active',
         'state',
         'state_ami',
@@ -65,8 +66,14 @@ class Survey extends Model
     const TIME_UP = 'time_up';
     const LIMIT_EXPIRES = 'limit_expires';
 
+    const URL = 'url';
+    const AMI = 'ami';
+
     const  ANSWER_MULTIPLE = 0;
     const  ANSWER_SINGLE = 1;
+
+    const  DATA_URL = 0;
+    const  DATA_URL_AND_AMI = 1;
 
     public static  function getListSurvey($perPage = 10,  $page = 1, $user_id, $states = null)
     {
@@ -75,6 +82,7 @@ class Survey extends Model
             'title',
             'user_id',
             'description',
+            'is_ami',
             'state',
             'state_ami',
             'status_not_completed',
@@ -82,8 +90,9 @@ class Survey extends Model
             'question_count',
             'start_time',
             'real_end_time',
-            'number_of_response',
+            'end_time',
             'limmit_of_response_anomyous',
+            'limmit_of_response',
             'created_at',
             'updated_at',
         )

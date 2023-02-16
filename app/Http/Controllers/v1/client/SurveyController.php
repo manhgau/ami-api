@@ -65,14 +65,33 @@ class SurveyController extends Controller
             $states = $request->states;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $datas = Survey::getListSurvey($perPage,  $page, $user_id, $states);
+            $array = [];
             foreach ($datas['data'] as $key => $value) {
-                $value['start_time'] ? $value['start_time'] = date_format(date_create($value['start_time']), 'd/m/Y') : null;
-                $value['real_end_time'] ? $value['real_end_time'] = date_format(date_create($value['real_end_time']), 'd/m/Y') : null;
-                $value['created_at'] ? $value['created_at'] = date_format(date_create($value['created_at']), 'd/m/Y') : null;
-                $value['updated_at'] ? $value['updated_at'] = date_format(date_create($value['updated_at']), 'd/m/Y') : null;
-                $value['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
-                $datas['data'][$key] = $value;
+                $data_url['id'] = $value['id'];
+                $data_url['title'] = $value['title'];
+                $data_url['question_count'] = $value['question_count'];
+                $data_url['state'] = $value['state'];
+                $data_url['status_not_completed'] = $value['status_not_completed'];
+                $value['start_time'] ? $data_url['start_time'] = date_format(date_create($value['start_time']), 'd/m/Y') : null;
+                $value['real_end_time'] ? $data_url['real_end_time'] = date_format(date_create($value['real_end_time']), 'd/m/Y') : null;
+                $value['created_at'] ? $data_url['created_at'] = date_format(date_create($value['created_at']), 'd/m/Y') : null;
+                $value['updated_at'] ? $data_url['updated_at'] = date_format(date_create($value['updated_at']), 'd/m/Y') : null;
+                $data_url['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
+                $data_url['limmit_response'] = $value['limmit_of_response_anomyous'];
+                $data_url['data_from'] = Survey::URL;
+                array_push($array, $data_url);
+                if ($value['is_ami'] == Survey::DATA_URL_AND_AMI) {
+                    $data_ami = $data_url;
+                    $value['end_time'] ? $data_ami['real_end_time'] = date_format(date_create($value['end_time']), 'd/m/Y') : null;
+                    $data_ami['limmit_response'] = $value['limmit_of_response'];
+                    $data_ami['state'] = $value['state_ami'];
+                    $data_ami['data_from'] = Survey::AMI;
+                    $value['state_ami'] == Survey::STATUS_NOT_COMPLETED ? $data_ami['status_not_completed'] = Survey::TIME_UP : null;
+                    $data_ami['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['id'], SurveyPartnerInput::ANYNOMOUS_FALSE);
+                    array_push($array, $data_ami);
+                }
             }
+            $datas['data'] = $array;
             $datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
