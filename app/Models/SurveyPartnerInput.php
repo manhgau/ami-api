@@ -103,6 +103,7 @@ class SurveyPartnerInput extends Model
                 'b.end_time',
                 'b.question_count as count_questions',
                 'b.view',
+                'b.created_at',
                 'b.attempts_limit_min',
                 'b.attempts_limit_max',
                 'b.is_answer_single',
