@@ -148,6 +148,7 @@ class SurveyPartnerInput extends Model
             ->select(
                 'a.id',
                 'b.title',
+                'b.description',
                 'b.id as survey_id',
                 'b.point',
                 'b.start_time',
