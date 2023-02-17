@@ -197,7 +197,7 @@ class Survey extends Model
         return self::select('id', 'user_id', 'limmit_of_response', 'limmit_of_response_anomyous')
             ->where('deleted', self::NOT_DELETED)
             ->where('active', self::ACTIVE)
-            ->where('end_time', '>', Carbon::now())
+            ->where('end_time', '<', Carbon::now())
             ->where('state_ami', self::STATUS_ON_PROGRESS)
             ->get()->toArray();
     }
