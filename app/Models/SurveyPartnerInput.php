@@ -92,7 +92,7 @@ class SurveyPartnerInput extends Model
             ->join('surveys as b', 'b.id', '=', 'c.survey_id')
             //->join('survey_partner_inputs as a', 'a.survey_id', '=', 'b.id')
             ->select(
-                //'a.id',
+                'c.id as survey_partner_id',
                 'b.title',
                 'c.is_save',
                 'c.id as survey_partner_id',
@@ -144,10 +144,11 @@ class SurveyPartnerInput extends Model
 
     public static  function getDetailSurveyPartnerInput($survey_partner_input_id, $partner_id)
     {
-        return DB::table('survey_partner_inputs as a')
+        return DB::table('survey_partners as a')
             ->join('surveys as b', 'b.id', '=', 'a.survey_id')
             ->select(
-                'a.id',
+                'a.id as survey_partner_id',
+                'a.is_save',
                 'b.title',
                 'b.description',
                 'b.id as survey_id',
