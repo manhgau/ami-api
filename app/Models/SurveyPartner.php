@@ -84,7 +84,7 @@ class SurveyPartner extends Model
         return DB::table('survey_partners as a')
             ->join('surveys as b', 'b.id', '=', 'a.survey_id')
             ->select(
-                'a.id',
+                'a.id as survey_partner_id',
                 'b.title',
                 'b.description',
                 'b.id as survey_id',
@@ -99,7 +99,6 @@ class SurveyPartner extends Model
                 'b.attempts_limit_max',
                 'b.is_answer_single',
             )
-            ->where('a.stattus', self::STATUS_ACTIVE)
             ->where('a.deleted', self::NOT_DELETED)
             ->where('a.id', $survey_partner_id)
             ->first();
