@@ -14,6 +14,8 @@ class AppSetting extends Model
     const IS_MAINTAIN_VALUE                 = 1;
     const LOGO                              = 'logo';
     const SURVEY_PROFILE_ID                 = 'survey_profile_id';
+    const FIREBASE_ANDROID                  = 'config_firebase_android';
+    const FIREBASE_IOS                      = 'config_firebase_ios';
 
     protected $fillable = [
         'key',
