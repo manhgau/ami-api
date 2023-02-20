@@ -46,6 +46,8 @@ class ConfigController extends Controller
         $settings->newest_version = $newest_version;
         $settings->force_update_version = $force_update_version;
         $settings->info = $rs;
+        $settings->info['config_firebase_android'] = json_decode(AppSetting::getByKey(AppSetting::FIREBASE_ANDROID, $all_settings), true);
+        $settings->info['config_firebase_ios'] = json_decode(AppSetting::getByKey(AppSetting::FIREBASE_IOS, $all_settings), true);
         //END version
 
         return ClientResponse::responseSuccess($msg, $settings);

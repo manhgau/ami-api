@@ -133,6 +133,7 @@ class Survey extends Model
             ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
             ->select(
                 'a.title',
+                'a.description',
                 'a.survey_profile_id',
                 'a.font_size',
                 'a.letter_font',
