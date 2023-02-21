@@ -381,18 +381,41 @@ class AuthController extends Controller
     }
 
 
-    public function logout()
+    public function logout(Request $request)
     {
-        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
-        if ($tokenInfo) {
-            if ($tokenInfo->delete()) {
-                return ClientResponse::responseSuccess('Đăng xuất thành công');
+        $token = $request->header('Authorization');
+        $access_token = JWT::checkAccessToken($token);
+        $type = $access_token->type ?? '';
+        if ($type == PartnerAccessToken::TYPE_ACCESS_TOKEN) {
+            if ($access_token) {
+                $aid = $access_token->aid ?? 0;
+                $tokenInfo = PartnerAccessToken::where('aid', $aid)->first();
+                if ($tokenInfo) {
+                    //
+                    $time = time();
+                    $expire = $tokenInfo->expire ?? 0;
+                    $refresh_expire = $tokenInfo->refresh_expire ?? 0;
+                    if ($expire < $time && ($type == PartnerAccessToken::TYPE_ACCESS_TOKEN)) {
+                        return ClientResponse::response(ClientResponse::$required_refresh_token, 'Gọi api refresh token');
+                    } else if ($refresh_expire < $time) {
+                        return ClientResponse::response(ClientResponse::$required_login_code, 'Bạn cần đăng nhập để thực hiện chức năng này');
+                    } else {
+                        if ($tokenInfo->delete()) {
+                            return ClientResponse::responseSuccess('Đăng xuất thành công');
+                        } else {
+                            //return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
+                        }
+                    }
+                } else {
+                    //return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+                }
             } else {
-                return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
+                //return ClientResponse::response(ClientResponse::$required_login_code, 'Yêu cầu truy cập bị từ chối');
             }
         } else {
-            return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
+            //return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
         }
+        return ClientResponse::responseSuccess('Đăng xuất thành công');
     }
 
     public function profile()
