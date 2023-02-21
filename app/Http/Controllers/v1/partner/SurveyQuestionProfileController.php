@@ -199,7 +199,13 @@ class SurveyQuestionProfileController extends Controller
                     }
                     $input['phone'] = $phone;
                     $input['partner_id'] = $partner_id;
-                    $result =  PartnerProfile::create($input);
+                    $partner_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
+                    if ($partner_profile) {
+                        PartnerProfile::updatePartnerProfile($input, $partner_id);
+                        $result =  PartnerProfile::getDetailPartnerProfile($partner_id);
+                    } else {
+                        $result =  PartnerProfile::create($input);
+                    }
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
