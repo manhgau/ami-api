@@ -73,7 +73,42 @@ class SurveyPartnerInput extends Model
 
     public static  function countPartnerInput($partner_id)
     {
-        return self::where('partner_id', $partner_id)->where('state', self::STATUS_DONE)->count();
+        $query =  DB::table('survey_partners as c')
+            ->join('surveys as b', 'b.id', '=', 'c.survey_id')
+            //->join('survey_partner_inputs as a', 'a.survey_id', '=', 'b.id')
+            ->select(
+                'c.id as survey_partner_id',
+                'b.title',
+                'c.is_save',
+                'c.id as survey_partner_id',
+                'b.id as survey_id',
+                'b.point',
+                'b.state_ami',
+                'b.start_time',
+                'b.end_time',
+                'b.question_count as count_questions',
+                'b.view',
+                'b.created_at',
+                'b.attempts_limit_min',
+                'b.attempts_limit_max',
+                'b.is_answer_single',
+                'c.number_of_response_partner',
+                'b.limmit_of_response',
+                'b.number_of_response',
+            )
+            ->where('c.stattus', SurveyPartner::STATUS_INACTIVE)
+            ->where('c.partner_id', $partner_id)
+            ->orderBy('b.created_at', 'desc')
+            ->distinct()
+            ->where(function ($query) {
+                $query->orwhere(function ($query) {
+                    $query->where('b.state_ami', Survey::STATUS_ON_PROGRESS)->whereColumn('c.number_of_response_partner', '>=', 'b.attempts_limit_max');
+                });
+                $query->orwhere(function ($query) {
+                    $query->where('b.end_time', '<', Carbon::now())->whereColumn('c.number_of_response_partner', '>=', 'b.attempts_limit_min');
+                });
+            });
+        return $query->count();
     }
 
     public static  function getALLSurveyPartnerInput($survey_id,  $question_id, $partner_id)
