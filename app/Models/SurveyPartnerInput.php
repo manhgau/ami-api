@@ -40,8 +40,8 @@ class SurveyPartnerInput extends Model
     const PARTNER           = 'partner';
     const OTHER             = 'other';
 
-    const ANYNOMOUS_TRUE    = 1;
-    const ANYNOMOUS_FALSE   = 0;
+    const ANYNOMOUS_TRUE    = "1";
+    const ANYNOMOUS_FALSE   = "0";
 
     public static  function updateSurveyPartnerInput($data, $id)
     {

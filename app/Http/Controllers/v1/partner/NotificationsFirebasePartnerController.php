@@ -38,7 +38,7 @@ class NotificationsFirebasePartnerController extends Controller
                         $value->updated_at ? $value->updated_at = date_format(date_create($value->updated_at), 'd/m/Y') : null;
                         $lists['data'][$key] = $value;
                     }
-                    $count = NotificationsFirebasePartners::countlNotificationPartner();
+                    $count = NotificationsFirebasePartners::countlNotificationPartner($partner_id);
                     if (!$lists) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
@@ -70,7 +70,7 @@ class NotificationsFirebasePartnerController extends Controller
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
                     NotificationsFirebasePartners::updateNotificationPartner(['is_viewed' => NotificationsFirebasePartners::VIEW_ACTIVE], $notification_partner_id);
-                    $count = NotificationsFirebasePartners::countlNotificationPartner();
+                    $count = NotificationsFirebasePartners::countlNotificationPartner($partner_id);
                     $data = [
                         'count' => $count,
                         'list' => $detail,
