@@ -52,9 +52,9 @@ class NotificationsFirebasePartners extends Model
             ->where('a.id', $notification_partner_id)
             ->first();
     }
-    public static function countlNotificationPartner()
+    public static function countlNotificationPartner($partner_id)
     {
-        return self::where('is_viewed', self::VIEW_INACTIVE)->count();
+        return self::where('is_viewed', self::VIEW_INACTIVE)->where('partner_id', $partner_id)->count();
     }
 
     public static  function updateNotificationPartner($data, $id)
