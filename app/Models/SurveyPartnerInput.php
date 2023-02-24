@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\FormatDate;
 use App\Helpers\RemoveData;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -340,22 +341,27 @@ class SurveyPartnerInput extends Model
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
-            ->get()->groupBy('value_level_ranking');
-        foreach ($result as $k => $v) {
-            $d = $v->groupBy('value_rating_ranking');
-            $array = [];
-            foreach ($d as $key => $item) {
-                $array['number_partner_answer'] = count($item);
-                $array['value_rating_ranking'] = $key;
-                $d[$key] = $array;
-            }
-            $result[$k] = $d;
+            ->get()->groupBy('value_rating_ranking');
+        // foreach ($result as $k => $v) {
+        //     $d = $v->groupBy('value_rating_ranking');
+        //     $array = [];
+        //     foreach ($d as $key => $item) {
+        //         $array['number_partner_answer'] = count($item);
+        //         $array['value_rating_ranking'] = $key;
+        //         $d[$key] = $array;
+        //     }
+        //     $result[$k] = $d;
+        // }
+        foreach ($result as $key => $item) {
+            $arr['number_partner_answer'] = count($item);
+            $arr['value_rating_ranking'] = $key;
+            $result[$key] = $arr;
         }
         return $result;
     }
 
 
-    public static  function getSurveyStatisticTextOrDate($perPage, $page, $question_id, $survey_id, $question_type, $filter)
+    public static  function getSurveyStatisticTextOrDate($perPage, $page, $question_id, $survey_id, $question_type, $filter, $is_time)
     {
         $query = DB::table('survey_partner_inputs')
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
@@ -382,28 +388,36 @@ class SurveyPartnerInput extends Model
         foreach ($result['data'] as $key => $value) {
             switch ($question_type) {
                 case QuestionType::DATETIME_DATE:
-                    $input['value'] = $value->value_date;
-                    $input['created_at'] = $value->created_at;
+                    if ($is_time == 1) {
+                        $input['value'] = FormatDate::formatDateStatistic($value->value_date);
+                    } else {
+                        $input['value'] = FormatDate::formatDateStatisticNoTime($value->value_date);
+                    }
+                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
                     $data[$key] = $input;
                     break;
                 case QuestionType::DATETIME_DATE_RANGE:
-                    $input['value'] = $value->value_date_start . '-' . $value->value_date_end;
-                    $input['created_at'] = $value->created_at;
+                    if ($is_time == 1) {
+                        $input['value'] = FormatDate::formatDateStatistic($value->value_date_start) . '-' . FormatDate::formatDateStatistic($value->value_date_end);
+                    } else {
+                        $input['value'] = FormatDate::formatDateStatisticNoTime($value->value_date_start) . '-' . FormatDate::formatDateStatisticNoTime($value->value_date_end);
+                    }
+                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
                     $data[$key] = $input;
                     break;
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                     $input['value'] = $value->value_text_box;
-                    $input['created_at'] = $value->created_at;
+                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
                     $data[$key] = $input;
                     break;
                 case QuestionType::QUESTION_ENDED_LONG_TEXT:
                     $input['value'] = $value->value_char_box;
-                    $input['created_at'] = $value->created_at;
+                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
                     $data[$key] = $input;
                     break;
                 case QuestionType::NUMBER:
                     $input['value'] = $value->value_number;
-                    $input['created_at'] = $value->created_at;
+                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
                     $data[$key] = $input;
                     break;
                 default:
