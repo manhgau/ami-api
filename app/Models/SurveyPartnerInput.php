@@ -357,8 +357,7 @@ class SurveyPartnerInput extends Model
             //->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
-        $result = $query->groupBy('suggested_answer_id')->get();
-        $data_results = array();
+        $result = $query->groupBy('suggested_answer_id')->get()->toArray();
         if (is_array($result) && count($result) > 0) {
             foreach ($result as $key => $value) {
                 $name_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($value->suggested_answer_id);
@@ -388,7 +387,7 @@ class SurveyPartnerInput extends Model
         $query = self::__filterTarget($query, $filter);
         $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
             ->get()
-            ->groupBy('value_rating_ranking');
+            ->groupBy('value_rating_ranking')->toArray();
         $data = self::getDetailDataRating();
         if (is_array($result) && count($result) > 0) {
             foreach ($result as $key => $value) {
@@ -417,7 +416,7 @@ class SurveyPartnerInput extends Model
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
-            ->get()->groupBy('value_rating_ranking');
+            ->get()->groupBy('value_rating_ranking')->toArray();
         $data = self::getDetailDataRaking();
         if (is_array($result) && count($result) > 0) {
             foreach ($result as $key => $item) {
@@ -519,6 +518,9 @@ class SurveyPartnerInput extends Model
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->get();
+        if (!$result) {
+            return $result;
+        }
         $answers = SurveyQuestionAnswer::getAnswerMatrixRow($question_id);
         $answers_value = [];
         foreach ($answers as $key => $value) {
