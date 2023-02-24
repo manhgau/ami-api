@@ -274,6 +274,78 @@ class SurveyPartnerInput extends Model
         return $query;
     }
 
+    public static  function getDetailDataRaking()
+    {
+        return [
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 1,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 2,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 3,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 4,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 5,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 6,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 7,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 8,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 9,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 10,
+            ],
+        ];
+    }
+
+    public static  function getDetailDataRating()
+    {
+        return [
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 1,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 2,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 3,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 4,
+            ],
+            [
+                'number_partner_answer' => 0,
+                'value_rating_ranking' => 5,
+            ]
+        ];
+    }
+
     public static  function getSurveyStatisticCheckbox($question_id, $survey_id, $filter)
     {
         $query = DB::table('survey_partner_inputs')
@@ -315,11 +387,11 @@ class SurveyPartnerInput extends Model
         $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
             ->get()
             ->groupBy('value_rating_ranking');
-        $data = array();
+        $data = self::getDetailDataRating();
         foreach ($result as $key => $value) {
             $array['number_partner_answer'] = count($value);
             $array['value_rating_ranking'] = $key;
-            array_push($data, $array);
+            $data[$key - 1] = $array;
         }
         return $data;
     }
@@ -352,11 +424,11 @@ class SurveyPartnerInput extends Model
         //     }
         //     $result[$k] = $d;
         // }
-        $data = array();
+        $data = self::getDetailDataRaking();
         foreach ($result as $key => $item) {
             $arr['number_partner_answer'] = count($item);
             $arr['value_rating_ranking'] = $key;
-            array_push($data, $arr);
+            $data[$key - 1] = $arr;
         }
 
         return $data;
