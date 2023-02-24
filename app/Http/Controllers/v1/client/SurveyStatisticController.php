@@ -235,7 +235,7 @@ class SurveyStatisticController extends Controller
                 case QuestionType::QUESTION_ENDED_SHORT_TEXT:
                 case QuestionType::QUESTION_ENDED_LONG_TEXT:
                 case QuestionType::NUMBER:
-                    $data =  SurveyPartnerInput::getSurveyStatisticTextOrDate($perPage, $page,  $question_id, $survey_id, $question_type, $filter);
+                    $data =  SurveyPartnerInput::getSurveyStatisticTextOrDate($perPage, $page,  $question_id, $survey_id, $question_type, $filter, $survey_questions->is_time);
                     $list = $data;
                     break;
                 case QuestionType::MULTI_FACTOR_MATRIX:
