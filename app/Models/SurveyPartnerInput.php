@@ -359,12 +359,14 @@ class SurveyPartnerInput extends Model
         $query = self::__filterTarget($query, $filter);
         $result = $query->groupBy('suggested_answer_id')->get();
         $data_results = array();
-        foreach ($result as $key => $value) {
-            $name_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($value->suggested_answer_id);
-            $input['suggested_answer_id'] = $value->suggested_answer_id;
-            $input['name_answer'] = $name_answer->value;
-            $input['number_partner_answer'] = $value->total;
-            $data_results[$key] = $input;
+        if (is_array($result) && count($result) > 0) {
+            foreach ($result as $key => $value) {
+                $name_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($value->suggested_answer_id);
+                $input['suggested_answer_id'] = $value->suggested_answer_id;
+                $input['name_answer'] = $name_answer->value;
+                $input['number_partner_answer'] = $value->total;
+                $data_results[$key] = $input;
+            }
         }
         return $data_results;
     }
@@ -388,10 +390,12 @@ class SurveyPartnerInput extends Model
             ->get()
             ->groupBy('value_rating_ranking');
         $data = self::getDetailDataRating();
-        foreach ($result as $key => $value) {
-            $array['number_partner_answer'] = count($value);
-            $array['value_rating_ranking'] = $key;
-            $data[$key - 1] = $array;
+        if (is_array($result) && count($result) > 0) {
+            foreach ($result as $key => $value) {
+                $array['number_partner_answer'] = count($value);
+                $array['value_rating_ranking'] = $key;
+                $data[$key - 1] = $array;
+            }
         }
         return $data;
     }
@@ -414,21 +418,13 @@ class SurveyPartnerInput extends Model
         $query = self::__filterTarget($query, $filter);
         $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
             ->get()->groupBy('value_rating_ranking');
-        // foreach ($result as $k => $v) {
-        //     $d = $v->groupBy('value_rating_ranking');
-        //     $array = [];
-        //     foreach ($d as $key => $item) {
-        //         $array['number_partner_answer'] = count($item);
-        //         $array['value_rating_ranking'] = $key;
-        //         $d[$key] = $array;
-        //     }
-        //     $result[$k] = $d;
-        // }
         $data = self::getDetailDataRaking();
-        foreach ($result as $key => $item) {
-            $arr['number_partner_answer'] = count($item);
-            $arr['value_rating_ranking'] = $key;
-            $data[$key - 1] = $arr;
+        if (is_array($result) && count($result) > 0) {
+            foreach ($result as $key => $item) {
+                $arr['number_partner_answer'] = count($item);
+                $arr['value_rating_ranking'] = $key;
+                $data[$key - 1] = $arr;
+            }
         }
 
         return $data;
@@ -459,47 +455,49 @@ class SurveyPartnerInput extends Model
         $result = $query->paginate($perPage, "*", "page", $page)->toArray();
         $result =    RemoveData::removeUnusedData($result);
         $data = [];
-        foreach ($result['data'] as $key => $value) {
-            switch ($question_type) {
-                case QuestionType::DATETIME_DATE:
-                    if ($is_time == 1) {
-                        $input['value'] = FormatDate::formatDateStatistic($value->value_date);
-                    } else {
-                        $input['value'] = FormatDate::formatDateStatisticNoTime($value->value_date);
-                    }
-                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
-                    $data[$key] = $input;
-                    break;
-                case QuestionType::DATETIME_DATE_RANGE:
-                    if ($is_time == 1) {
-                        $input['value'] = FormatDate::formatDateStatistic($value->value_date_start) . '-' . FormatDate::formatDateStatistic($value->value_date_end);
-                    } else {
-                        $input['value'] = FormatDate::formatDateStatisticNoTime($value->value_date_start) . '-' . FormatDate::formatDateStatisticNoTime($value->value_date_end);
-                    }
-                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
-                    $data[$key] = $input;
-                    break;
-                case QuestionType::QUESTION_ENDED_SHORT_TEXT:
-                    $input['value'] = $value->value_text_box;
-                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
-                    $data[$key] = $input;
-                    break;
-                case QuestionType::QUESTION_ENDED_LONG_TEXT:
-                    $input['value'] = $value->value_char_box;
-                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
-                    $data[$key] = $input;
-                    break;
-                case QuestionType::NUMBER:
-                    $input['value'] = $value->value_number;
-                    $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
-                    $data[$key] = $input;
-                    break;
-                default:
-                    return false;
-                    break;
+        if (is_array($result) && count($result) > 0) {
+            foreach ($result['data'] as $key => $value) {
+                switch ($question_type) {
+                    case QuestionType::DATETIME_DATE:
+                        if ($is_time == 1) {
+                            $input['value'] = FormatDate::formatDateStatistic($value->value_date);
+                        } else {
+                            $input['value'] = FormatDate::formatDateStatisticNoTime($value->value_date);
+                        }
+                        $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
+                        $data[$key] = $input;
+                        break;
+                    case QuestionType::DATETIME_DATE_RANGE:
+                        if ($is_time == 1) {
+                            $input['value'] = FormatDate::formatDateStatistic($value->value_date_start) . '-' . FormatDate::formatDateStatistic($value->value_date_end);
+                        } else {
+                            $input['value'] = FormatDate::formatDateStatisticNoTime($value->value_date_start) . '-' . FormatDate::formatDateStatisticNoTime($value->value_date_end);
+                        }
+                        $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
+                        $data[$key] = $input;
+                        break;
+                    case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+                        $input['value'] = $value->value_text_box;
+                        $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
+                        $data[$key] = $input;
+                        break;
+                    case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                        $input['value'] = $value->value_char_box;
+                        $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
+                        $data[$key] = $input;
+                        break;
+                    case QuestionType::NUMBER:
+                        $input['value'] = $value->value_number;
+                        $input['created_at'] = FormatDate::formatDateStatistic($value->created_at);
+                        $data[$key] = $input;
+                        break;
+                    default:
+                        return false;
+                        break;
+                }
             }
+            $result['data'] = $data;
         }
-        $result['data'] = $data;
         return $result;
     }
 
@@ -546,7 +544,7 @@ class SurveyPartnerInput extends Model
 
     private static function __filterTarget($query, $filter)
     {
-        if ($filter['is_anynomous'] != null) {
+        if (isset($filter['is_anynomous'])) {
             $query->where('survey_partner_inputs.is_anynomous', $filter['is_anynomous']);
         }
         if ($filter['start_time'] != null && $filter['end_time'] != null) {
