@@ -315,13 +315,13 @@ class SurveyPartnerInput extends Model
         $result = $query->orderBy('survey_partner_input_lines.value_rating_ranking', 'asc')
             ->get()
             ->groupBy('value_rating_ranking');
-
+        $data = array();
         foreach ($result as $key => $value) {
             $array['number_partner_answer'] = count($value);
             $array['value_rating_ranking'] = $key;
-            $result[$key] = $array;
+            array_push($data, $array);
         }
-        return $result;
+        return $data;
     }
 
     public static  function getSurveyStatisticRanking($question_id, $survey_id, $filter)
@@ -352,12 +352,14 @@ class SurveyPartnerInput extends Model
         //     }
         //     $result[$k] = $d;
         // }
+        $data = array();
         foreach ($result as $key => $item) {
             $arr['number_partner_answer'] = count($item);
             $arr['value_rating_ranking'] = $key;
-            $result[$key] = $arr;
+            array_push($data, $arr);
         }
-        return $result;
+
+        return $data;
     }
 
 
