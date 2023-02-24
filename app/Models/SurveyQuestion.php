@@ -162,11 +162,17 @@ class SurveyQuestion extends Model
                 'a.type_ranking',
                 'a.is_multiple',
                 'a.validation_random',
+                'a.validation_required',
                 'a.is_time',
+                'a.is_date',
                 'a.format_date_time',
                 'a.is_page',
                 'a.page_id',
+                'a.name_level_1',
+                'a.name_level_2',
+                'a.name_level_3',
                 'a.background_id',
+                'a.logic',
                 'b.image as background',
             )
             ->where('a.deleted', self::NOT_DELETED)
