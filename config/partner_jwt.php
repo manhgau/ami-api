@@ -7,6 +7,6 @@
  * Time: 14:09
  */
 return [
-    'ttl' => env('PARTNER_JWT_TTL', 15),    //15 phút
-    'refresh_ttl' => env('PARTNER_JWT_REFRESH_TTL', 43200), //30 ngày tính theo số phút
+    'ttl' => env('PARTNER_JWT_TTL', 1),    //1 phút
+    'refresh_ttl' => env('PARTNER_JWT_REFRESH_TTL', 10), //2 phút
 ];

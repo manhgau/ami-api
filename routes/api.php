@@ -262,6 +262,7 @@ Route::group(['prefix' => 'v1'], function () {
                     Route::post('/change-password', [PartnerAuthController::class, 'changePassWord']);
                     Route::post('/mapping-uid-fcmtoken', [MappingUidFcmTokenController::class, 'mappingUidFcmToken']);
                     Route::get('/check-fcmtoken', [MappingUidFcmTokenController::class, 'checkFcmToken']);
+                    Route::get('/profileTest', [PartnerAuthController::class, 'profileTest']);
                     Route::group([
                         'middleware' => 'partner_profile',
                     ], function ($router) {
