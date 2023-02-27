@@ -28,6 +28,9 @@ class SurveyQuestionAnswer extends Model
     const DELETED  = 1;
     const NOT_LOGIC  = 0;
 
+    const ROW  = 'row';
+    const COLUMN  = 'column';
+
     protected $hidden = ['deleted', 'created_at', 'updated_at', 'updated_by', 'created_by'];
 
     public static  function SurveyQuestionAnswer($data)
