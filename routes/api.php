@@ -85,7 +85,6 @@ Route::group(['prefix' => 'v1'], function () {
             //
             Route::get('/settings', [ClientConfigController::class, 'settings']);
             Route::get('/info', [SettingController::class, 'getInfo']);
-            Route::post('contact', [ContactController::class, 'addContact']);
             Route::post('subscribe', [SubscribesController::class, 'addSubscribes']);
             //auth
             Route::group([
@@ -341,6 +340,8 @@ Route::group(['prefix' => 'v1'], function () {
 
         ], function ($router) {
             Route::get('feedback', [FeedbackController::class, 'getList']);
+            Route::post('client-contact', [ContactController::class, 'addContact']);
+            Route::post('partner-contact', [PartnerContactsController::class, 'createPartnerContact']);
             Route::group([
                 'prefix' => 'blog'
 
@@ -367,12 +368,6 @@ Route::group(['prefix' => 'v1'], function () {
             ], function ($router) {
                 Route::get('get-list', [PageController::class, 'getAll']);
                 Route::get('get-detail/{slug}', [PageController::class, 'getDetail']);
-            });
-            Route::group([
-                'prefix' => 'partner-contact'
-
-            ], function ($router) {
-                Route::post('create', [PartnerContactsController::class, 'createPartnerContact']);
             });
         });
     });

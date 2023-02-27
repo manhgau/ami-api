@@ -56,6 +56,7 @@ class SurveyStatisticController extends Controller
     {
         try {
             $survey_id = $request->survey_id;
+            $limit = $request->limit;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
             $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
@@ -75,12 +76,13 @@ class SurveyStatisticController extends Controller
                 $year_min = Carbon::now()->year - $value['max_value'];
                 $result = SurveyPartnerInput::getDiagramYearOfBirth($survey_id, $year_min, $year_max, $filter);
                 $arr['year_of_birth_name'] = $value['name'];
-                $arr['totle'] =  $result->count();
+                $arr['total'] =  $result->count();
                 $data[$value['name']] = $arr;
             }
             if (!$data) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
+            $data = collect($data)->sortByDesc('total')->take($limit);
             return ClientResponse::responseSuccess('Ok', $data);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());

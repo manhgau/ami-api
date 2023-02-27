@@ -210,11 +210,11 @@ class SurveyPartnerInput extends Model
     public static  function getDiagramSurvey($survey_id, $filter)
     {
         $query = DB::table('survey_partner_inputs')
-            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
-            ->join('provinces', 'provinces.code', '=', 'survey_profile_inputs.province_code')
-            ->join('genders', 'genders.id', '=', 'survey_profile_inputs.gender')
-            ->join('academic_levels', 'academic_levels.id', '=', 'survey_profile_inputs.academic_level_id')
-            ->join('personal_income_levels', 'personal_income_levels.id', '=', 'survey_profile_inputs.personal_income_level_id')
+            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
+            ->LeftJoin('provinces', 'provinces.code', '=', 'survey_profile_inputs.province_code')
+            ->LeftJoin('genders', 'genders.id', '=', 'survey_profile_inputs.gender')
+            ->LeftJoin('academic_levels', 'academic_levels.id', '=', 'survey_profile_inputs.academic_level_id')
+            ->LeftJoin('personal_income_levels', 'personal_income_levels.id', '=', 'survey_profile_inputs.personal_income_level_id')
             ->select(
                 'provinces.name as province_name',
                 'genders.name as gender_name',
@@ -222,7 +222,8 @@ class SurveyPartnerInput extends Model
                 'personal_income_levels.name as personal_income_level_name'
             )
             ->where('survey_partner_inputs.survey_id', $survey_id)
-            ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE);
+            ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE)
+            ->where('survey_partner_inputs.state', self::STATUS_DONE);
         $query = self::__filterTarget($query, $filter);
         return $query->get();
     }
@@ -230,9 +231,10 @@ class SurveyPartnerInput extends Model
     public static  function getDiagramYearOfBirth($survey_id, $year_min, $year_max, $filter)
     {
         $query = DB::table('survey_partner_inputs')
-            ->join('survey_profile_inputs', 'survey_profile_inputs.partner_id', '=', 'survey_partner_inputs.partner_id')
+            ->LeftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
             ->where('survey_partner_inputs.survey_id', $survey_id)
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE)
+            ->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->whereYear('year_of_birth', '>=', $year_min)
             ->whereYear('year_of_birth', '<=', $year_max);
         $query = self::__filterTarget($query, $filter);
@@ -500,6 +502,33 @@ class SurveyPartnerInput extends Model
         return $result;
     }
 
+    public static  function getDetailDataRowMatrix($question_id)
+    {
+        $lis_row = SurveyQuestionAnswer::getAllAnswer($question_id, SurveyQuestionAnswer::ROW);
+        $arr = array();
+        foreach ($lis_row as $k => $v) {
+            $array = array();
+            $lis_column = SurveyQuestionAnswer::getAllAnswer($question_id, SurveyQuestionAnswer::COLUMN);
+            foreach ($lis_column as $key => $value) {
+                $array[$value['value']] = ['name_answer_column' => $value['value'], 'number_partner_answer' => 0];
+            }
+            $arr[$v['value']] = $array;
+        }
+        return $arr;
+    }
+
+    public static  function getDetailDataColumnMatrix($question_id)
+    {
+        $lis_column = SurveyQuestionAnswer::getAllAnswer($question_id, SurveyQuestionAnswer::COLUMN);
+        $arr = array();
+        foreach ($lis_column as $key => $value) {
+            $arr[$value['value']] = ['name_answer_column' => $value['value'], 'number_partner_answer' => 0];
+        }
+        return $arr;
+    }
+
+
+
     public static  function getSurveyStatisticMatrix($question_id, $survey_id, $filter)
     {
         $query = DB::table('survey_partner_inputs')
@@ -532,16 +561,18 @@ class SurveyPartnerInput extends Model
             $result[$key] = $input;
         }
         $result = $result->groupBy('name_answer_row');
+        $data = self::getDetailDataRowMatrix($question_id);
         foreach ($result as $k => $item) {
             $group_item = $item->groupBy('name_answer_column');
+            $data_column = self::getDetailDataColumnMatrix($question_id);
             foreach ($group_item as $key => $value) {
-                $data['name_answer_column'] = $key;
-                $data['number_partner_answer'] = count($value);
-                $group_item[$key] = $data;
+                $mang['name_answer_column'] = $key;
+                $mang['number_partner_answer'] = count($value);
+                $data_column[$key] = $mang;
             }
-            $result[$k] = $group_item;
+            $data[$k] = $data_column;
         }
-        return $result;
+        return $data;
     }
 
     private static function __filterTarget($query, $filter)
