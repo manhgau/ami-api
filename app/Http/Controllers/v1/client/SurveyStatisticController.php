@@ -45,9 +45,6 @@ class SurveyStatisticController extends Controller
             switch ($group_by) {
                 case 'province_name':
                     $list = Province::getAllProvince();
-                    foreach ($list as $key => $value) {
-                        $default[$value['name']] = ['value_group_by' => $value['name'], 'total' => 0];
-                    }
                     break;
                 case 'gender_name':
                     $list = Gender::getAllGender();
