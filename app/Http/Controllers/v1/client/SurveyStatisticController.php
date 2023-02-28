@@ -5,6 +5,10 @@ namespace App\Http\Controllers\v1\client;
 use App\Helpers\ClientResponse;
 use App\Helpers\FormatDate;
 use App\Helpers\RemoveData;
+use App\Models\AcademicLevel;
+use App\Models\Gender;
+use App\Models\PersonalIncomeLevels;
+use App\Models\Province;
 use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
@@ -38,15 +42,42 @@ class SurveyStatisticController extends Controller
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
+            switch ($group_by) {
+                case 'province_name':
+                    $list = Province::getAllProvince();
+                    foreach ($list as $key => $value) {
+                        $default[$value['name']] = ['value_group_by' => $value['name'], 'total' => 0];
+                    }
+                    break;
+                case 'gender_name':
+                    $list = Gender::getAllGender();
+                    break;
+                case 'academic_level_name':
+                    $list = AcademicLevel::getAllAcademicLevel();
+
+                    break;
+                case 'personal_income_level_name':
+                    $list = PersonalIncomeLevels::getAllPersonalIncomeLevels();
+                    break;
+                default:
+                    return ClientResponse::responseError('Group By không hợp lệ', $group_by);
+                    break;
+            }
             $data = $result->groupBy($group_by);
             $array = [];
+            $default = array();
+            foreach ($list as $key => $value) {
+                $default[$value['name']] = ['value_group_by' => $value['name'], 'total' => 0];
+            }
             foreach ($data as $key => $item) {
                 $array['total'] = count($item);
                 $array['value_group_by'] = $key;
-                $data[$key] = $array;
+                if (array_key_exists($key, $default)) {
+                    $default[$key] = $array;
+                }
             }
-            $data = $data->sortByDesc('total')->take($limit);
-            return ClientResponse::responseSuccess('Ok', $data);
+            $default = collect($default)->sortByDesc('total')->take($limit);
+            return ClientResponse::responseSuccess('Ok', $default);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
