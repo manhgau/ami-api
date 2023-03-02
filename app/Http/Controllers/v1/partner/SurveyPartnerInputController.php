@@ -137,7 +137,7 @@ class SurveyPartnerInputController extends Controller
                         $time_remaining = $timestamp - Carbon::now()->timestamp;
                         $value->time_remaining = floor(max(0, $time_remaining) / (60 * 60 * 24));
                         if (($value->end_time < $time_now) && ($value->number_of_response_partner < $value->attempts_limit_min)) {
-                            $value->status = "Đã Đóng";
+                            $value->status = "Đã đóng";
                             $value->status_key = SurveyPartnerInput::CLOSED;
                         } elseif (
                             ($value->end_time < $time_now) && ($value->number_of_response_partner >= $value->attempts_limit_min) ||
