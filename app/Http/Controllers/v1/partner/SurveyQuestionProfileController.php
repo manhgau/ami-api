@@ -132,22 +132,6 @@ class SurveyQuestionProfileController extends Controller
                     if (!$survey_profile_id) {
                         return ClientResponse::responseSuccess('OK', null);
                     }
-                    if ($option == SurveyPartnerInput::PARTNER) {
-                        $input = PartnerProfile::getPartnerProfileDetail($partner_id);
-                        $input['partner_id'] = $partner_id;
-                        $input['survey_id'] = $survey_id;
-                        $input['survey_profile_id'] = $survey_profile_id;
-                        $model = SurveyProfileInputs::getSurveyProfileInputDetail($survey_profile_id, $partner_input_id = null, $survey_id, $partner_id);
-                        if ($model) {
-                            $result = $model->update($input);
-                        } else {
-                            $result = SurveyProfileInputs::create($input);
-                        }
-                        if (!$result) {
-                            return ClientResponse::responseError('Đã có lỗi xảy ra');
-                        }
-                        return ClientResponse::responseSuccess('OK', null);
-                    }
                     $perPage = $request->per_page ?? 10;
                     $page = $request->current_page ?? 1;
                     $lists = $this->__questionProfile($survey_profile_id, $perPage, $page);
