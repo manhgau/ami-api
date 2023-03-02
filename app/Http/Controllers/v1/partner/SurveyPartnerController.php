@@ -40,9 +40,9 @@ class SurveyPartnerController extends Controller
                         $time_remaining = $timestamp - Carbon::now()->timestamp;
                         $value->time_remaining = floor(max(0, $time_remaining) / (60 * 60 * 24));
                         if ($value->end_time <= $time_now) {
-                            $value->status = SurveyPartner::CLOSED;
+                            $value->status = "Đã Đóng";
                         } else {
-                            $value->status = SurveyPartner::ON_PROGRESS;
+                            $value->status = "Đang thực hiện";
                         }
                         $array[$key] = $value;
                     }
