@@ -72,7 +72,7 @@ class SurveyPartnerInput extends Model
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_TRUE)->count();
     }
 
-    public static  function countPartnerInput($partner_id)
+    public static  function countPartnerInput($partner_id, $status)
     {
         $query =  DB::table('survey_partners as c')
             ->join('surveys as b', 'b.id', '=', 'c.survey_id')
@@ -100,15 +100,10 @@ class SurveyPartnerInput extends Model
             ->where('c.stattus', SurveyPartner::STATUS_INACTIVE)
             ->where('c.partner_id', $partner_id)
             ->orderBy('b.created_at', 'desc')
-            ->distinct()
-            ->where(function ($query) {
-                $query->orwhere(function ($query) {
-                    $query->where('b.state_ami', Survey::STATUS_ON_PROGRESS)->whereColumn('c.number_of_response_partner', '>=', 'b.attempts_limit_max');
-                });
-                $query->orwhere(function ($query) {
-                    $query->where('b.end_time', '<', Carbon::now())->whereColumn('c.number_of_response_partner', '>=', 'b.attempts_limit_min');
-                });
-            });
+            ->distinct();
+        if ($status == self::NOT_COMPLETED) {
+            $query->where('b.state_ami', Survey::STATUS_ON_PROGRESS)->whereColumn('c.number_of_response_partner', '<', 'b.attempts_limit_max');
+        }
         return $query->count();
     }
 
