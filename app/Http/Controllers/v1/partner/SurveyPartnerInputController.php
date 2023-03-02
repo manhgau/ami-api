@@ -138,13 +138,16 @@ class SurveyPartnerInputController extends Controller
                         $value->time_remaining = floor(max(0, $time_remaining) / (60 * 60 * 24));
                         if (($value->end_time < $time_now) && ($value->number_of_response_partner < $value->attempts_limit_min)) {
                             $value->status = "Đã Đóng";
+                            $value->status_key = SurveyPartnerInput::CLOSED;
                         } elseif (
                             ($value->end_time < $time_now) && ($value->number_of_response_partner >= $value->attempts_limit_min) ||
                             ($value->state_ami == Survey::STATUS_ON_PROGRESS) && ($value->number_of_response_partner >= $value->attempts_limit_max)
                         ) {
                             $value->status = "Hoàn thành";
+                            $value->status_key = SurveyPartnerInput::COMPLETED;
                         } elseif (($value->state_ami == Survey::STATUS_ON_PROGRESS) && ($value->number_of_response_partner < $value->attempts_limit_max)) {
                             $value->status = "Chưa hoàn thành";
+                            $value->status_key = SurveyPartnerInput::NOT_COMPLETED;
                         }
                         $array[$key] = $value;
                     }
