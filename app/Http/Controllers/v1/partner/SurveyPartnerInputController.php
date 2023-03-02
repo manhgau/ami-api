@@ -13,6 +13,7 @@ use App\Models\PartnerProfile;
 use App\Models\Survey;
 use App\Models\SurveyPartner;
 use App\Models\SurveyPartnerInput;
+use App\Models\SurveyProfileInputs;
 use App\Models\SurveyQuestion;
 use Carbon\Carbon;
 
@@ -48,6 +49,14 @@ class SurveyPartnerInputController extends Controller
                     $result = SurveyPartnerInput::create($input);
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    if ($request->option == SurveyPartnerInput::PARTNER && isset($survey->survey_profile_id)) {
+                        $input = PartnerProfile::getPartnerProfileDetail($partner_id);
+                        $input['partner_id'] = $partner_id;
+                        $input['survey_id'] = $request->survey_id;
+                        $input['survey_profile_id'] = $survey->survey_profile_id;
+                        $input['partner_input_id'] = $result->id;
+                        SurveyProfileInputs::create($input);
                     }
                     return ClientResponse::responseSuccess('Thêm mới thành công', $result);
                 } catch (\Exception $ex) {
