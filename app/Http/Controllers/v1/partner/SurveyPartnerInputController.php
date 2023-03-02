@@ -50,7 +50,7 @@ class SurveyPartnerInputController extends Controller
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
-                    if ($request->option == SurveyPartnerInput::PARTNER) {
+                    if ($request->option == SurveyPartnerInput::PARTNER && isset($survey->survey_profile_id)) {
                         $input = PartnerProfile::getPartnerProfileDetail($partner_id);
                         $input['partner_id'] = $partner_id;
                         $input['survey_id'] = $request->survey_id;
