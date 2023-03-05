@@ -12,6 +12,8 @@ class CommonCached
     //app settings
     const app_all_setting                                   = "api_cached:app_all_setting:";
     const api_get_info                                      = "api_cached:api_get_info:";
+    //
+    const cache_find_implementation_process                 = "api_cached:cache_find_implementation_process:";
 
     //API
     const api_list_province                                 = 'api_cached:api_list_province';
@@ -39,6 +41,7 @@ class CommonCached
     //
     const cache_find_qa_category_by_id                      = "api_cached:cache_find_qa_category_by_id:id:";
     const cache_find_qa_category                            = "api_cached:cache_find_qa_category";
+    const cache_find_qa_item_by_category_id                 = "api_cached:cache_find_qa_item_by_category_id";
     const cache_find_qa_by_slug                             = 'api_cached:cache_find_qa_by_slug:slug';
     const cache_find_qa                                     = 'api_cached:cache_find_qa';
     const cache_find_qa_relate                              = 'api_cached:cache_find_qa_relate';
@@ -60,11 +63,23 @@ class CommonCached
     const cache_find_survey_question_by_question_id          = 'api_cached:cache_find_survey_question_by_question_id';
     //
     const cache_find_survey_template                         = 'api_cached:cache_find_survey_template';
-    const cache_find_survey_template_by_id                   = 'api_cached:cache_find_survey_template_by_id';
+    const cache_find_survey_template_topic                   = 'api_cached:cache_find_survey_template_topic';
+    const cache_find_survey_template_by_template_id          = 'api_cached:cache_find_survey_template_by_template_id';
     //
     const cache_find_survey_partner                          = 'api_cached:cache_find_survey_partner';
 
     const cache_find_static_page_category_by_slug            = "api_cached:cache_find_static_page_category_by_id:slug";
+
+    //
+    const cache_find_product_category_by_id                      = "api_cached:cache_find_product_category_by_id:id:";
+    const cache_find_product_category                            = "api_cached:cache_find_product_category";
+    const cache_find_product_item                                = "api_cached:cache_find_product_item";
+
+    const cache_find_partner_visitor                            = "api_cached:cache_find_partner_visitor";
+    const cache_find_frequently_question                        = "api_cached:cache_find_frequently_question";
+
+    const cache_find_survey_template_by_categoey_qa             = "api_cached:cache_find_survey_template_by_categoey_qa";
+    const cache_find_survey_template_by_categoey_survey         = "api_cached:cache_find_survey_template_by_categoey_survey";
 
 
     public static function storeData($key_cache, $datas, $fast = false)

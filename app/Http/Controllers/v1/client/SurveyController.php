@@ -220,7 +220,7 @@ class SurveyController extends Controller
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
             $input['user_id'] = $user_id;
-            $input['title'] = ucfirst($request->title) ?? $survey_template->title . ' copy';
+            $request->title ? $input['title'] = ucfirst($request->title) : $input['title'] = $survey_template->title . '_copy';
             $input['active'] = Survey::ACTIVE;
             $input['id'] = CFunction::generateUuid();
             $input['start_time'] = Carbon::now();
@@ -229,17 +229,13 @@ class SurveyController extends Controller
             if (!$survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            $survey_template_question = SurveyTemplateQuestion::getSurveyTemplateQuestion($survey_template_id);
-            $ids = [];
-            foreach ($survey_template_question   as $key => $value) {
-                $ids[$key] = $value['survey_question_id'];
-            }
-            $survey_questions = SurveyQuestion::getSurveyQuestion($ids)->toArray();
-            if (count($survey_questions) > 0) {
-                foreach ($survey_questions  as  $survey_question) {
-                    $survey_id = $survey_question['survey_id'];
-                    $survey_question['survey_id'] =  $survey->id;
-                    self::__copySurveyQuestion($survey_question, $survey_id);
+            $page_id = SurveyQuestion::NO_PAGE;
+            $list_questions  = SurveyQuestion::getAllQuestionGroup($survey_template->survey_id, $page_id)->toArray();
+            if (count($list_questions) > 0) {
+                foreach ($list_questions  as  $list_question) {
+                    $list_question = $list_question;
+                    $list_question['survey_id'] = $survey->id;
+                    self::__copySurveyQuestion($list_question, $survey_template->survey_id);
                 }
             }
             return ClientResponse::responseSuccess('Thêm mới thành công', $survey);

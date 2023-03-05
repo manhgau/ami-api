@@ -10,16 +10,16 @@ class SurveyTemplate extends Model
 
     protected $fillable = [
         'title',
-        'category_id',
-        'color',
-        'background',
-        'logo',
+        'survey_id',
+        'thumbnail',
+        'description',
+        'content',
         'active',
         'created_at',
         'updated_at',
         'created_by',
         'updated_by',
-        'deleted', 
+        'deleted',
     ];
 
     const ACTIVE = 1;
@@ -31,18 +31,18 @@ class SurveyTemplate extends Model
 
     public static  function getListSurveyTemplate($perPage = 10,  $page = 1, $category_id = null)
     {
-        $query = self::where('deleted', self::NOT_DELETED)->where('active',self::ACTIVE)->orderBy('id', 'ASC');
+        $query = self::where('deleted', self::NOT_DELETED)->where('active', self::ACTIVE)->orderBy('id', 'ASC');
         if ($category_id != null) {
-            $query->where('category_id',$category_id);
+            $query->where('category_id', $category_id);
         }
 
         $data =  $query->paginate($perPage, "*", "page", $page)->toArray();
         return $data;
     }
 
-    public static  function getDetailSurveyTemplate( $id)
+    public static  function getDetailSurveyTemplate($id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('active',self::ACTIVE)->first();
+        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('active', self::ACTIVE)->first();
     }
 
     public static  function updateSurveyTemplate($data, $id)
@@ -56,7 +56,7 @@ class SurveyTemplate extends Model
 
     public function surveyCategory()
     {
-        return $this->belongsTo('App\Models\SurveyCategory','category_id','id');
+        return $this->belongsTo('App\Models\SurveyCategory', 'category_id', 'id');
     }
 
     public function userCreated()
