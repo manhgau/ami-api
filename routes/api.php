@@ -16,6 +16,7 @@ use App\Http\Controllers\v1\client\SurveyQuestionAnswersController;
 use App\Http\Controllers\v1\client\SurveyQuestionController;
 use App\Http\Controllers\v1\client\SurveyStatisticController;
 use App\Http\Controllers\v1\client\SurveyTemplateController;
+use App\Http\Controllers\v1\client\TemplateController;
 use App\Http\Controllers\v1\partner\MappingUidFcmTokenController;
 use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
 use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
@@ -46,8 +47,15 @@ use App\Http\Controllers\v1\partner\SurveyPartnerInputLineController;
 use App\Http\Controllers\v1\partner\SurveyQuestionPartnerController;
 use App\Http\Controllers\v1\partner\SurveyQuestionProfileController;
 use App\Http\Controllers\v1\partner\YearOfBirthController;
+use App\Http\Controllers\v1\visitor\BackgroundController;
 use App\Http\Controllers\v1\visitor\FeedbackController;
+use App\Http\Controllers\v1\visitor\FrequentlyQuestionController;
+use App\Http\Controllers\v1\visitor\ImplementationProcessController;
 use App\Http\Controllers\v1\visitor\PartnerContactsController;
+use App\Http\Controllers\v1\visitor\PartnerVisitorController;
+use App\Http\Controllers\v1\visitor\ProductCategoryController;
+use App\Http\Controllers\v1\visitor\ProductItemController;
+use App\Http\Controllers\v1\visitor\QAndAItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +94,8 @@ Route::group(['prefix' => 'v1'], function () {
             Route::get('/settings', [ClientConfigController::class, 'settings']);
             Route::get('/info', [SettingController::class, 'getInfo']);
             Route::post('subscribe', [SubscribesController::class, 'addSubscribes']);
+            Route::get('/template-topic', [SurveyTemplateController::class, 'getTopicTemplate']);
+            Route::get('/template-topic/{category_survey}', [SurveyTemplateController::class, 'getListSurveyTemplate']);
             //auth
             Route::group([
                 'prefix' => 'auth'
@@ -128,8 +138,6 @@ Route::group(['prefix' => 'v1'], function () {
                     Route::group([
                         'prefix' => '/template'
                     ], function ($router) {
-                        Route::get('/', [SurveyTemplateController::class, 'getListSurveyTemplate']);
-                        Route::get('/{survey_template_id}', [SurveyTemplateController::class, 'getDetailSurveyTemplate']);
                         Route::post('/{survey_template_id}/use-template', [SurveyController::class, 'useSurveyTemplate']);
                     });
                     Route::group([
@@ -341,6 +349,12 @@ Route::group(['prefix' => 'v1'], function () {
 
         ], function ($router) {
             Route::get('feedback', [FeedbackController::class, 'getList']);
+            Route::get('background', [BackgroundController::class, 'getBackground']);
+            Route::get('implementation-process', [ImplementationProcessController::class, 'getImplementationProcess']);
+            Route::get('partner-visitor', [PartnerVisitorController::class, 'getPartnerVisitor']);
+            Route::get('frequently-question', [FrequentlyQuestionController::class, 'getFrequentlyQuestion']);
+            Route::get('template/{category_qa}', [TemplateController::class, 'getListTemplateByCategoryQa']);
+            Route::get('template/{survey_template_id}/detail', [TemplateController::class, 'getDetailTemplate']);
             Route::post('client-contact', [ContactController::class, 'addContact']);
             Route::post('partner-contact', [PartnerContactsController::class, 'createPartnerContact']);
             Route::group([
@@ -359,7 +373,8 @@ Route::group(['prefix' => 'v1'], function () {
             ], function ($router) {
                 Route::get('qa-category', [QAndACategoryController::class, 'getAll']);
                 Route::get('qa-category/{id}', [QAndACategoryController::class, 'getDetail']);
-                Route::get('get-list', [QAndAController::class, 'getAll']);
+                Route::get('get-list/{category_id}', [QAndAController::class, 'getAll']);
+                Route::get('/item/{category_id}', [QAndAItemController::class, 'getAllQaItem']);
                 Route::get('qa-relate/{slug}', [QAndAController::class, 'getQAndARelate']);
                 Route::get('get-detail/{slug}', [QAndAController::class, 'getDetail']);
             });
@@ -369,6 +384,15 @@ Route::group(['prefix' => 'v1'], function () {
             ], function ($router) {
                 Route::get('get-list', [PageController::class, 'getAll']);
                 Route::get('get-detail/{slug}', [PageController::class, 'getDetail']);
+            });
+
+            Route::group([
+                'prefix' => '/product'
+
+            ], function ($router) {
+                Route::get('/category', [ProductCategoryController::class, 'getAllProductCategory']);
+                Route::get('/category/{category_id}', [ProductCategoryController::class, 'getDetailProductCategory']);
+                Route::get('/item/{category_id}', [ProductItemController::class, 'getAllProductItem']);
             });
         });
     });

@@ -110,7 +110,6 @@ class Survey extends Model
 
     public static  function getDetailSurvey($survey_id)
     {
-
         return  DB::table('surveys  as a')
             ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
             ->select(
