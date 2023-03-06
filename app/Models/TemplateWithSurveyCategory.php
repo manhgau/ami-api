@@ -33,4 +33,22 @@ class TemplateWithSurveyCategory extends Model
             ->where('a.template_id', $survey_template_id);
         return $query->get();
     }
+
+    public static  function getListTemplateByCategorySurvey($perPage = 10,  $page = 1, $category_survey)
+    {
+        $query =  DB::table('template_with_survey_category as a')
+            ->join('survey_templates as b', 'b.id', '=', 'a.template_id')
+            ->select(
+                'a.id',
+                'a.survey_category_id',
+                'a.template_id as survey_template_id',
+                'b.title',
+                'b.description',
+                'b.thumbnail',
+            )
+            ->where('b.active', self::ACTIVE)
+            ->where('a.survey_category_id', $category_survey)
+            ->orderBy('b.created_at', 'desc');
+        return $query->paginate($perPage, "*", "page", $page)->toArray();
+    }
 }

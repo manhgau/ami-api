@@ -7,6 +7,7 @@ use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
 use App\Models\SurveyCategory;
 use App\Models\SurveyTemplate;
+use App\Models\TemplateWithSurveyCategory;
 use Illuminate\Http\Request;
 
 
@@ -23,7 +24,7 @@ class SurveyTemplateController extends Controller
             $ckey  = CommonCached::cache_find_survey_template_by_categoey_survey . "_" . $category_survey . "_" . $perPage . "_" . $page;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = SurveyTemplate::getListSurveyTemplate($perPage,  $page, $category_survey);
+                $datas = TemplateWithSurveyCategory::getListTemplateByCategorySurvey($perPage,  $page, $category_survey);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }
@@ -39,12 +40,11 @@ class SurveyTemplateController extends Controller
     public function getTopicTemplate(Request $request)
     {
         try {
-            // $ckey  = CommonCached::cache_find_survey_template_topic;
-            // $datas = CommonCached::getData($ckey);
+            $ckey  = CommonCached::cache_find_survey_template_topic;
+            $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
                 $datas = SurveyCategory::getALL();
-                $datas = RemoveData::removeUnusedData($datas);
-                // CommonCached::storeData($ckey, $datas);
+                CommonCached::storeData($ckey, $datas);
             }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
