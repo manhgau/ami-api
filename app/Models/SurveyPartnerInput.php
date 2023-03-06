@@ -355,13 +355,16 @@ class SurveyPartnerInput extends Model
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->groupBy('suggested_answer_id')->get()->toArray();
+        $data_results = [];
         if (is_array($result) && count($result) > 0) {
             foreach ($result as $key => $value) {
                 $name_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($value->suggested_answer_id);
                 $input['suggested_answer_id'] = $value->suggested_answer_id;
-                $input['name_answer'] = $name_answer->value;
+                $name_answer ? $input['name_answer'] = $name_answer->value : $input['name_answer'] = '';
                 $input['number_partner_answer'] = $value->total;
-                $data_results[$key] = $input;
+                if ($name_answer) {
+                    $data_results[$key] = $input;
+                }
             }
         }
         return $data_results;
