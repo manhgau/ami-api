@@ -36,12 +36,12 @@ class ConfigController extends Controller
         //check fcmToken
         //version
         $newest_version = [
-            'android_apps'  =>  '2.0.0',
-            'ios_apps'  =>  '2.0.0',
+            'android_apps'  =>  '1.0.0',
+            'ios_apps'  =>  '1.0.0',
         ];
         $force_update_version  = [
-            'android_apps'  =>  '2.0.0',
-            'ios_apps'  =>  '2.0.0',
+            'android_apps'  =>  '1.0.0',
+            'ios_apps'  =>  '1.0.0',
         ];
         $settings->newest_version = $newest_version;
         $settings->force_update_version = $force_update_version;
