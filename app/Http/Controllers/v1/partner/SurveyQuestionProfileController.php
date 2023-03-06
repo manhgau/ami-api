@@ -55,11 +55,13 @@ class SurveyQuestionProfileController extends Controller
                 case QuestionTypeProfile::PROVINCE:
                     $data_response = $value;
                     $data_response['answers'] = Province::getAllProvince();
+                    $data_response['question_type'] = $value['question_type'] . '_address1';
                     $datas[] = $data_response;
                     break;
                 case QuestionTypeProfile::DISTRICT:
                     $data_response = $value;
                     $data_response['answers'] = District::getAllDistrict();
+                    $data_response['question_type'] = $value['question_type'] . '_address2';
                     $datas[] = $data_response;
                     break;
                 case QuestionTypeProfile::GENDER:
@@ -105,7 +107,7 @@ class SurveyQuestionProfileController extends Controller
 
         try {
             $survey_profile_id = $request->survey_profile_id;
-            $perPage = $request->per_page ?? 10;
+            $perPage = $request->per_page ?? 30;
             $page = $request->current_page ?? 1;
             $lists = $this->__questionProfile($survey_profile_id, $perPage, $page);
             return ClientResponse::responseSuccess('OK', $lists);
@@ -132,7 +134,7 @@ class SurveyQuestionProfileController extends Controller
                     if (!$survey_profile_id) {
                         return ClientResponse::responseSuccess('OK', null);
                     }
-                    $perPage = $request->per_page ?? 10;
+                    $perPage = $request->per_page ?? 30;
                     $page = $request->current_page ?? 1;
                     $lists = $this->__questionProfile($survey_profile_id, $perPage, $page);
                     return ClientResponse::responseSuccess('OK', $lists);
@@ -167,6 +169,7 @@ class SurveyQuestionProfileController extends Controller
                             case QuestionTypeProfile::IS_KEY_SHOPPER:
                             case QuestionTypeProfile::HAS_CHILDREN:
                             case QuestionTypeProfile::PROVINCE:
+                            case QuestionTypeProfile::DISTRICT:
                             case QuestionTypeProfile::GENDER:
                             case QuestionTypeProfile::MARITAL_STATUS:
                             case QuestionTypeProfile::JOB_TYPE:
@@ -174,7 +177,7 @@ class SurveyQuestionProfileController extends Controller
                             case QuestionTypeProfile::FAMILY_INCOME_LEVEL:
                             case QuestionTypeProfile::ACADEMIC_LEVEL:
                             case QuestionTypeProfile::FAMILY_PEOPLE:
-                                $input[$value['profile_type']] = (int)$value['value_answer'];
+                                $input[$value['profile_type']] = $value['value_answer'];
                                 break;
                             default:
                                 return ClientResponse::responseError('profile type không hợp lệ', $value['profile_type']);
@@ -231,13 +234,14 @@ class SurveyQuestionProfileController extends Controller
                             case QuestionTypeProfile::HAS_CHILDREN:
                             case QuestionTypeProfile::PROVINCE:
                             case QuestionTypeProfile::GENDER:
+                            case QuestionTypeProfile::DISTRICT:
                             case QuestionTypeProfile::MARITAL_STATUS:
                             case QuestionTypeProfile::JOB_TYPE:
                             case QuestionTypeProfile::PERSONAL_INCOME_LEVEL:
                             case QuestionTypeProfile::FAMILY_INCOME_LEVEL:
                             case QuestionTypeProfile::ACADEMIC_LEVEL:
                             case QuestionTypeProfile::FAMILY_PEOPLE:
-                                $input[$value['profile_type']] = (int)$value['value_answer'];
+                                $input[$value['profile_type']] = $value['value_answer'];
                                 break;
                             default:
                                 return ClientResponse::responseError('profile type không hợp lệ', $value['profile_type']);
