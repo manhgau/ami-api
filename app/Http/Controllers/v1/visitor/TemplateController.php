@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\v1\client;
+namespace App\Http\Controllers\v1\visitor;
 
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;

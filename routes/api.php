@@ -16,7 +16,7 @@ use App\Http\Controllers\v1\client\SurveyQuestionAnswersController;
 use App\Http\Controllers\v1\client\SurveyQuestionController;
 use App\Http\Controllers\v1\client\SurveyStatisticController;
 use App\Http\Controllers\v1\client\SurveyTemplateController;
-use App\Http\Controllers\v1\client\TemplateController;
+use App\Http\Controllers\v1\visitor\TemplateController;
 use App\Http\Controllers\v1\partner\MappingUidFcmTokenController;
 use App\Http\Controllers\v1\partner\AcademicLevelCotroller;
 use App\Http\Controllers\v1\partner\ConfigController as PartnerConfigController;
