@@ -244,6 +244,7 @@ class SurveyStatisticController extends Controller
             $list = '';
             $chart = '';
             $survey_questions = SurveyQuestion::getDetailSurveyQuestion($question_id);
+
             $question_type = $survey_questions->question_type;
             switch ($question_type) {
                 case QuestionType::YES_NO:
@@ -276,10 +277,20 @@ class SurveyStatisticController extends Controller
                     return ClientResponse::responseError('question type không hợp lệ', $question_type);
                     break;
             }
+            $query = SurveyPartnerInput::getStatisticQuestionsSurvey(
+                $survey_id,
+                $question_id,
+                $filter
+            );
+            $group = $query->get()->groupBy('skipped');
+            $number_of_response =  array_key_exists(SurveyPartnerInputLine::NOT_SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::NOT_SKIP]->groupBy('partner_input_id')) : 0;
+            $number_of_skip = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_input_id')) : 0;
             $result = [
                 'question_name' => $survey_questions->title,
                 'sequence' => $survey_questions->sequence,
                 'question_type' => $question_type,
+                'number_of_response' => $number_of_response,
+                'number_of_skip' => $number_of_skip,
                 'chart' => $chart,
                 'list_values' => $list,
             ];
