@@ -17,6 +17,7 @@ class SurveyProfileInputs extends Model
         'year_of_birth',
         'gender',
         'province_code',
+        'district_code',
         'job_type_id',
         'academic_level_id',
         'marital_status_id',
