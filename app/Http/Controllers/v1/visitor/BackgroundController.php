@@ -12,6 +12,8 @@ namespace App\Http\Controllers\v1\visitor;
 
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
+use App\Helpers\Common\CommonCached;
+use App\Helpers\GetYoutubeId;
 use App\Models\Backgrounds;
 
 class BackgroundController extends Controller
@@ -20,7 +22,13 @@ class BackgroundController extends Controller
     {
 
         try {
-            $datas = Backgrounds::getBackground();
+            $ckey  = CommonCached::cache_find_background;
+            $datas = CommonCached::getData($ckey);
+            if (empty($datas)) {
+                $datas = Backgrounds::getBackground();
+                $datas->youtube_id = GetYoutubeId::getYoutubeId($datas->youtube_url);
+                CommonCached::storeData($ckey, $datas);
+            }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

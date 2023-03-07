@@ -13,6 +13,7 @@ namespace App\Http\Controllers\v1\visitor;
 use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
+use App\Helpers\GetYoutubeId;
 use App\Models\Backgrounds;
 use App\Models\ImplementationProcess;
 
@@ -26,9 +27,12 @@ class ImplementationProcessController extends Controller
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
                 $datas = ImplementationProcess::getImplementationProcess();
+                foreach ($datas as $key => $value) {
+                    $value->youtube_id = GetYoutubeId::getYoutubeId($value->youtube_url);
+                    $datas[$key] = $value;
+                }
                 CommonCached::storeData($ckey, $datas);
             }
-            $datas = ImplementationProcess::getImplementationProcess();
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

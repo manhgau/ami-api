@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\visitor;
 
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
+use App\Helpers\GetYoutubeId;
 use App\Helpers\RemoveData;
 use App\Models\QAndA;
 use Illuminate\Http\Request;
@@ -21,6 +22,10 @@ class QAndAController extends Controller
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
                 $datas = QAndA::getAll($perPage, $page, $category_id);
+                foreach ($datas['data'] as $key => $value) {
+                    $value->youtube_id = GetYoutubeId::getYoutubeId($value->youtube_url);
+                    $datas['data'][$key] = $value;
+                }
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }
