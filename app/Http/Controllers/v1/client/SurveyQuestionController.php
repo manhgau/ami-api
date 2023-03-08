@@ -247,6 +247,7 @@ class SurveyQuestionController extends Controller
                             break;
                         case QuestionType::YES_NO:
                             $input['is_page'] = SurveyQuestion::NO_PAGE;
+                            $input['is_multiple'] = SurveyQuestion::NOT_MULTIPLE;
                             $data_insert = [
                                 [
                                     "survey_id" => $survey_id,

@@ -395,7 +395,7 @@ class AuthController extends Controller
                 if ($type_image == User::LOGO) {
                     $time_now = Carbon::now();
                     $user_package = UserPackage::getPackageUser($user_id, $time_now);
-                    if ($user_package['add_logo']) {
+                    if ($user_package['add_logo'] == 1) {
                         $path = env('FTP_PATH') . FtpSv::LOGO_FOLDER;
                         $image = FtpSv::upload($file, $name, $path, FtpSv::LOGO_FOLDER);
                         $update_image = User::updateProfile([User::LOGO => $image], $user_id);
