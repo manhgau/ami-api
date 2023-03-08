@@ -100,9 +100,9 @@ class SurveyPartnerInputController extends Controller
                         $input_log['partner_name'] = $partner_profile->name;
                         $input_log['type'] = PartnerPointLog::CONG;
                         $input_log['point'] =  $point;
-                        $input_log['action '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
-                        $input_log['object_type '] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
-                        $input_log['object_id '] = $survey_id;
+                        $input_log['action'] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
+                        $input_log['object_type'] = PartnerPointLog::TYPE_OBJ_SURVEY;
+                        $input_log['object_id'] = $survey_id;
                         PartnerPointLog::create($input_log);
                     }
                     return ClientResponse::responseSuccess('Cập nhập thành công', true);
