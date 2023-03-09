@@ -13,6 +13,7 @@ class ProductCategorys extends Model
         'thumbnail',
         'image',
         'youtube_url',
+        'youtube_url_detail',
         'description',
         'content',
         'status',
@@ -36,6 +37,6 @@ class ProductCategorys extends Model
 
     public static  function getDetailProductCategory($id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('status', self::STATUS_ACTIVE)->first();
+        return self::select('id', 'title', 'image', 'youtube_url_detail', 'content')->where('deleted', self::NOT_DELETED)->where('id', $id)->where('status', self::STATUS_ACTIVE)->first();
     }
 }

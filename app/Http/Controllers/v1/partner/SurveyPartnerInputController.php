@@ -233,18 +233,25 @@ class SurveyPartnerInputController extends Controller
                     if (($number_of_response >= $survey_detail->limmit_of_response) && $survey_detail->limmit_of_response != 0) {
                         return ClientResponse::response(ClientResponse::$limmit_of_response, 'Khảo sát đã đạt lượt phản hồ giới hạn');
                     }
-                    $result = SurveyPartnerInput::checkPartnerInput($partner_id, $survey_id);
-                    if (!$result) {
+                    if ($survey_detail->is_answer_single == Survey::ANSWER_SINGLE) {
                         $data =  [
                             ['key' => SurveyPartnerInput::PARTNER, 'name' => $partner_profile->fullname, 'disabled' => 0, 'description' => ''],
+                            ['key' => SurveyPartnerInput::OTHER, 'name' => 'Khác', 'disabled' => 1, 'description' => '(Thu thập bảng hỏi từ đáp viên khác)'],
+                        ];
+                    } else {
+                        $result = SurveyPartnerInput::checkPartnerInput($partner_id, $survey_id);
+                        if (!$result) {
+                            $data =  [
+                                ['key' => SurveyPartnerInput::PARTNER, 'name' => $partner_profile->fullname, 'disabled' => 0, 'description' => ''],
+                                ['key' => SurveyPartnerInput::OTHER, 'name' => 'Khác', 'disabled' => 0, 'description' => '(Thu thập bảng hỏi từ đáp viên khác)'],
+                            ];
+                            return ClientResponse::responseSuccess('Tài khoản chưa trả lời khảo sát', $data);
+                        }
+                        $data =  [
+                            ['key' => SurveyPartnerInput::PARTNER, 'name' => $partner_profile->fullname, 'disabled' => 1, 'description' => ''],
                             ['key' => SurveyPartnerInput::OTHER, 'name' => 'Khác', 'disabled' => 0, 'description' => '(Thu thập bảng hỏi từ đáp viên khác)'],
                         ];
-                        return ClientResponse::responseSuccess('Tài khoản chưa trả lời khảo sát', $data);
                     }
-                    $data =  [
-                        ['key' => SurveyPartnerInput::PARTNER, 'name' => $partner_profile->fullname, 'disabled' => 1, 'description' => ''],
-                        ['key' => SurveyPartnerInput::OTHER, 'name' => 'Khác', 'disabled' => 0, 'description' => '(Thu thập bảng hỏi từ đáp viên khác)'],
-                    ];
                     return ClientResponse::responseSuccess('Tài khoản đã trả lời khảo sát', $data);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());

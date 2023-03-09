@@ -52,6 +52,7 @@ class ProductCategoryController extends Controller
             $detail = CommonCached::getData($ckey);
             if (empty($detail)) {
                 $detail = ProductCategorys::getDetailProductCategory($category_id);
+                $detail['youtube_id_detail'] = GetYoutubeId::getYoutubeId($detail['youtube_url_detail']);
                 CommonCached::storeData($ckey, $detail);
             }
             if (!$detail) {
