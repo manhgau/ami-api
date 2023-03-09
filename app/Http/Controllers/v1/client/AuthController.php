@@ -402,8 +402,9 @@ class AuthController extends Controller
                         if (!$update_image) {
                             return ClientResponse::responseError('Đã có lỗi xảy ra');
                         }
+                    } else {
+                        return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
                     }
-                    return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
                 } else {
                     $path = env('FTP_PATH') . FtpSv::AVATAR_FOLDER;
                     $image = FtpSv::upload($file, $name, $path, FtpSv::AVATAR_FOLDER);
