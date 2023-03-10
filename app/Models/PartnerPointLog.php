@@ -20,6 +20,7 @@ class PartnerPointLog extends Model
         'object_type',
         'object_id',
         'note',
+        'status',
     ];
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
