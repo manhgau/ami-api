@@ -19,6 +19,7 @@ use App\Helpers\FtpSv;
 use App\Helpers\JWT;
 use App\Models\AppSetting;
 use App\Models\OtpLog;
+use App\Models\PartnerPointLog;
 use App\Models\SurveyPartnerInput;
 
 class AuthController extends Controller
@@ -428,6 +429,9 @@ class AuthController extends Controller
                 $partner->profile =  PartnerProfile::getPartnerProfile($partner->id);
                 $all_settings = AppSetting::getAllSetting();
                 $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+                $partner->profile->point_pending = PartnerPointLog::getPointPendingOfPartner($partner->id);
+                $partner->profile->point_fail = PartnerPointLog::getPointFailOfPartner($partner->id);
+                $partner->profile->avatar ? $partner->profile->avatar =   $image_domain . $partner->profile->avatar : null;
                 $partner->profile->avatar ? $partner->profile->avatar =   $image_domain . $partner->profile->avatar : null;
                 $partner->profile->year_of_birth ? $partner->profile->year_of_birth = date_format(date_create($partner->profile->year_of_birth), 'd-m-Y') : null;
                 return ClientResponse::responseSuccess('Thông tin tài khoản', $partner);
