@@ -238,8 +238,6 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                                     $input['matrix_row_id'] = $value['matrix_row_id'];
                                     $data_input[] = $input;
                                 }
-                            } else {
-                                return ClientResponse::response(ClientResponse::$validator_value, 'Đây là một câu hỏi bắt buộc.');
                             }
                         }
                     }

@@ -87,11 +87,8 @@ class SurveyPartnerInputController extends Controller
                     $survey_partner = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
                     SurveyPartner::updateSurveyPartner(['number_of_response_partner' =>  $survey_partner->number_of_response_partner + 1, 'stattus' => SurveyPartner::STATUS_INACTIVE], $survey_partner->id);
                     $survey = Survey::getDetailSurvey($survey_id);
-                    $model_profile = PartnerProfile::getDetailPartnerProfile($partner_id);
                     $point = $survey->point / $survey->attempts_limit_max;
-                    $data['point_tpr'] =  $model_profile->point_tpr + $point;
-                    $data['kpi_point_tpr'] = $model_profile->kpi_point_tpr + $point;
-                    PartnerProfile::updatePartnerProfile($data, $partner_id);
+                    $kpi_point = $survey->kpi_point / $survey->attempts_limit_max;
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($survey_id, $partner_id);
                     if ($count_survey_partner_input >= $survey->attempts_limit_min) {
                         $input_log['status'] = PartnerPointLog::PENDING;
@@ -103,6 +100,7 @@ class SurveyPartnerInputController extends Controller
                     $input_log['partner_name'] = $partner_profile->name;
                     $input_log['type'] = PartnerPointLog::CONG;
                     $input_log['point'] =  $point;
+                    $input_log['kpi_point'] =  $kpi_point;
                     $input_log['action'] = PartnerPointLog::ACTION_FINISHED_ANSWER_SURVEY;
                     $input_log['object_type'] = PartnerPointLog::TYPE_OBJ_SURVEY;
                     $input_log['object_id'] = $survey_id;
