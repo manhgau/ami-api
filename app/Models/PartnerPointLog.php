@@ -13,6 +13,7 @@ class PartnerPointLog extends Model
         'partner_name',
         'type',
         'point',
+        'kpi_point',
         'created_at',
         'updated_at',
         'created_by',
