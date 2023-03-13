@@ -87,8 +87,8 @@ class SurveyPartnerInputController extends Controller
                     $survey_partner = SurveyPartner::checkSurveyPartner($survey_id, $partner_id);
                     SurveyPartner::updateSurveyPartner(['number_of_response_partner' =>  $survey_partner->number_of_response_partner + 1, 'stattus' => SurveyPartner::STATUS_INACTIVE], $survey_partner->id);
                     $survey = Survey::getDetailSurvey($survey_id);
-                    $point = $survey->point / $survey->attempts_limit_max;
-                    $kpi_point = $survey->kpi_point / $survey->attempts_limit_max;
+                    $point = $survey->point;
+                    $kpi_point = $survey->kpi_point;
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($survey_id, $partner_id);
                     if ($count_survey_partner_input >= $survey->attempts_limit_min) {
                         $input_log['status'] = PartnerPointLog::PENDING;

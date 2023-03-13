@@ -39,6 +39,7 @@ use App\Http\Controllers\v1\partner\MaritalStatusController;
 use App\Http\Controllers\v1\partner\NotificationsFirebasePartnerController;
 use App\Http\Controllers\v1\partner\NumberOfFamilyController;
 use App\Http\Controllers\v1\partner\PackageController;
+use App\Http\Controllers\v1\partner\PartnerPointLogController;
 use App\Http\Controllers\v1\partner\PersonalIncomeLevelsController;
 use App\Http\Controllers\v1\partner\StaticPagesController;
 use App\Http\Controllers\v1\partner\SurveyPartnerController;
@@ -312,6 +313,20 @@ Route::group(['prefix' => 'v1'], function () {
                             Route::post('/{partner_input_id}/question/{question_id}', [SurveyPartnerInputLineController::class, 'surveyPartnerInputLine']);
                             Route::get('/{partner_input_id}/question/{question_id}/exit', [SurveyPartnerInputController::class, 'exitSurvey']);
                         });
+                    });
+                });
+            });
+
+            Route::group([
+                'prefix' => 'reward'
+            ], function ($router) {
+                Route::group([
+                    'middleware' => 'partner_auth',
+                ], function ($router) {
+                    Route::group([
+                        'middleware' => 'partner_profile',
+                    ], function ($router) {
+                        Route::get('/history/{status}', [PartnerPointLogController::class, 'getListHistoryPointLog']);
                     });
                 });
             });

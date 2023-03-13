@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class PartnerPointLog extends Model
 {
@@ -33,16 +34,45 @@ class PartnerPointLog extends Model
     const ACTION_FINISHED_ANSWER_SURVEY = 'finished_answer_survey';
     const ACTION_REDEEM_REWARD  = 'redeem_reward';
     const TYPE_OBJ_SURVEY  = 'survey';
-    const PENDING  = 'pending';
+    const SUCCESS = 'success';
+    const FAIL = 'fail';
+    const UNQUALIFIED =  'unqualified';
+    const PENDING =  'pending';
 
-
-    public static  function getPartnerPointLog($partner_id, $survey_id)
+    public static  function getPointPendingOfPartner($partner_id)
     {
-        return self::where('partner_id', $partner_id)->where('object_id', $survey_id)->first();
+        $query = self::where('partner_id', $partner_id)
+            ->where('type', self::CONG)
+            ->where(function ($query) {
+                $query->orWhere('status', PartnerPointLog::PENDING)
+                    ->orWhere('status', PartnerPointLog::UNQUALIFIED);
+            });
+        return $query->get()->sum('point');
+    }
+
+    public static  function getPointFailOfPartner($partner_id)
+    {
+        return self::where('partner_id', $partner_id)
+            ->where('type', self::CONG)
+            ->where('status', PartnerPointLog::FAIL)
+            ->get()->sum('point');
     }
 
     public static  function updatePartnerPointLog($data, $partner_id, $survey_id)
     {
         return  self::where('partner_id', $partner_id)->where('object_id', $survey_id)->update($data);
+    }
+
+    public static  function getListHistoryPointLog($perPage = 10,  $page = 1, $status)
+    {
+        $query =  DB::table('partner_point_logs as a')
+            ->leftJoin('surveys as b', 'b.id', '=', 'a.object_id')
+            ->select(
+                'a.*',
+                'b.title',
+            )
+            ->where('a.status', $status)
+            ->orderBy('a.created_at', 'desc');
+        return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
 }
