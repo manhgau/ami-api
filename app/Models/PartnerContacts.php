@@ -8,8 +8,7 @@ class PartnerContacts extends Model
 {
     protected $fillable = [
         'name',
-        'phone',
-        'email',
+        'email_phone',
         'year_of_birth',
         'gender',
         'province_code',
@@ -32,6 +31,4 @@ class PartnerContacts extends Model
     const STATUS_INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
-
 }
-
