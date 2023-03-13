@@ -17,6 +17,7 @@ class Contact extends Model
         'status',
         'deleted',
         'note',
+        'message'
     ];
     protected $hidden = ['deleted', 'created_at', 'updated_at'];
     const PENDING = 'pending';

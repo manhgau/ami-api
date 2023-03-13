@@ -27,7 +27,7 @@ class ContactController extends Controller
                 'email' => 'required|string|max:255',
                 'phone' => 'string|max:50',
                 'company_name' => 'string|max:255',
-                'note' => 'string|max:500',
+                'message' => 'string|max:500',
                 'job_type_id'   => 'integer|exists:App\Models\JobType,id',
                 'business_id' => 'integer|exists:App\Models\BusinessScope,id',
             ]);
