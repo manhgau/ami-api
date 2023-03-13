@@ -31,15 +31,8 @@ class SurveyQuestionPartnerController extends Controller
                     if (!SurveyPartner::checkSurveyPartner($survey_id, $partner_id)) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
-                    $list_answer_logic = SurveyQuestionAnswer::getLogicAnswer($survey_id);
-                    $logic_comes = [];
-                    if (is_array($list_answer_logic) && count($list_answer_logic) > 0) {
-                        foreach ($list_answer_logic as $key => $value) {
-                            $logic_comes[$key] = $value['logic_come'];
-                        }
-                    }
                     $survey_setup = Survey::getSetupSurvey($survey_id);
-                    $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page,  $survey_setup->is_random, $logic_comes);
+                    $lists = SurveyQuestion::getListQuestion($survey_id, $perPage, $page,  $survey_setup->is_random, null);
                     $lists = RemoveData::removeUnusedData($lists);
                     if (!$lists) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
@@ -51,7 +44,7 @@ class SurveyQuestionPartnerController extends Controller
                         $value->background ? $value->background = $image_domain . $value->background : null;
                         if ($value->question_type == QuestionType::GROUP) {
 
-                            $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id, $logic_comes);
+                            $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id, null);
                             $list_question = [];
                             foreach ($question_group as $cat => $item) {
                                 $item->background ? $item->background = $image_domain . $item->background : null;
