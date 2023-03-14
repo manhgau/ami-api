@@ -26,6 +26,8 @@ class ClientResponse
     //
     public static $partner_required_fill_info = 421;
     //Partner cập nhật hồ sơ cá nhân
+
+    public static $contact_admin = 455;
     public static $check_partner_mapping_fcmtoken = 420;
     public static $partner_input = 600;     //Partner đã trả lời khảo sát
     public static $un_partner_input = 601;     //Partner chưa trả lời khảo sát

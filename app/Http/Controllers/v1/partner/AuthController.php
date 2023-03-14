@@ -459,9 +459,9 @@ class AuthController extends Controller
                         'gender'        => 'required|digits:1|integer|exists:App\Models\Gender,id',
                         'province_code' => 'string|exists:App\Models\Province,code',
                         'district_code' => 'string|exists:App\Models\District,code',
-                        'addrees'        => 'required|string|max:255',
-                        'job_type_id'   => 'required|integer|exists:App\Models\JobType,id',
-                        'academic_level_id' => 'required|integer|exists:App\Models\AcademicLevel,id',
+                        'addrees'        => 'string|max:255',
+                        'job_type_id'   => 'integer|exists:App\Models\JobType,id',
+                        'academic_level_id' => 'integer|exists:App\Models\AcademicLevel,id',
                         'marital_status_id' => 'integer|exists:App\Models\MaritalStatus,id',
                         //
                         'personal_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
@@ -470,7 +470,6 @@ class AuthController extends Controller
                         'is_key_shopper' => 'boolean',
                         'has_children' => 'boolean',
                         'most_cost_of_living' => 'boolean',
-
                     ]);
 
                     if ($validator->fails()) {
@@ -484,25 +483,16 @@ class AuthController extends Controller
                         $profile = new PartnerProfile();
                         $profile->partner_id = $partner_id;
                     }
-                    //required
-                    $profile->fullname = $request->fullname;
-                    $profile->phone = $request->phone;
-                    $profile->year_of_birth = FormatDate::formatDate($request->year_of_birth);
-                    $profile->gender = $request->gender;
-                    $profile->province_code = $request->province_code;
-                    $profile->district_code = $request->district_code;
-                    $profile->addrees = $request->addrees;
-                    $profile->job_type_id = $request->job_type_id;
-                    $profile->academic_level_id = $request->academic_level_id;
-                    $profile->marital_status_id = $request->marital_status_id;
-
-                    $profile->personal_income_level_id = $request->personal_income_level_id;
-                    $profile->family_income_level_id = $request->family_income_level_id;
-                    $profile->family_people = $request->family_people;
-                    $profile->is_key_shopper = $request->is_key_shopper;
-                    $profile->has_children = $request->has_children;
+                    if ($profile->phone != $request->phone) {
+                        return ClientResponse::response(ClientResponse::$contact_admin, 'Liên hệ admin để cập nhập số điện thoại');
+                    }
+                    $data_update = $request->all();
+                    $data_update['year_of_birth'] = FormatDate::formatDate($request->year_of_birth);
                     //update profile
-                    $profile->save();
+                    $update_profile = PartnerProfile::updatePartnerProfile($data_update, $partner_id);
+                    if (!$update_profile) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
                     return ClientResponse::responseSuccess('Cập nhật thông tin tài khoản thành công');
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
