@@ -38,4 +38,9 @@ class NumberOfFamilys extends Model
         $data =  $family_people->paginate($perPage, "*", "page", $page)->toArray();
         return $data;
     }
+
+    public static  function getAllNumberOfFamily()
+    {
+        return self::select('id as value', 'name')->where('deleted', self::NOT_DELETED)->get();
+    }
 }

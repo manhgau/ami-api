@@ -72,6 +72,7 @@ class PartnerProfile extends Model
             ->leftJoin('marital_status as g', 'g.id', '=', 'a.marital_status_id')
             ->leftJoin('personal_income_levels as h', 'h.id', '=', 'a.personal_income_level_id')
             ->leftJoin('family_income_levels as i', 'i.id', '=', 'a.family_income_level_id')
+            ->leftJoin('number_of_familys as k', 'k.id', '=', 'a.family_people')
             ->select(
                 'a.id',
                 'a.partner_id',
@@ -83,7 +84,7 @@ class PartnerProfile extends Model
                 'a.point_used',
                 'a.kpi_point',
                 'a.addrees',
-                'a.family_people',
+                // 'a.family_people',
                 'a.has_children',
                 'a.is_key_shopper',
                 'b.name as district_name',
@@ -94,6 +95,7 @@ class PartnerProfile extends Model
                 'g.name as .marital_status_name',
                 'h.name as personal_income_level_name',
                 'i.name as family_income_level_name',
+                'k.min_value as family_people',
             )
             ->where('partner_id', $partner_id)->first();
     }

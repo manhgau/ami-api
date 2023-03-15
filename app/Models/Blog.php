@@ -40,6 +40,7 @@ class Blog extends Model
                 'blogs.description',
                 'blogs.category_id',
                 'blogs.thumbnail',
+                'blogs.created_at',
                 'blog_categories.title as category_name',
                 'blogs.type'
             )
