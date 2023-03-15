@@ -181,8 +181,21 @@ class SurveyPartnerInputController extends Controller
                     }
                     $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $result->end_time)->timestamp;
                     $time_remaining = $timestamp - Carbon::now()->timestamp;
-                    $result = json_decode(json_encode($result), true);
-                    $result['time_remaining'] = floor(max(0, $time_remaining) / (60 * 60 * 24));
+                    $result->time_remaining = floor(max(0, $time_remaining) / (60 * 60 * 24));
+                    $time_now = Carbon::now();
+                    if (($result->end_time < $time_now) && ($result->number_of_response_partner < $result->attempts_limit_min)) {
+                        $result->status = "Đã đóng";
+                        $result->status_key = SurveyPartnerInput::CLOSED;
+                    } elseif (
+                        ($result->end_time < $time_now) && ($result->number_of_response_partner >= $result->attempts_limit_min) ||
+                        ($result->state_ami == Survey::STATUS_ON_PROGRESS) && ($result->number_of_response_partner >= $result->attempts_limit_max)
+                    ) {
+                        $result->status = "Hoàn thành";
+                        $result->status_key = SurveyPartnerInput::COMPLETED;
+                    } elseif (($result->state_ami == Survey::STATUS_ON_PROGRESS) && ($result->number_of_response_partner < $result->attempts_limit_max)) {
+                        $result->status = "Chưa hoàn thành";
+                        $result->status_key = SurveyPartnerInput::NOT_COMPLETED;
+                    }
                     return ClientResponse::responseSuccess('OK', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());

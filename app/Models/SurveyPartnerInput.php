@@ -180,6 +180,8 @@ class SurveyPartnerInput extends Model
             ->select(
                 'a.id as survey_partner_id',
                 'a.is_save',
+                'a.number_of_response_partner',
+                'b.state_ami',
                 'b.title',
                 'b.description',
                 'b.id as survey_id',

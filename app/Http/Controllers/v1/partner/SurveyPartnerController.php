@@ -77,8 +77,15 @@ class SurveyPartnerController extends Controller
                     }
                     $timestamp = Carbon::createFromFormat('Y-m-d H:i:s', $result->end_time)->timestamp;
                     $time_remaining = $timestamp - Carbon::now()->timestamp;
-                    $result = json_decode(json_encode($result), true);
-                    $result['time_remaining'] = floor(max(0, $time_remaining) / (60 * 60 * 24));
+                    $result->time_remaining = floor(max(0, $time_remaining) / (60 * 60 * 24));
+                    $time_now = Carbon::now();
+                    if ($result->end_time <= $time_now) {
+                        $result->status = "Đã đóng";
+                        $result->status_key = SurveyPartner::CLOSED;
+                    } else {
+                        $result->status = "Đang thực hiện";
+                        $result->status_key = SurveyPartner::ON_PROGRESS;
+                    }
                     return ClientResponse::responseSuccess('OK', $result);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
