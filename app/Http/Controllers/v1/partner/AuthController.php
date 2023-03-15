@@ -453,7 +453,6 @@ class AuthController extends Controller
                     $validator = Validator::make($request->all(), [
                         //required
                         'fullname'        => 'required|string|max:50',
-                        'phone'        => 'required|string|max:50',
                         'year_of_birth' => 'required',
                         'gender'        => 'required|digits:1|integer|exists:App\Models\Gender,id',
                         'province_code' => 'string|exists:App\Models\Province,code',
@@ -481,9 +480,6 @@ class AuthController extends Controller
                     if (!$profile) {
                         $profile = new PartnerProfile();
                         $profile->partner_id = $partner_id;
-                    }
-                    if ($profile->phone != $request->phone) {
-                        return ClientResponse::response(ClientResponse::$contact_admin, 'Liên hệ admin để cập nhập số điện thoại');
                     }
                     $data_update = $request->all();
                     $data_update['year_of_birth'] = FormatDate::formatDate($request->year_of_birth);
