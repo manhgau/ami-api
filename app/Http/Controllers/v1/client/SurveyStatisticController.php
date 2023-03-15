@@ -287,6 +287,7 @@ class SurveyStatisticController extends Controller
             $number_of_skip = array_key_exists(SurveyPartnerInputLine::SKIP, json_decode($group, true)) ? count($group[SurveyPartnerInput::SKIP]->groupBy('partner_input_id')) : 0;
             $result = [
                 'question_name' => $survey_questions->title,
+                'description' => $survey_questions->description,
                 'sequence' => $survey_questions->sequence,
                 'question_type' => $question_type,
                 'number_of_response' => $number_of_response,
