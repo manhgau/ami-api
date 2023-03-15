@@ -13,6 +13,7 @@ use App\Models\FamilyIncomeLevels;
 use App\Models\Gender;
 use App\Models\JobType;
 use App\Models\MaritalStatus;
+use App\Models\NumberOfFamilys;
 use App\Models\PartnerProfile;
 use App\Models\PersonalIncomeLevels;
 use App\Models\Province;
@@ -38,7 +39,6 @@ class SurveyQuestionProfileController extends Controller
         foreach ($lists['data'] as  $value) {
             switch ($value['profile_type']) {
                 case QuestionTypeProfile::FULLNAME:
-                case QuestionTypeProfile::FAMILY_PEOPLE:
                 case QuestionTypeProfile::YEAR_OF_BIRTH:
                     $data_response = $value;
                     $datas[] = $data_response;
@@ -67,6 +67,11 @@ class SurveyQuestionProfileController extends Controller
                 case QuestionTypeProfile::GENDER:
                     $data_response = $value;
                     $data_response['answers'] = Gender::getAllGender();
+                    $datas[] = $data_response;
+                    break;
+                case QuestionTypeProfile::FAMILY_PEOPLE:
+                    $data_response = $value;
+                    $data_response['answers'] = NumberOfFamilys::getAllNumberOfFamily();
                     $datas[] = $data_response;
                     break;
                 case QuestionTypeProfile::MARITAL_STATUS:

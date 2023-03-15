@@ -433,6 +433,7 @@ class AuthController extends Controller
                 $partner->profile->point_fail = PartnerPointLog::getPointFailOfPartner($partner->id);
                 $partner->profile->avatar ? $partner->profile->avatar =   $image_domain . $partner->profile->avatar : null;
                 $partner->profile->year_of_birth ? $partner->profile->year_of_birth = date_format(date_create($partner->profile->year_of_birth), 'd-m-Y') : null;
+                $partner->profile->family_people ? $partner->profile->family_people = (int) $partner->profile->family_people : $partner->profile->family_people = 0;
                 return ClientResponse::responseSuccess('Thông tin tài khoản', $partner);
             } else {
                 return ClientResponse::responseError('Tài khoản không tồn tại');

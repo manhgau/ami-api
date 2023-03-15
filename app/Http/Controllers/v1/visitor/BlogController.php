@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\visitor;
 
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
+use App\Helpers\FormatDate;
 use App\Helpers\RemoveData;
 use App\Models\Blog;
 use Illuminate\Http\Request;
@@ -21,6 +22,9 @@ class BlogController extends Controller
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
                 $datas = Blog::getAll($perPage, $page,  $category_id);
+                foreach ($datas['data'] as $key => $value) {
+                    $value->created_at = FormatDate::formatDateStatisticNoTime($value->created_at);
+                }
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }
