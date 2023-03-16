@@ -92,6 +92,7 @@ class SurveyPartnerInputController extends Controller
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($survey_id, $partner_id);
                     if ($count_survey_partner_input >= $survey->attempts_limit_min) {
                         $input_log['status'] = PartnerPointLog::PENDING;
+                        PartnerPointLog::updatePartnerPointLog(['status' => PartnerPointLog::PENDING], $partner_id, $survey_id);
                     }
                     $input_log['partner_id'] = $partner_id;
                     $input_log['partner_input_id'] = $partner_input_id;
@@ -105,7 +106,6 @@ class SurveyPartnerInputController extends Controller
                     $input_log['object_type'] = PartnerPointLog::TYPE_OBJ_SURVEY;
                     $input_log['object_id'] = $survey_id;
                     PartnerPointLog::create($input_log);
-                    PartnerPointLog::updatePartnerPointLog(['status' => PartnerPointLog::PENDING], $partner_id, $survey_id);
                     return ClientResponse::responseSuccess('Cập nhập thành công', true);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());
