@@ -604,6 +604,9 @@ class SurveyPartnerInput extends Model
         if ($filter['is_key_shopper'] != null) {
             $query->whereIn('survey_profile_inputs.has_children', $filter['is_key_shopper']);
         }
+        if ($filter['family_peoples'] != null) {
+            $query->whereIn('survey_profile_inputs.family_people', $filter['family_people']);
+        }
         $year_of_birth = $filter['year_of_birth'];
         if ($year_of_birth !== null) {
             $query->where(function ($query) use ($year_of_birth) {
@@ -622,15 +625,6 @@ class SurveyPartnerInput extends Model
                             $data['year_min'], $data['year_max']
                         ]
                     );
-                }
-            });
-        }
-        $family_peoples = $filter['family_peoples'];
-        if ($family_peoples !== null) {
-            $query->where(function ($query) use ($family_peoples) {
-                foreach ($family_peoples as $value) {
-                    $detail = NumberOfFamilys::getDetail($value);
-                    $query->orWhereBetween('survey_profile_inputs.family_people', [(int) $detail->min_value, (int) $detail->max_value]);
                 }
             });
         }

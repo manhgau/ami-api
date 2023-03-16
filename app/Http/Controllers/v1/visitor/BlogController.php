@@ -18,10 +18,11 @@ class BlogController extends Controller
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
             $category_id = $request->category_id;
-            $ckey  = CommonCached::cache_find_blog . "_" . $perPage . "_" . $page . "_" . $category_id;
+            $search = $request->search;
+            $ckey  = CommonCached::cache_find_blog . "_" . $perPage . "_" . $page . "_" . $category_id . "_" . $search;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = Blog::getAll($perPage, $page,  $category_id);
+                $datas = Blog::getAll($perPage, $page,  $category_id, $search);
                 foreach ($datas['data'] as $key => $value) {
                     $value->created_at = FormatDate::formatDateStatisticNoTime($value->created_at);
                 }
