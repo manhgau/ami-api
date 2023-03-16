@@ -80,7 +80,7 @@ class Blog extends Model
     {
         $blog =  DB::table('blogs')
             ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
-            ->select('blogs.*', 'blog_categories.title as category_name')->where('blogs.deleted', self::NOT_DELETED)
+            ->select('blogs.*', 'blog_categories.title as category_name', 'blog_categories.slug as category_slug')->where('blogs.deleted', self::NOT_DELETED)
             ->where('blogs.status', self::STATUS_ACTIVE)
             ->where('blogs.slug', $slug)->first();
         return $blog;
