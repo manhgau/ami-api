@@ -84,7 +84,7 @@ class PartnerProfile extends Model
                 'a.point_used',
                 'a.kpi_point',
                 'a.addrees',
-                // 'a.family_people',
+                'a.family_people as family_people_id ',
                 'a.has_children',
                 'a.is_key_shopper',
                 'b.name as district_name',

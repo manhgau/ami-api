@@ -29,7 +29,7 @@ class Blog extends Model
     const BLOG  = 'blog';
     const SOLUTION  = 'solution';
 
-    public static  function getALL($perPage = 10, $page = 1,  $category_id = null)
+    public static  function getALL($perPage = 10, $page = 1,  $category_id = null, $search = null)
     {
         $blogs =  DB::table('blogs')
             ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
@@ -48,6 +48,9 @@ class Blog extends Model
             ->orderBy('blogs.id', 'desc');
         if ($category_id != null) {
             $blogs->where('blogs.category_id', $category_id);
+        }
+        if ($search != null) {
+            $blogs->where('blogs.title', 'like', '%' . $search . '%');
         }
         $datas = $blogs->paginate($perPage, "*", "page", $page)->toArray();
         return $datas;
