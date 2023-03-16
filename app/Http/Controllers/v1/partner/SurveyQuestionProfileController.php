@@ -72,6 +72,7 @@ class SurveyQuestionProfileController extends Controller
                 case QuestionTypeProfile::FAMILY_PEOPLE:
                     $data_response = $value;
                     $data_response['answers'] = NumberOfFamilys::getAllNumberOfFamily();
+                    $data_response['question_type'] = $value['question_type'] . '_address1';
                     $datas[] = $data_response;
                     break;
                 case QuestionTypeProfile::MARITAL_STATUS:
