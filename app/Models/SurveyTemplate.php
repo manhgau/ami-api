@@ -42,7 +42,7 @@ class SurveyTemplate extends Model
 
     public static  function getDetailSurveyTemplate($id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('active', self::ACTIVE)->first();
+        return self::select('id as survey_template_id', 'title', 'survey_id', 'thumbnail', 'description', 'content')->where('deleted', self::NOT_DELETED)->where('id', $id)->where('active', self::ACTIVE)->first();
     }
 
     public static  function updateSurveyTemplate($data, $id)
