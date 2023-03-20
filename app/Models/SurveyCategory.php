@@ -8,7 +8,7 @@ class SurveyCategory extends Model
 {
     protected $fillable = [
         'title',
-        'slug',
+        'icon',
         'status',
         'created_at',
         'updated_at',
