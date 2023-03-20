@@ -36,6 +36,7 @@ use App\Http\Controllers\v1\partner\ChildrenAgeRangesController;
 use App\Http\Controllers\v1\partner\FamilyIncomeLevelsController;
 use App\Http\Controllers\v1\partner\GendersController;
 use App\Http\Controllers\v1\partner\MaritalStatusController;
+use App\Http\Controllers\v1\client\NotificationsFirebaseClientController;
 use App\Http\Controllers\v1\partner\NotificationsFirebasePartnerController;
 use App\Http\Controllers\v1\partner\NumberOfFamilyController;
 use App\Http\Controllers\v1\partner\PackageController;
@@ -206,6 +207,18 @@ Route::group(['prefix' => 'v1'], function () {
                         Route::get('/list-question', [SurveyPartnerInputAnynomousController::class, 'getSurveyQuestion']);
                         Route::get('/{partner_input_id}/question/{question_id}/exit', [SurveyPartnerInputLineAnynomousController::class, 'exitSurvey']);
                     });
+                });
+            });
+            Route::group([
+                'middleware' => 'client_auth',
+
+            ], function ($router) {
+                Route::group([
+                    'prefix' => 'notification',
+
+                ], function ($router) {
+                    Route::get('/', [NotificationsFirebaseClientController::class, 'getListNotificationClient']);
+                    Route::get('/{notification_partner_id}', [NotificationsFirebaseClientController::class, 'getDetailNotificationClient']);
                 });
             });
             //package
