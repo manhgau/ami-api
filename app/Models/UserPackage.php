@@ -31,16 +31,15 @@ class UserPackage extends Model
                 'packages.name',
                 'packages.id',
                 'packages.response_limit',
-                'packages.level',
                 'packages.limit_projects',
                 'packages.limit_questions',
                 'packages.add_logo',
                 'packages.data_storage',
+                'packages.logic_jumps',
             )
             ->where('user_packages.user_id', $user_id)
             ->where('user_packages.end_time', '>', $time_now)
-            ->where('user_packages.status', self::STATUS_ACTIVE)
-            ->orderBy('packages.level', 'desc')->first();
+            ->where('user_packages.status', self::STATUS_ACTIVE)->first();
         if (!$result) {
             $result = Package::getPackageFree();
         }
