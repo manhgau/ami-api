@@ -30,4 +30,14 @@ class CheckResponseOfSurvey
         }
         return false;
     }
+
+    public static function checkLogicJump($user_id)
+    {
+        $time_now = Carbon::now();
+        $user_package = UserPackage::getPackageUser($user_id, $time_now);
+        if ($user_package->logic_jumps == 0) {
+            return true;
+        }
+        return false;
+    }
 }
