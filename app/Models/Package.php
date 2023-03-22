@@ -22,6 +22,7 @@ class Package extends Model
         'priority',
         'standard',
         'gift_selection',
+        'is_default'
     ];
 
     protected $hidden = ['deleted', 'created_at', 'updated_at', 'status', 'updated_by', 'created_by'];
@@ -30,7 +31,7 @@ class Package extends Model
     const STATUS_INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
-    const FREE  = 0;
+    const FREE  = 1;
 
     public static  function getListPackage($perPage = 10,  $page = 1)
     {
@@ -50,12 +51,12 @@ class Package extends Model
             'name',
             'id',
             'response_limit',
-            'level',
             'limit_projects',
             'limit_questions',
             'add_logo',
             'data_storage',
-        )->where('status', self::STATUS_ACTIVE)->where('level', 0)->first();
+            'logic_jumps',
+        )->where('status', self::STATUS_ACTIVE)->where('is_default', 1)->first();
     }
 
 
@@ -66,11 +67,11 @@ class Package extends Model
             ->select('b.limit_projects', 'b.limit_questions')
             ->where('a.user_id', $user_id)
             ->where('a.status', self::STATUS_ACTIVE)
-            ->orderBy('b.level', 'DESC')->first();
+            ->first();
         if (!$survey_user_number) {
             $package_free =  Package::query()
                 ->where('status', self::STATUS_ACTIVE)
-                ->where('level', Package::FREE)
+                ->where('is_default', Package::FREE)
                 ->first();
             return $package_free;
         }
