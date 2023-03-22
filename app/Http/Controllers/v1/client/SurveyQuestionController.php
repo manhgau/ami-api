@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\client;
 
 use App\Helpers\CheckPackageUser;
+use App\Helpers\CheckResponseOfSurvey;
 use App\Helpers\ClientResponse;
 use App\Helpers\Context;
 use App\Models\AppSetting;
@@ -294,6 +295,9 @@ class SurveyQuestionController extends Controller
             $request->description ? $input['description'] = ucfirst($request->description) : "";
             $request->title ? $input['title'] = ucfirst($request->title) : "";
             $input['updated_by'] = $user_id;
+            if (isset($request->logic) && CheckResponseOfSurvey::checkLogicJump($user_id)) {
+                return ClientResponse::response(ClientResponse::$add_logo, 'Gói cước bạn đang sử dụng không có quyền phần nhánh câu hỏi!');
+            }
             $update_survey = SurveyQuestion::updateSurveyQuestion($input, $question_id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
