@@ -28,8 +28,7 @@ class NotificationsFirebasePartners extends Model
                 'b.id as notification_id',
                 'b.title',
                 'b.notification_type',
-                'b.slug',
-                'b.description',
+                'b.content as description',
             )
             ->where('a.partner_id', $partner_id)
             ->orderBy('a.created_at', 'desc')
@@ -44,8 +43,6 @@ class NotificationsFirebasePartners extends Model
                 'b.id as notification_id',
                 'b.title',
                 'b.notification_type',
-                'b.slug',
-                'b.description',
                 'b.content',
             )
             ->where('a.partner_id', $partner_id)

@@ -28,8 +28,7 @@ class NotificationsFirebaseClients extends Model
                 'b.id as notification_id',
                 'b.title',
                 'b.notification_type',
-                'b.slug',
-                'b.description',
+                'b.content as description',
             )
             ->where('a.client_id', $client_id)
             ->orderBy('a.created_at', 'desc')
@@ -44,8 +43,6 @@ class NotificationsFirebaseClients extends Model
                 'b.id as notification_id',
                 'b.title',
                 'b.notification_type',
-                'b.slug',
-                'b.description',
                 'b.content',
             )
             ->where('a.client_id', $client_id)
