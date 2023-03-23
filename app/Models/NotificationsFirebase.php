@@ -10,7 +10,8 @@ class NotificationsFirebase extends Model
 
     protected $fillable = [
         'title',
-        'slug',
+        'is_auto',
+        'action_auto',
         'description',
         'content',
         'status',
@@ -27,6 +28,17 @@ class NotificationsFirebase extends Model
     const STATUS_INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+    const AUTO  = 1;
+    const NO_AUTO  = 0;
+
+    const CLEINT_AUTH = 'client_auth';
+    const PARTNER_AUTH = 'partner_auth';
+    const PROJECT_EXPIRED = 'project_expired';
+
+    public static function getTemplateNotification($key)
+    {
+        return self::where('action_auto', $key)->where('is_auto', self::AUTO)->first();
+    }
 
     public function sendNotifyTopicFCM()
     {

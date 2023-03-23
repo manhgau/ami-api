@@ -29,6 +29,7 @@ class NotificationsFirebaseClientController extends Controller
             foreach ($lists['data'] as $key => $value) {
                 $value->created_at ? $value->created_at = date_format(date_create($value->created_at), 'd/m/Y') : null;
                 $value->updated_at ? $value->updated_at = date_format(date_create($value->updated_at), 'd/m/Y') : null;
+                $value->description = substr($value->description, 0, 200) . '...';
                 $lists['data'][$key] = $value;
             }
             $count = NotificationsFirebaseClients::countlNotificationClient($user_id);
@@ -51,6 +52,8 @@ class NotificationsFirebaseClientController extends Controller
             $notification_partner_id = $request->notification_partner_id;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $detail = NotificationsFirebaseClients::getDetailNotificationClient($user_id, $notification_partner_id);
+            $detail->created_at ? $detail->created_at = date_format(date_create($detail->created_at), 'd/m/Y') : null;
+            $detail->updated_at ? $detail->updated_at = date_format(date_create($detail->updated_at), 'd/m/Y') : null;
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

@@ -18,6 +18,8 @@ use App\Helpers\FormatDate;
 use App\Helpers\FtpSv;
 use App\Helpers\JWT;
 use App\Models\AppSetting;
+use App\Models\NotificationsFirebase;
+use App\Models\NotificationsFirebasePartners;
 use App\Models\OtpLog;
 use App\Models\PartnerPointLog;
 use App\Models\SurveyPartnerInput;
@@ -164,6 +166,13 @@ class AuthController extends Controller
                     $otpInfo->expire_at = time();
                     $otpInfo->save();
                 }
+                $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PARTNER_AUTH);
+                $template_notification->content = str_replace("{{phone}}", $phone, $template_notification->content);
+                $input['title'] = $template_notification->title;
+                $input['content'] = $template_notification->content;
+                $input['partner_id'] = $partner->id;
+                $input['notification_id'] = $template_notification->id;
+                NotificationsFirebasePartners::create($input);
                 return ClientResponse::responseSuccess('Tạo tài khoản thành công');
             } else {
                 return ClientResponse::responseError('Không thể tạo tài khoản, vui lòng thử lại sau');
