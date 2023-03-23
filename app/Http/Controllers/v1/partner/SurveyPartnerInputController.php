@@ -7,9 +7,12 @@ use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
+use App\Models\MappingUidFcmToken;
+use App\Models\NotificationsFirebase;
 use App\Models\Partner;
 use App\Models\PartnerPointLog;
 use App\Models\PartnerProfile;
+use App\Models\QueueNotifications;
 use App\Models\Survey;
 use App\Models\SurveyPartner;
 use App\Models\SurveyPartnerInput;
@@ -90,6 +93,7 @@ class SurveyPartnerInputController extends Controller
                     $point = $survey->point;
                     $kpi_point = $survey->kpi_point;
                     $count_survey_partner_input = SurveyPartnerInput::countSurveyPartnerInput($survey_id, $partner_id);
+                    self::__pushNotification($survey, $partner_id, $count_survey_partner_input);
                     if ($count_survey_partner_input >= $survey->attempts_limit_min) {
                         $input_log['status'] = PartnerPointLog::PENDING;
                         PartnerPointLog::updatePartnerPointLog(['status' => PartnerPointLog::PENDING], $partner_id, $survey_id);
@@ -114,6 +118,38 @@ class SurveyPartnerInputController extends Controller
         } else {
             return ClientResponse::response(ClientResponse::$required_login_code, 'Tài khoản chưa đăng nhập');
         }
+    }
+
+    private static function __pushNotification($survey, $partner_id,  $count_survey_partner_input)
+    {
+        $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id)->fcm_token ?? null;
+        $input['fcm_token'] = $fcm_token;
+        if ($survey->is_answer_single == Survey::ANSWER_SINGLE) {
+            $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_COMPLETE_1_1);
+            $template_notification->content = str_replace("{{project_name}}", $survey->title, $template_notification->content);
+            $input['title'] = $template_notification->title;
+            $input['content'] = $template_notification->content;
+            $input['partner_id'] =  $partner_id;
+            $input['notify_id'] = $template_notification->id;
+        } else {
+            if ($count_survey_partner_input == $survey->attempts_limit_min) {
+                $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_NOT_COMPLETE);
+                $template_notification->content = str_replace("{{project_name}}", $survey->title, $template_notification->content);
+                $input['title'] = $template_notification->title;
+                $input['content'] = $template_notification->content;
+                $input['partner_id'] =  $partner_id;
+                $input['notify_id'] = $template_notification->id;
+            }
+            if ($count_survey_partner_input >= $survey->attempts_limit_max) {
+                $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_COMPLETE_1_N);
+                $template_notification->content = str_replace("{{project_name}}", $survey->title, $template_notification->content);
+                $input['title'] = $template_notification->title;
+                $input['content'] = $template_notification->content;
+                $input['partner_id'] =  $partner_id;
+                $input['notify_id'] = $template_notification->id;
+            }
+        }
+        QueueNotifications::create($input);
     }
 
     public function getlistSurveyPartnerInput(Request $request)

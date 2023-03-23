@@ -11,6 +11,8 @@ use App\Helpers\FormatDate;
 use App\Helpers\RemoveData;
 use App\Models\AppSetting;
 use App\Models\FormatDateType;
+use App\Models\NotificationsFirebase;
+use App\Models\NotificationsFirebaseClients;
 use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
@@ -20,6 +22,7 @@ use App\Models\SurveyTargets;
 use App\Models\SurveyTemplate;
 use App\Models\SurveyTemplateQuestion;
 use App\Models\TypeTarget;
+use App\Models\UserPackage;
 use Carbon\Carbon;
 use Validator;
 use Illuminate\Http\Request;
@@ -158,8 +161,17 @@ class SurveyController extends Controller
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            // if (isset($request->link_url)) {
-            // }
+            if (isset($request->link_url) && Survey::countSurveyLinkUrlNotNull($user_id) == 3) {
+                $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_NUMBER);
+                $user_package = UserPackage::getPackageUser($user_id,  Carbon::now());
+                ($user_package['limit_projects'] != 0) ? $limit_projects = $user_package['limit_projects'] :  $limit_projects = '∞';
+                $template_notification->content = str_replace("{{project_number}}", $limit_projects, $template_notification->content);
+                $input['title'] = $template_notification->title;
+                $input['content'] = $template_notification->content;
+                $input['client_id'] =  $user_id;
+                $input['notification_id'] = $template_notification->id;
+                NotificationsFirebaseClients::create($input);
+            }
             return ClientResponse::responseSuccess('Update thành công');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
