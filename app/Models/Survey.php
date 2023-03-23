@@ -38,6 +38,7 @@ class Survey extends Model
         'limmit_of_response_anomyous',
         'number_of_response',
         'point',
+        'is_answer_single',
         'is_attempts_limited',
         'attempts_limit_min',
         'attempts_limit_max',
@@ -127,12 +128,18 @@ class Survey extends Model
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('user_id', $user_id)->where('active', self::ACTIVE)->first();
     }
 
+    public static  function countSurveyLinkUrlNotNull($user_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('user_id', $user_id)->where('active', self::ACTIVE)->whereNotNull('link_url')->count();
+    }
+
     public static  function getSetupSurvey($survey_id)
     {
         return  DB::table('surveys  as a')
             ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
             ->select(
                 'a.title',
+                'a.user_id',
                 'a.description',
                 'a.survey_profile_id',
                 'a.font_size',

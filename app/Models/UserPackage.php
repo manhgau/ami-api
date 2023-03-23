@@ -48,6 +48,27 @@ class UserPackage extends Model
         return json_decode(json_encode($result), true);
     }
 
+    public static  function getAllPackageUser($time)
+    {
+        return  DB::table('user_packages')
+            ->join('packages', 'packages.id', '=', 'user_packages.package_id')
+            ->select(
+                'packages.name',
+                'packages.id',
+                'packages.response_limit',
+                'packages.limit_projects',
+                'packages.limit_questions',
+                'packages.add_logo',
+                'packages.data_storage',
+                'packages.logic_jumps',
+                'user_packages.start_time',
+                'user_packages.end_time',
+                'user_packages.user_id',
+            )
+            ->where('user_packages.end_time', $time)
+            ->where('user_packages.status', self::STATUS_ACTIVE)->get()->toArray();
+    }
+
     public static  function updatePackage($data, $id)
     {
         return self::where('id', $id)->update($data);

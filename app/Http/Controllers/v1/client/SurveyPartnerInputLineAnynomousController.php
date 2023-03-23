@@ -30,9 +30,11 @@ class SurveyPartnerInputLineAnynomousController extends Controller
             }
             $question_id = $request->question_id ?? 0;
             $survey_id = $request->survey_id ?? 0;
+            $partner_input_id = $request->partner_input_id ?? 0;
+            SurveyPartnerInputLine::deletePartnerInputLine($survey_id, $partner_input_id, $question_id);
             $input['question_id']   = $question_id;
             $input['survey_id']     = $survey_id;
-            $input['partner_input_id']   = (int)$request->partner_input_id;
+            $input['partner_input_id']   = $partner_input_id;
             $survey_question = SurveyQuestion::checkQuestionOfSurvey($survey_id, $question_id);
             if (!$survey_question) {
                 return ClientResponse::responseError('Không tồn tại câu hỏi khảo sát');

@@ -30,10 +30,17 @@ class NotificationsFirebase extends Model
     const DELETED  = 1;
     const AUTO  = 1;
     const NO_AUTO  = 0;
-
+    //Client----------------------------------------------------------------
     const CLEINT_AUTH = 'client_auth';
-    const PARTNER_AUTH = 'partner_auth';
     const PROJECT_EXPIRED = 'project_expired';
+    const PROJECT_NUMBER = 'project_number';
+    const PACKAGE_EXPIRED = 'package_expired';
+
+    //Partner----------------------------------------------------------------
+    const PARTNER_AUTH = 'partner_auth';
+    const  PROJECT_COMPLETE_1_1 = 'project_complete_1_1';
+    const  PROJECT_NOT_COMPLETE = 'project_not_complete';
+    const  PROJECT_COMPLETE_1_N  = 'project_complete_1_n';
 
     public static function getTemplateNotification($key)
     {

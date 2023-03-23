@@ -2,16 +2,13 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class QueueNotifications extends Model
 {
 
     protected $fillable = [
         'notify_id',
-        'receiving_group',
         'title',
         'content',
         'partner_id',
