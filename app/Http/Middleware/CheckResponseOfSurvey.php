@@ -24,7 +24,7 @@ class CheckResponseOfSurvey
         $user_package = UserPackage::getPackageUser($survey_user->user_id, $time_now);
         $number_of_response_user  = SurveyPartnerInput::countAllSurveyUserInput($survey_user->user_id);
         $number_of_response_survey  = SurveyPartnerInput::countSurveyInput($id, SurveyPartnerInput::ANYNOMOUS_TRUE);
-        if ($survey_user->state != Survey::STATUS_ON_PROGRESS || ($number_of_response_user >=  $user_package->response_limit) || (($survey_user->limmit_of_response_anomyous != 0) & ($number_of_response_survey >= $survey_user->limmit_of_response_anomyous))) {
+        if ($survey_user->state != Survey::STATUS_ON_PROGRESS || ($number_of_response_user >=  $user_package['response_limit']) || (($survey_user->limmit_of_response_anomyous != 0) & ($number_of_response_survey >= $survey_user->limmit_of_response_anomyous))) {
             return ClientResponse::response(ClientResponse::$survey_enough_responses, 'Khảo sát đã thu thập đủ số phản hồi,hoặc đã đóng');
         }
         return $next($request);

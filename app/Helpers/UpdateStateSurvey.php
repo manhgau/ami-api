@@ -48,7 +48,7 @@ class UpdateStateSurvey
             foreach ($list_survey as $survey) {
                 $number_of_response_user  = SurveyPartnerInput::countAllSurveyUserInput($survey['user_id']);
                 $time_now = Carbon::now();
-                $user_package = UserPackage::getPackageUser($survey['user_id'], $time_now)->toArray();
+                $user_package = UserPackage::getPackageUser($survey['user_id'], $time_now);
                 if ($number_of_response_user >= $user_package['response_limit']) {
                     if ($survey['limmit_of_response_anomyous'] ==  0) {
                         Survey::updateSurvey(["state" => Survey::STATUS_COMPLETED], $survey['id']);
