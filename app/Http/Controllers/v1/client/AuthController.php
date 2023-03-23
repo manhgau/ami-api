@@ -14,7 +14,8 @@ use App\Helpers\FtpSv;
 use App\Jobs\SendActiveAcountEmailJob;
 use App\Jobs\SendResetPasswordEmailJob;
 use App\Models\AppSetting;
-use App\Models\Survey;
+use App\Models\NotificationsFirebase;
+use App\Models\NotificationsFirebaseClients;
 use App\Models\SurveyPartnerInput;
 use App\Models\UserPackage;
 use Illuminate\Support\Str;
@@ -220,6 +221,8 @@ class AuthController extends Controller
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
         $user_package['number_of_response']  = SurveyPartnerInput::countAllSurveyUserInput($user_id);
+        $user_package['start_time']  =  $user_package['start_time'] ?? '';
+        $user_package['end_time']  =  $user_package['end_time'] ?? '';
         $data = [
             'user_package' => $user_package,
             'user_profile' => $user,
@@ -277,7 +280,13 @@ class AuthController extends Controller
         $user->active_code = '';
         $user->active_expire = time();
         $user->save();
-
+        $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::CLEINT_AUTH);
+        $template_notification->content = str_replace("{{name}}", $user->name, $template_notification->content);
+        $input['title'] = $template_notification->title;
+        $input['content'] = $template_notification->content;
+        $input['client_id'] =  $user_id;
+        $input['notification_id'] = $template_notification->id;
+        NotificationsFirebaseClients::create($input);
         return ClientResponse::responseSuccess('Kích hoạt tài khoản thành công');
     }
 
@@ -385,6 +394,21 @@ class AuthController extends Controller
     public function updateImage(Request $request)
     {
         try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'image' => 'required|mimes:jpeg,png,jpg|max:512',
+                ],
+                [
+                    'image.required' => 'File ảnh là bắt buộc.',
+                    'image.mimes' => 'Hỗ trợ các định dạng jpeg,png,jpg.',
+                    'image.max' => 'Kích thước tối đa 512KB.',
+                ]
+            );
+            if ($validator->fails()) {
+                $errorString = implode(",", $validator->messages()->all());
+                return ClientResponse::responseError($errorString);
+            }
             $type_image = $request->type_image;
             if (User::checkImageValid($type_image) === false) {
                 return ClientResponse::responseError('Lỗi ! Không có loại ảnh này.');

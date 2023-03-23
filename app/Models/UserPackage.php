@@ -36,6 +36,8 @@ class UserPackage extends Model
                 'packages.add_logo',
                 'packages.data_storage',
                 'packages.logic_jumps',
+                'user_packages.start_time',
+                'user_packages.end_time',
             )
             ->where('user_packages.user_id', $user_id)
             ->where('user_packages.end_time', '>', $time_now)
@@ -43,7 +45,7 @@ class UserPackage extends Model
         if (!$result) {
             $result = Package::getPackageFree();
         }
-        return $result;
+        return json_decode(json_encode($result), true);
     }
 
     public static  function updatePackage($data, $id)

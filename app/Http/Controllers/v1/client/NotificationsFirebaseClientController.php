@@ -52,6 +52,8 @@ class NotificationsFirebaseClientController extends Controller
             $notification_partner_id = $request->notification_partner_id;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $detail = NotificationsFirebaseClients::getDetailNotificationClient($user_id, $notification_partner_id);
+            $detail->created_at ? $detail->created_at = date_format(date_create($detail->created_at), 'd/m/Y') : null;
+            $detail->updated_at ? $detail->updated_at = date_format(date_create($detail->updated_at), 'd/m/Y') : null;
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }

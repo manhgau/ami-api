@@ -9,6 +9,8 @@ class NotificationsFirebaseClients extends Model
 {
 
     protected $fillable = [
+        'title',
+        'content',
         'notification_id',
         'client_id',
         'is_viewed',
@@ -24,11 +26,14 @@ class NotificationsFirebaseClients extends Model
         return DB::table('notifications_firebase_clients as a')
             ->join('notifications_firebases as b', 'b.id', '=', 'a.notification_id')
             ->select(
-                'a.*',
+                'a.id',
+                'a.client_id',
+                'a.is_viewed',
+                'a.created_at',
+                'a.updated_at',
                 'b.id as notification_id',
-                'b.title',
                 'b.notification_type',
-                'b.content as description',
+                'a.content as description',
             )
             ->where('a.client_id', $client_id)
             ->orderBy('a.created_at', 'desc')
@@ -41,9 +46,7 @@ class NotificationsFirebaseClients extends Model
             ->select(
                 'a.*',
                 'b.id as notification_id',
-                'b.title',
                 'b.notification_type',
-                'b.content',
             )
             ->where('a.client_id', $client_id)
             ->where('a.id', $notification_client_id_id)
