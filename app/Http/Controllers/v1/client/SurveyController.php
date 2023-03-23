@@ -158,6 +158,8 @@ class SurveyController extends Controller
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
+            // if (isset($request->link_url)) {
+            // }
             return ClientResponse::responseSuccess('Update thành công');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
