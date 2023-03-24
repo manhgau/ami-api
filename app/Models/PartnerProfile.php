@@ -37,6 +37,27 @@ class PartnerProfile extends Model
         return  self::where('partner_id', $id)->update($data);
     }
 
+    public static  function checkCompletePartnerProfile($partner_id)
+    {
+        return self::where('partner_id', $partner_id)
+            ->whereNotNull('fullname')
+            ->whereNotNull('year_of_birth')
+            ->whereNotNull('gender')
+            ->whereNotNull('province_code')
+            ->whereNotNull('district_code')
+            ->whereNotNull('addrees')
+            ->whereNotNull('job_type_id')
+            ->whereNotNull('academic_level_id')
+            ->whereNotNull('marital_status_id')
+            ->whereNotNull('personal_income_level_id')
+            ->whereNotNull('family_income_level_id')
+            ->whereNotNull('family_people')
+            ->whereNotNull('has_children')
+            ->whereNotNull('is_key_shopper')
+            ->count();
+    }
+
+
     public static  function getDetailPartnerProfile($partner_id)
     {
         return self::where('partner_id', $partner_id)->first();
