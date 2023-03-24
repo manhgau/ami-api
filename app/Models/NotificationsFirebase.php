@@ -41,6 +41,7 @@ class NotificationsFirebase extends Model
     const  PROJECT_COMPLETE_1_1 = 'project_complete_1_1';
     const  PROJECT_NOT_COMPLETE = 'project_not_complete';
     const  PROJECT_COMPLETE_1_N  = 'project_complete_1_n';
+    const  PROFILE_COMPLETE  = 'profile_complete';
 
     public static function getTemplateNotification($key)
     {

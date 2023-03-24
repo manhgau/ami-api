@@ -18,10 +18,12 @@ use App\Helpers\FormatDate;
 use App\Helpers\FtpSv;
 use App\Helpers\JWT;
 use App\Models\AppSetting;
+use App\Models\MappingUidFcmToken;
 use App\Models\NotificationsFirebase;
 use App\Models\NotificationsFirebasePartners;
 use App\Models\OtpLog;
 use App\Models\PartnerPointLog;
+use App\Models\QueueNotifications;
 use App\Models\SurveyPartnerInput;
 
 class AuthController extends Controller
@@ -485,7 +487,7 @@ class AuthController extends Controller
                         return ClientResponse::responseError($errorString);
                     }
                     //$input = $validator->valid();
-
+                    $check = PartnerProfile::checkCompletePartnerProfile($partner_id);
                     $profile = $partner->profile;
                     if (!$profile) {
                         $profile = new PartnerProfile();
@@ -497,6 +499,16 @@ class AuthController extends Controller
                     $update_profile = PartnerProfile::updatePartnerProfile($data_update, $partner_id);
                     if (!$update_profile) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    if (PartnerProfile::checkCompletePartnerProfile($partner_id) == 1 && $check == 0) {
+                        $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id)->fcm_token ?? null;
+                        $input['fcm_token'] = $fcm_token;
+                        $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROFILE_COMPLETE);
+                        $input['title'] = $template_notification->title;
+                        $input['content'] = $template_notification->content;
+                        $input['partner_id'] =  $partner_id;
+                        $input['notify_id'] = $template_notification->id;
+                        QueueNotifications::create($input);
                     }
                     return ClientResponse::responseSuccess('Cập nhật thông tin tài khoản thành công');
                 } catch (\Exception $ex) {

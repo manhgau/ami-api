@@ -91,7 +91,11 @@ class SurveyController extends Controller
                     $data_ami['data_from'] = Survey::AMI;
                     $value['state_ami'] == Survey::STATUS_NOT_COMPLETED ? $data_ami['status_not_completed'] = Survey::TIME_UP : null;
                     $data_ami['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['id'], SurveyPartnerInput::ANYNOMOUS_FALSE);
-                    array_push($array, $data_ami);
+                    if (isset($states) && $states == $data_ami['state']) {
+                        array_push($array, $data_ami);
+                    } else {
+                        array_push($array, $data_ami);
+                    }
                 }
             }
             $datas['data'] = $array;
