@@ -14,6 +14,7 @@ use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
 use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
+use App\Models\SurveyQuestionAnswer;
 use App\Models\YearOfBirths;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -301,11 +302,127 @@ class SurveyStatisticController extends Controller
         }
     }
 
-    public function exportSurveyStatistic(Request $request)
+    public function exportFileSurvey(Request $request)
     {
         try {
+            $arr_export = [];
+            $arr_heading = ['Mã lượt hỏi'];
+            $survey_id = $request->survey_id;
+            $request->data_from == Survey::AMI ? $is_anynomous = SurveyPartnerInput::ANYNOMOUS_FALSE : $is_anynomous = SurveyPartnerInput::ANYNOMOUS_TRUE;
+            $datas = SurveyQuestion::getListQuestionExportFile($survey_id);
+            foreach ($datas as $key => $value) {
+                if ($value->question_type == QuestionType::GROUP) {
+                    $group_question = SurveyQuestion::listGroupQuestions($survey_id, $value->id, null);
+                    foreach ($group_question as $cat => $item) {
+                        $title = $value->title . '-' . $item->title;
+                        array_push($arr_heading, $title);
+                    }
+                } else {
+                    if ($value->question_type == QuestionType::MULTI_FACTOR_MATRIX) {
+                        $list_answer = SurveyQuestionAnswer::getListAnswer($value->id);
+                        foreach ($list_answer as $cat => $item) {
+                            $title = $value->title . '-' . $item->value;
+                            array_push($arr_heading, $title);
+                        }
+                    } else {
+                        $title = $value->title;
+                        array_push($arr_heading, $title);
+                    }
+                }
+            }
+            array_push($arr_export, $arr_heading);
+            $list_input = SurveyPartnerInput::listInput($survey_id, $is_anynomous);
+            foreach ($list_input as $key => $value) {
+                $arr_row = [];
+                array_push($arr_row, $value->id);
+                $datas = SurveyQuestion::getListQuestionExportFile($survey_id);
+                foreach ($datas as $cat => $item) {
+                    if ($item->question_type == QuestionType::GROUP) {
+                        $group_question = SurveyQuestion::listGroupQuestions($survey_id, $item->id, null);
+                        foreach ($group_question as $k => $v) {
+                            $data = self::__getInputLine($v, $arr_row);
+                            array_push($arr_row,  $data);
+                        }
+                    } else {
+                        if ($item->question_type == QuestionType::MULTI_FACTOR_MATRIX) {
+                            $list_answer = SurveyQuestionAnswer::getListAnswer($item->id);
+                            foreach ($list_answer as  $v) {
+                                $list_input_line = SurveyPartnerInputLine::listInputLine($value->id, $item->id, $v['id']);
+                                $data = '';
+                                foreach ($list_input_line as $key =>  $detail) {
+                                    $answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($detail->matrix_column_id);
+                                    if ($key == 0) {
+                                        $answer ? $data =   $data . $answer->value : $data =  '';
+                                    } else {
+                                        $answer ? $data =  $data . ', ' . $answer->value : $data =  '';
+                                    }
+                                }
+                                array_push($arr_row,  $data);
+                            }
+                        } else {
+                            $data = self::__getInputLine($item, $arr_row);
+                            array_push($arr_row,  $data);
+                        }
+                    }
+                }
+                array_push($arr_export,  $arr_row);
+            }
+            return ClientResponse::responseSuccess('OK', $arr_export);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
+    }
+
+    private function __getInputLine($value, $arr_row)
+    {
+        $data = '';
+        switch ($value->question_type) { // question_id 
+            case QuestionType::MULTI_CHOICE:
+            case QuestionType::MULTI_CHOICE_DROPDOWN:
+            case QuestionType::YES_NO:
+                $list_input_line = SurveyPartnerInputLine::listInputLine($arr_row[0], $value->id);
+                foreach ($list_input_line as $key =>  $detail) {
+                    $answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($detail->suggested_answer_id);
+                    if ($key == 0) {
+                        $answer ? $data =   $data . $answer->value : $data =  '';
+                    } else {
+                        $answer ? $data =  $data  . ', ' .  $answer->value : $data =  '';
+                    }
+                }
+                break;
+                break;
+            case QuestionType::DATETIME_DATE:
+                $list_input_line = SurveyPartnerInputLine::listInputLine($arr_row[0], $value->id);
+                foreach ($list_input_line as  $detail) {
+                    $detail->value_date ? $data =  $detail->value_date : $data =  '';
+                }
+                break;
+            case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+                $list_input_line = SurveyPartnerInputLine::listInputLine($arr_row[0], $value->id);
+                foreach ($list_input_line as  $detail) {
+                    $detail->value_text_box ? $data =  $detail->value_text_box : $data =  '';
+                }
+                break;
+            case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                $list_input_line = SurveyPartnerInputLine::listInputLine($arr_row[0], $value->id);
+                foreach ($list_input_line as  $detail) {
+                    $detail->value_char_box ? $data =  $detail->value_char_box : $data =  '';
+                }
+                break;
+            case QuestionType::NUMBER:
+                $list_input_line = SurveyPartnerInputLine::listInputLine($arr_row[0], $value->id);
+                foreach ($list_input_line as  $detail) {
+                    $detail->value_number ? $data =  $detail->value_number : $data =  '';
+                }
+                break;
+            case QuestionType::RATING_STAR:
+            case QuestionType::RANKING:
+                $list_input_line = SurveyPartnerInputLine::listInputLine($arr_row[0], $value->id);
+                foreach ($list_input_line as  $detail) {
+                    $detail->value_rating_ranking ? $data =  $detail->value_rating_ranking : $data =  '';
+                }
+                break;
+        }
+        return $data;
     }
 }

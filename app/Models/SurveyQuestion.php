@@ -366,4 +366,29 @@ class SurveyQuestion extends Model
             10                  => $question_detail->name_level_3,
         ];
     }
+
+    public static  function getListQuestionExportFile($survey_id)
+    {
+        $query =  self::select(
+            'id',
+            'survey_id',
+            'sequence',
+            'title',
+            'description',
+            'question_type',
+            'skip_count',
+            'view',
+            'type_ranking',
+            'is_multiple',
+            'validation_random',
+            'is_time',
+            'format_date_time',
+            'is_page',
+            'page_id'
+        )
+            ->where('deleted', self::NOT_DELETED)
+            ->where('survey_id', $survey_id)
+            ->where('page_id', self::NO_PAGE);
+        return $query->orderBy('sequence', 'asc')->get();
+    }
 }
