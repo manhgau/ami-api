@@ -27,7 +27,7 @@ class CheckPackageUser
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
         $count_survey_question = SurveyQuestion::countQuestionOfSurvey($survey_id);
-        if (($user_package['limit_questions'] > 0 && $count_survey_question + $number) >= $user_package['limit_questions']) {
+        if ($user_package['limit_questions'] > 0 && ($count_survey_question + $number) >= $user_package['limit_questions']) {
             return true;
         }
         return false;
