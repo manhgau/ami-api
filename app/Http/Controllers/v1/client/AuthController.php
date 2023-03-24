@@ -97,8 +97,8 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|confirmed|min:6',
             'phone' => 'max:20',
-            'job_type_id'   => 'exists:App\Models\JobType,id',
-            'business_scope_id'   => 'exists:App\Models\BusinessScope,id',
+            // 'job_type_id'   => 'exists:App\Models\JobType,id',
+            // 'business_scope_id'   => 'exists:App\Models\BusinessScope,id',
             'company_name' => 'max:50',
         ]);
         if ($validator->fails()) {
