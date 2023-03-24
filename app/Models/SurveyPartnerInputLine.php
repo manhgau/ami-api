@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class SurveyPartnerInputLine extends Model
 {
@@ -62,5 +63,19 @@ class SurveyPartnerInputLine extends Model
     {
         return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)
             ->where('question_id', $question_id)->where('partner_input_id', $partner_input_id)->delete();
+    }
+
+    public static  function listInputLine($partner_input_id, $question_id,  $matrix_row_id = null)
+    {
+        $query =  DB::table('survey_partner_input_lines as a')
+            ->select(
+                'a.*',
+            )
+            ->where('a.partner_input_id', $partner_input_id)
+            ->where('a.question_id', $question_id);
+        if ($matrix_row_id != null) {
+            $query->where('a.matrix_row_id', $matrix_row_id);
+        }
+        return $query->orderBy('a.id', 'asc')->get();
     }
 }

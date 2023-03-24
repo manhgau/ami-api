@@ -49,6 +49,11 @@ class SurveyPartnerInput extends Model
         return self::where('id', $id)->update($data);
     }
 
+    public static  function listInput($survey_id, $is_anynomous)
+    {
+        return self::where('survey_id', $survey_id)->where('is_anynomous', $is_anynomous)->where('state', self::STATUS_DONE)->get();
+    }
+
     public static  function countSurveyInput($survey_id, $is_anynomous = null)
     {
         $query =  self::where('survey_id', $survey_id)->where('state', self::STATUS_DONE);

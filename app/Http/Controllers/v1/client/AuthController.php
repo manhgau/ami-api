@@ -96,10 +96,10 @@ class AuthController extends Controller
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|confirmed|min:6',
-            'phone' => 'string|max:20',
-            'job_type_id'   => 'integer|exists:App\Models\JobType,id',
-            'business_scope_id'   => 'integer|exists:App\Models\BusinessScope,id',
-            'company_name' => 'string|max:50',
+            'phone' => 'max:20',
+            'job_type_id'   => 'exists:App\Models\JobType,id',
+            'business_scope_id'   => 'exists:App\Models\BusinessScope,id',
+            'company_name' => 'max:50',
         ]);
         if ($validator->fails()) {
             $errorString = implode(",", $validator->messages()->all());

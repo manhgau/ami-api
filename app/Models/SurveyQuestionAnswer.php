@@ -99,4 +99,16 @@ class SurveyQuestionAnswer extends Model
     {
         return self::where('deleted', self::NOT_DELETED)->where('question_id', $id)->orWhere('matrix_question_id', $id)->delete();
     }
+
+    public static  function getListAnswer($id)
+    {
+        $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'logic_come', 'value', 'value_type')
+            ->where('value_type', self::ROW)
+            ->where('deleted', self::NOT_DELETED)
+            ->where(function ($query) use ($id) {
+                $query->where('question_id', $id)
+                    ->orWhere('matrix_question_id', $id);
+            });
+        return $query->orderBy('sequence', 'asc')->get();
+    }
 }

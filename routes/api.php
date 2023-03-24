@@ -192,6 +192,7 @@ Route::group(['prefix' => 'v1'], function () {
                         Route::post('/diagram/target/{group_by}', [SurveyStatisticController::class, 'getDiagramSurvey']);
                         Route::post('/diagram/year-of-birth', [SurveyStatisticController::class, 'getDiagramYearOfBirth']);
                         Route::post('/question/{question_id}', [SurveyStatisticController::class, 'getSurveyStatisticDetail']);
+                        Route::post('/export-file/{data_from}', [SurveyStatisticController::class, 'exportFileSurvey']);
                     });
                 });
                 Route::group([
