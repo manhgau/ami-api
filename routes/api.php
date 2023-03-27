@@ -198,6 +198,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::group([
                     'prefix' => '/{survey_id}/anynomous'
                 ], function ($router) {
+                    Route::get('/live-preview', [SurveyPartnerInputAnynomousController::class, 'getSurveyQuestion']);
                     Route::group([
                         'middleware' => 'check_response_of_survey',
 
