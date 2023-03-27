@@ -29,7 +29,7 @@ class UpdateStateSurvey
                 $input['notification_id'] =  $template_notification['id'];
                 NotificationsFirebaseClients::create($input);
                 $number_of_response_survey  = SurveyPartnerInput::countSurveyInput($survey['id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
-                if (($number_of_response_survey < $survey['limmit_of_response_anomyous']) & $survey['limmit_of_response_anomyous'] > 0) {
+                if (($number_of_response_survey < $survey['limmit_of_response_anomyous']) && $survey['limmit_of_response_anomyous'] > 0) {
                     Survey::updateSurvey(["state" => Survey::STATUS_NOT_COMPLETED, 'status_not_completed' => Survey::TIME_UP], $survey['id']);
                 } else {
                     Survey::updateSurvey(["state" => Survey::STATUS_COMPLETED], $survey['id']);
@@ -49,7 +49,7 @@ class UpdateStateSurvey
                 $number_of_response_user  = SurveyPartnerInput::countAllSurveyUserInput($survey['user_id']);
                 $time_now = Carbon::now();
                 $user_package = UserPackage::getPackageUser($survey['user_id'], $time_now);
-                if ($number_of_response_user >= $user_package['response_limit']) {
+                if (($number_of_response_user >= $user_package['response_limit']) && $user_package['response_limit'] > 0) {
                     if ($survey['limmit_of_response_anomyous'] ==  0) {
                         Survey::updateSurvey(["state" => Survey::STATUS_COMPLETED], $survey['id']);
                     } else {
