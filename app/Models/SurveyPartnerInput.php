@@ -26,6 +26,7 @@ class SurveyPartnerInput extends Model
         'os',
         'browser',
         'user_agent',
+        'deleted',
         'created_at',
         'updated_at',
     ];
@@ -44,9 +45,17 @@ class SurveyPartnerInput extends Model
     const ANYNOMOUS_TRUE    = "1";
     const ANYNOMOUS_FALSE   = "0";
 
+    const NOT_DELETED  = 0;
+    const DELETED  = 1;
+
     public static  function updateSurveyPartnerInput($data, $id)
     {
         return self::where('id', $id)->update($data);
+    }
+
+    public static  function deleteSurveyPartnerInput($survey_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('is_anynomous', self::ANYNOMOUS_TRUE)->where('survey_id', $survey_id)->update(['deleted' => self::DELETED]);
     }
 
     public static  function listInput($survey_id, $is_anynomous)

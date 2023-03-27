@@ -56,6 +56,11 @@ class User extends Model
         'email_verified_at' => 'datetime',
     ];
 
+    public static function getAllUser()
+    {
+        return self::where('is_active', self::IS_ACTIVE)->get()->toArray();
+    }
+
 
     public static function generatePasswordHash($plain_text)
     {

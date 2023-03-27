@@ -209,4 +209,16 @@ class Survey extends Model
             ->where('state_ami', self::STATUS_ON_PROGRESS)
             ->get()->toArray();
     }
+
+    public static  function getAllSurvey()
+    {
+        return self::select(
+            'id',
+            'title',
+            'user_id',
+            'start_time',
+            'end_time',
+            'real_end_time',
+        )->where('deleted', self::NOT_DELETED)->get()->toArray();
+    }
 }

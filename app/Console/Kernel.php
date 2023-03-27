@@ -27,7 +27,9 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('deleteExpire:user-refresh-token')->dailyAt('02:00');
         $schedule->command('update-state-survey')->everyTenMinutes();
-        $schedule->command('push-notification-package-client')->everyTenMinutes();
+        $schedule->command('push-notification-package-client')->dailyAt('06:00');
+        $schedule->command('push-notification-data-storage-expires')->dailyAt('06:00');
+        $schedule->command('push-notification-data-storage-expires')->dailyAt('06:00');
     }
 
 

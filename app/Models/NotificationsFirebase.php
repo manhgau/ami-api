@@ -35,6 +35,7 @@ class NotificationsFirebase extends Model
     const PROJECT_EXPIRED = 'project_expired';
     const PROJECT_NUMBER = 'project_number';
     const PACKAGE_EXPIRED = 'package_expired';
+    const DATA_STORAGE_EXPIRED = 'data_storage_expires';
 
     //Partner----------------------------------------------------------------
     const PARTNER_AUTH = 'partner_auth';
