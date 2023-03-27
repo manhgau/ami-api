@@ -83,7 +83,7 @@ class SurveyPartnerInputAnynomousController extends Controller
     {
         try {
             $survey_id = $request->survey_id;
-            $perPage = $request->per_page ?? 20;
+            $perPage = $request->per_page ?? 100;
             $page = $request->current_page ?? 1;
             $survey_setup = Survey::getSetupSurvey($survey_id);
             if (!$survey_setup) {
