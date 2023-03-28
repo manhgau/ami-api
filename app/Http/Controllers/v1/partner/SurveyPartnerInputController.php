@@ -126,7 +126,7 @@ class SurveyPartnerInputController extends Controller
         $input['fcm_token'] = $fcm_token;
         if ($survey->is_answer_single == Survey::ANSWER_SINGLE) {
             $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_COMPLETE_1_1);
-            $template_notification->content = str_replace("{{project_name}}", $survey->title, $template_notification->content);
+            $template_notification->content = str_replace(["{{project_name}}", "{{point}}"], [$survey->title, $survey->point], $template_notification->content);
             $input['title'] = $template_notification->title;
             $input['content'] = $template_notification->content;
             $input['partner_id'] =  $partner_id;

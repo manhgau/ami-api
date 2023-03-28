@@ -55,7 +55,7 @@ class SurveyPartnerInput extends Model
 
     public static  function deleteSurveyPartnerInput($survey_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('is_anynomous', self::ANYNOMOUS_TRUE)->where('survey_id', $survey_id)->update(['deleted' => self::DELETED]);
+        return self::where('deleted', self::NOT_DELETED)->where('is_anynomous', self::ANYNOMOUS_TRUE)->where('survey_id', $survey_id)->get();
     }
 
     public static  function listInput($survey_id, $is_anynomous)
