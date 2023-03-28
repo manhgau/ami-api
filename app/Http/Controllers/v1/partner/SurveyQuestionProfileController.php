@@ -12,12 +12,15 @@ use App\Models\District;
 use App\Models\FamilyIncomeLevels;
 use App\Models\Gender;
 use App\Models\JobType;
+use App\Models\MappingUidFcmToken;
 use App\Models\MaritalStatus;
+use App\Models\NotificationsFirebase;
 use App\Models\NumberOfFamilys;
 use App\Models\PartnerProfile;
 use App\Models\PersonalIncomeLevels;
 use App\Models\Province;
 use App\Models\QuestionTypeProfile;
+use App\Models\QueueNotifications;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
 use App\Models\SurveyProfileInputs;
@@ -197,6 +200,15 @@ class SurveyQuestionProfileController extends Controller
                         $result =  PartnerProfile::getDetailPartnerProfile($partner_id);
                     } else {
                         $result =  PartnerProfile::create($input);
+                        $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id)->fcm_token ?? null;
+                        $input['fcm_token'] = $fcm_token;
+                        $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PARTNER_AUTH);
+                        $template_notification->content = str_replace("{{user_name}}", $result->fullname, $template_notification->content);
+                        $input['title'] = $template_notification->title;
+                        $input['content'] = $template_notification->content;
+                        $input['partner_id'] =  $partner_id;
+                        $input['notify_id'] = $template_notification->id;
+                        QueueNotifications::create($input);
                     }
                     if (!$result) {
                         return ClientResponse::responseError('Đã có lỗi xảy ra');

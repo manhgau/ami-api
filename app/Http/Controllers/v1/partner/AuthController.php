@@ -20,7 +20,6 @@ use App\Helpers\JWT;
 use App\Models\AppSetting;
 use App\Models\MappingUidFcmToken;
 use App\Models\NotificationsFirebase;
-use App\Models\NotificationsFirebasePartners;
 use App\Models\OtpLog;
 use App\Models\PartnerPointLog;
 use App\Models\QueueNotifications;
@@ -168,13 +167,6 @@ class AuthController extends Controller
                     $otpInfo->expire_at = time();
                     $otpInfo->save();
                 }
-                $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PARTNER_AUTH);
-                $template_notification->content = str_replace("{{phone}}", $phone, $template_notification->content);
-                $input['title'] = $template_notification->title;
-                $input['content'] = $template_notification->content;
-                $input['partner_id'] = $partner->id;
-                $input['notification_id'] = $template_notification->id;
-                NotificationsFirebasePartners::create($input);
                 return ClientResponse::responseSuccess('Tạo tài khoản thành công');
             } else {
                 return ClientResponse::responseError('Không thể tạo tài khoản, vui lòng thử lại sau');
@@ -504,6 +496,7 @@ class AuthController extends Controller
                         $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id)->fcm_token ?? null;
                         $input['fcm_token'] = $fcm_token;
                         $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROFILE_COMPLETE);
+                        $template_notification->content = str_replace("{{user_name}}", $profile->fullname, $template_notification->content);
                         $input['title'] = $template_notification->title;
                         $input['content'] = $template_notification->content;
                         $input['partner_id'] =  $partner_id;

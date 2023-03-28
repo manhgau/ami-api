@@ -35,6 +35,7 @@ class NotificationsFirebase extends Model
     const PROJECT_EXPIRED = 'project_expired';
     const PROJECT_NUMBER = 'project_number';
     const PACKAGE_EXPIRED = 'package_expired';
+    const PACKAGE_IS_ALMOST_EXPIRED = 'package_is_almost_expired';
     const DATA_STORAGE_EXPIRED = 'data_storage_expires';
 
     //Partner----------------------------------------------------------------
@@ -43,6 +44,8 @@ class NotificationsFirebase extends Model
     const  PROJECT_NOT_COMPLETE = 'project_not_complete';
     const  PROJECT_COMPLETE_1_N  = 'project_complete_1_n';
     const  PROFILE_COMPLETE  = 'profile_complete';
+    const  PROJECT_EXPIRED_HAS_NOT_REACHED_MIN  = 'project_expired_has_not_reached_min';
+    const  PROJECT_EXPIRED_HAS_NOT_REACHED_MAX  = 'project_expired_has_not_reached_max';
 
     public static function getTemplateNotification($key)
     {

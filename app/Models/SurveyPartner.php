@@ -103,4 +103,29 @@ class SurveyPartner extends Model
             ->where('a.id', $survey_partner_id)
             ->first();
     }
+
+
+
+    public static  function getAllSurveyIsAlmostExpires($time)
+    {
+        $query = DB::table('survey_partners as a')
+            ->join('surveys as b', 'b.id', '=', 'a.survey_id')
+            ->select(
+                'b.title',
+                'a.id as survey_partner_id',
+                'b.id as survey_id',
+                'a.is_save',
+                'a.partner_id',
+                'b.number_of_response',
+                'b.start_time',
+                'b.end_time',
+                'b.attempts_limit_min',
+                'b.attempts_limit_max',
+                'b.is_answer_single',
+            )
+            ->where('a.stattus', self::STATUS_INACTIVE)
+            ->whereDate('b.end_time', $time)
+            ->where('a.deleted', self::NOT_DELETED);
+        return $query->get()->toArray();
+    }
 }
