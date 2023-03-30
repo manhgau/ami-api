@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Helpers\Common\CommonCached;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -29,5 +28,10 @@ class Images extends Model
     public static  function getTemplateImage($perPage = 100,  $page = 1)
     {
         return self::where('deleted', self::NOT_DELETED)->where('template_image', self::TEMPLATE)->paginate($perPage, "*", "page", $page)->toArray();
+    }
+
+    public static  function getDetailImage($id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->first();
     }
 }

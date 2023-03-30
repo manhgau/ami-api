@@ -11,6 +11,7 @@ use App\Helpers\FormatDate;
 use App\Helpers\RemoveData;
 use App\Models\AppSetting;
 use App\Models\FormatDateType;
+use App\Models\Images;
 use App\Models\NotificationsFirebase;
 use App\Models\NotificationsFirebaseClients;
 use App\Models\QuestionType;
@@ -174,9 +175,6 @@ class SurveyController extends Controller
             //$update_survey = Survey::updateSurvey($data, $request->survey_id);
             $key_notifications = Survey::countSurveyLinkUrlNotNull($user_id);
             $survey_user->save();
-            if (!$survey_user) {
-                return ClientResponse::responseError('Đã có lỗi xảy ra');
-            }
             if (isset($request->link_url) && Survey::countSurveyLinkUrlNotNull($user_id) == 3 && $key_notifications < 3) {
                 $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_NUMBER);
                 if ($template_notification) {
@@ -186,6 +184,14 @@ class SurveyController extends Controller
                     $input['notification_id'] = $template_notification->id;
                 }
                 NotificationsFirebaseClients::create($input);
+            }
+            if (!$survey_user) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            if ($survey_user->background_id) {
+                $all_settings = AppSetting::getAllSetting();
+                $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+                $survey_user->background = $image_domain . Images::getDetailImage($survey_user->background_id)->image;
             }
             return ClientResponse::responseSuccess('Update thành công', $survey_user);
         } catch (\Exception $ex) {
