@@ -25,21 +25,25 @@ class CheckProjectIsAlsmostExpires
                         $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($value->partner_id)->fcm_token ?? null;
                         $input['fcm_token'] = $fcm_token;
                         $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_EXPIRED_HAS_NOT_REACHED_MIN);
-                        $template_notification->content = str_replace("{{project_name}}", $value->title, $template_notification->content);
-                        $input['title'] = $template_notification->title;
-                        $input['content'] = $template_notification->content;
-                        $input['partner_id'] =  $value->partner_id;
-                        $input['notify_id'] = $template_notification->id;
+                        if ($template_notification) {
+                            $template_notification->content = str_replace("{{project_name}}", $value->title, $template_notification->content);
+                            $input['title'] = $template_notification->title;
+                            $input['content'] = $template_notification->content;
+                            $input['partner_id'] =  $value->partner_id;
+                            $input['notify_id'] = $template_notification->id;
+                        }
                     }
                     if ($number_of_response >= $value->attempts_limit_min && $number_of_response < $value->attempts_limit_max) {
                         $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($value->partner_id)->fcm_token ?? null;
                         $input['fcm_token'] = $fcm_token;
                         $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_EXPIRED_HAS_NOT_REACHED_MAX);
-                        $template_notification->content = str_replace("{{project_name}}", $value->title, $template_notification->content);
-                        $input['title'] = $template_notification->title;
-                        $input['content'] = $template_notification->content;
-                        $input['partner_id'] =  $value->partner_id;
-                        $input['notify_id'] = $template_notification->id;
+                        if ($template_notification) {
+                            $template_notification->content = str_replace("{{project_name}}", $value->title, $template_notification->content);
+                            $input['title'] = $template_notification->title;
+                            $input['content'] = $template_notification->content;
+                            $input['partner_id'] =  $value->partner_id;
+                            $input['notify_id'] = $template_notification->id;
+                        }
                     }
                     QueueNotifications::create($input);
                 }

@@ -126,27 +126,33 @@ class SurveyPartnerInputController extends Controller
         $input['fcm_token'] = $fcm_token;
         if ($survey->is_answer_single == Survey::ANSWER_SINGLE) {
             $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_COMPLETE_1_1);
-            $template_notification->content = str_replace(["{{project_name}}", "{{point}}"], [$survey->title, $survey->point], $template_notification->content);
-            $input['title'] = $template_notification->title;
-            $input['content'] = $template_notification->content;
-            $input['partner_id'] =  $partner_id;
-            $input['notify_id'] = $template_notification->id;
-        } else {
-            if ($count_survey_partner_input == $survey->attempts_limit_min) {
-                $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_NOT_COMPLETE);
-                $template_notification->content = str_replace("{{project_name}}", $survey->title, $template_notification->content);
+            if ($template_notification) {
+                $template_notification->content = str_replace(["{{project_name}}", "{{point}}"], [$survey->title, $survey->point], $template_notification->content);
                 $input['title'] = $template_notification->title;
                 $input['content'] = $template_notification->content;
                 $input['partner_id'] =  $partner_id;
                 $input['notify_id'] = $template_notification->id;
             }
+        } else {
+            if ($count_survey_partner_input == $survey->attempts_limit_min) {
+                $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_NOT_COMPLETE);
+                if ($template_notification) {
+                    $template_notification->content = str_replace("{{project_name}}", $survey->title, $template_notification->content);
+                    $input['title'] = $template_notification->title;
+                    $input['content'] = $template_notification->content;
+                    $input['partner_id'] =  $partner_id;
+                    $input['notify_id'] = $template_notification->id;
+                }
+            }
             if ($count_survey_partner_input >= $survey->attempts_limit_max) {
                 $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_COMPLETE_1_N);
-                $template_notification->content = str_replace("{{project_name}}", $survey->title, $template_notification->content);
-                $input['title'] = $template_notification->title;
-                $input['content'] = $template_notification->content;
-                $input['partner_id'] =  $partner_id;
-                $input['notify_id'] = $template_notification->id;
+                if ($template_notification) {
+                    $template_notification->content = str_replace("{{project_name}}", $survey->title, $template_notification->content);
+                    $input['title'] = $template_notification->title;
+                    $input['content'] = $template_notification->content;
+                    $input['partner_id'] =  $partner_id;
+                    $input['notify_id'] = $template_notification->id;
+                }
             }
         }
         QueueNotifications::create($input);
