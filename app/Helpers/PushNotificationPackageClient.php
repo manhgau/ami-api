@@ -17,20 +17,24 @@ class PushNotificationPackageClient
         $list_expired = UserPackage::getAllPackageUser($time_now);
         if ((is_array($list) && count($list) > 0) || (is_array($list_expired) && count($list_expired) > 0)) {
             $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PACKAGE_IS_ALMOST_EXPIRED);
-            foreach ($list as $key => $value) {
-                $input['title'] = $template_notification['title'];
-                $input['notification_id'] =  $template_notification['id'];
-                $input['content'] = str_replace("{{package_name}}", $value->name, $template_notification['content']);
-                $input['client_id'] =  $value->user_id;
-                NotificationsFirebaseClients::create($input);
+            if ($template_notification) {
+                foreach ($list as $key => $value) {
+                    $input['title'] = $template_notification['title'];
+                    $input['notification_id'] =  $template_notification['id'];
+                    $input['content'] = str_replace("{{package_name}}", $value->name, $template_notification['content']);
+                    $input['client_id'] =  $value->user_id;
+                    NotificationsFirebaseClients::create($input);
+                }
             }
             $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PACKAGE_EXPIRED);
-            foreach ($list_expired as $key => $value) {
-                $input['title'] = $template_notification['title'];
-                $input['notification_id'] =  $template_notification['id'];
-                $input['content'] = str_replace("{{package_name}}", $value->name, $template_notification['content']);
-                $input['client_id'] =  $value->user_id;
-                NotificationsFirebaseClients::create($input);
+            if ($template_notification) {
+                foreach ($list_expired as $key => $value) {
+                    $input['title'] = $template_notification['title'];
+                    $input['notification_id'] =  $template_notification['id'];
+                    $input['content'] = str_replace("{{package_name}}", $value->name, $template_notification['content']);
+                    $input['client_id'] =  $value->user_id;
+                    NotificationsFirebaseClients::create($input);
+                }
             }
             return true;
         }

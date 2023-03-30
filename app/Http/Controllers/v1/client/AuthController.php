@@ -281,12 +281,14 @@ class AuthController extends Controller
         $user->active_expire = time();
         $user->save();
         $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::CLEINT_AUTH);
-        $template_notification->content = str_replace("{{name}}", $user->name, $template_notification->content);
-        $input['title'] = $template_notification->title;
-        $input['content'] = $template_notification->content;
-        $input['client_id'] =  $user_id;
-        $input['notification_id'] = $template_notification->id;
-        NotificationsFirebaseClients::create($input);
+        if ($template_notification) {
+            $template_notification->content = str_replace("{{name}}", $user->name, $template_notification->content);
+            $input['title'] = $template_notification->title;
+            $input['content'] = $template_notification->content;
+            $input['client_id'] =  $user_id;
+            $input['notification_id'] = $template_notification->id;
+            NotificationsFirebaseClients::create($input);
+        }
         return ClientResponse::responseSuccess('Kích hoạt tài khoản thành công');
     }
 

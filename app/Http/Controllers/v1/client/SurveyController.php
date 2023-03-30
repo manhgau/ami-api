@@ -168,13 +168,13 @@ class SurveyController extends Controller
             }
             if (isset($request->link_url) && Survey::countSurveyLinkUrlNotNull($user_id) == 3) {
                 $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_NUMBER);
-                $user_package = UserPackage::getPackageUser($user_id,  Carbon::now());
-                ($user_package['limit_projects'] != 0) ? $limit_projects = $user_package['limit_projects'] :  $limit_projects = '∞';
-                $template_notification->content = str_replace("{{project_number}}", $limit_projects, $template_notification->content);
-                $input['title'] = $template_notification->title;
-                $input['content'] = $template_notification->content;
-                $input['client_id'] =  $user_id;
-                $input['notification_id'] = $template_notification->id;
+                if ($template_notification) {
+                    $user_package = UserPackage::getPackageUser($user_id,  Carbon::now());
+                    $input['title'] = $template_notification->title;
+                    $input['content'] = $template_notification->content;
+                    $input['client_id'] =  $user_id;
+                    $input['notification_id'] = $template_notification->id;
+                }
                 NotificationsFirebaseClients::create($input);
             }
             return ClientResponse::responseSuccess('Update thành công');

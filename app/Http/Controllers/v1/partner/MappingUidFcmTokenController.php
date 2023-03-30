@@ -33,6 +33,9 @@ class MappingUidFcmTokenController extends Controller
             $partner = $tokenInfo->partner;
             $partner_id =  $partner->id ?? 0;
             $input['device_id'] = $request->header('DeviceId');
+            if (!$request->header('DeviceId')) {
+                return ClientResponse::responseError("DeviceId là bắt buộc");
+            }
             $input['fcm_token'] = $request->fcm_token;
             $input['os'] = $request->os;
             $partner = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id);
@@ -57,6 +60,9 @@ class MappingUidFcmTokenController extends Controller
             $partner = $tokenInfo->partner;
             $partner_id =  $partner->id ?? 0;
             $device_id = $request->header('DeviceId');
+            if (!$request->header('DeviceId')) {
+                return ClientResponse::responseError("DeviceId là bắt buộc");
+            }
             $check_fcm_token = MappingUidFcmToken::checkFcmToken($partner_id, $device_id);
             if (!$check_fcm_token) {
                 return ClientResponse::response(ClientResponse::$check_partner_mapping_fcmtoken, 'Tài khoản chưa cập nhập FcmToken');

@@ -496,12 +496,14 @@ class AuthController extends Controller
                         $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id)->fcm_token ?? null;
                         $input['fcm_token'] = $fcm_token;
                         $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROFILE_COMPLETE);
-                        $template_notification->content = str_replace("{{user_name}}", $profile->fullname, $template_notification->content);
-                        $input['title'] = $template_notification->title;
-                        $input['content'] = $template_notification->content;
-                        $input['partner_id'] =  $partner_id;
-                        $input['notify_id'] = $template_notification->id;
-                        QueueNotifications::create($input);
+                        if ($template_notification) {
+                            $template_notification->content = str_replace("{{user_name}}", $profile->fullname, $template_notification->content);
+                            $input['title'] = $template_notification->title;
+                            $input['content'] = $template_notification->content;
+                            $input['partner_id'] =  $partner_id;
+                            $input['notify_id'] = $template_notification->id;
+                            QueueNotifications::create($input);
+                        }
                     }
                     return ClientResponse::responseSuccess('Cập nhật thông tin tài khoản thành công');
                 } catch (\Exception $ex) {
