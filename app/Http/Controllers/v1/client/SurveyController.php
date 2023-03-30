@@ -138,38 +138,48 @@ class SurveyController extends Controller
                 $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
-            $survey_user = Survey::getDetailSurvey($request->survey_id);
+            $survey_user = Survey::where('active', Survey::ACTIVE)->where('active', Survey::ACTIVE)->find($request->survey_id);
             if ($survey_user->state == Survey::STATUS_COMPLETED) {
                 return ClientResponse::responseError('Không được sửa khảo sát này');
             }
             if (!$survey_user) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            $data = $request->all();
-            $request->real_end_time ? $data['real_end_time'] = FormatDate::formatDate($request->real_end_time) : null;
+            $request->real_end_time ? $survey_user->real_end_time = FormatDate::formatDate($request->real_end_time) : null;
+            $request->description ? $survey_user->description = ucfirst($request->description) : "";
+            $request->title ? $survey_user->title = ucfirst($request->title) : "";
+            $request->font_size ? $survey_user->font_size = $request->font_size : "";
+            $request->letter_font ? $survey_user->letter_font = $request->letter_font : "";
+            $request->title_color ? $survey_user->title_color = $request->title_color : "";
+            $request->content_color ? $survey_user->content_color = $request->content_color : "";
+            $request->button_color ? $survey_user->button_color = $request->button_color : "";
+            $request->text_color_of_button ? $survey_user->text_color_of_button = $request->text_color_of_button : "";
+            $request->background_id ? $survey_user->background_id = $request->background_id : "";
+            $request->state ? $survey_user->state = $request->state : "";
+            $request->link_url ? $survey_user->link_url = $request->link_url : "";
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $request->description ? $data['description'] = ucfirst($request->description) : "";
-            $request->title ? $data['title'] = ucfirst($request->title) : "";
-            $data['user_id'] = $user_id;
-            $data['updated_by'] = $user_id;
-            $data['updated_at'] = Carbon::now();
+            $survey_user->user_id = $user_id;
+            $survey_user->updated_by = $user_id;
+            $survey_user->updated_at = Carbon::now();
             if ($request->limmit_of_response_anomyous) {
-                if (!CheckResponseOfSurvey::checkAllResponseOfSurvey($user_id, $data['limmit_of_response_anomyous']) || !CheckResponseOfSurvey::checkResponseSettingOfSurvey($user_id, $data['limmit_of_response_anomyous'])) {
+                if (!CheckResponseOfSurvey::checkAllResponseOfSurvey($user_id, $request->limmit_of_response_anomyous) || !CheckResponseOfSurvey::checkResponseSettingOfSurvey($user_id, $request->limmit_of_response_anomyous)) {
                     return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng giới hạn phản hồi đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
                 }
+                $survey_user->limmit_of_response_anomyous = $request->limmit_of_response_anomyous;
             }
             if ($survey_user->state == Survey::STATUS_NOT_COMPLETED &&  $request->real_end_time) {
-                $data['state'] = Survey::STATUS_ON_PROGRESS;
-                $data['status_not_completed'] = null;
+                $survey_user->state = Survey::STATUS_ON_PROGRESS;
+                $survey_user->status_not_completed = null;
             }
-            $update_survey = Survey::updateSurvey($data, $request->survey_id);
-            if (!$update_survey) {
+            //$update_survey = Survey::updateSurvey($data, $request->survey_id);
+            $key_notifications = Survey::countSurveyLinkUrlNotNull($user_id);
+            $survey_user->save();
+            if (!$survey_user) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            if (isset($request->link_url) && Survey::countSurveyLinkUrlNotNull($user_id) == 3) {
+            if (isset($request->link_url) && Survey::countSurveyLinkUrlNotNull($user_id) == 3 && $key_notifications < 3) {
                 $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_NUMBER);
                 if ($template_notification) {
-                    $user_package = UserPackage::getPackageUser($user_id,  Carbon::now());
                     $input['title'] = $template_notification->title;
                     $input['content'] = $template_notification->content;
                     $input['client_id'] =  $user_id;
@@ -177,7 +187,7 @@ class SurveyController extends Controller
                 }
                 NotificationsFirebaseClients::create($input);
             }
-            return ClientResponse::responseSuccess('Update thành công');
+            return ClientResponse::responseSuccess('Update thành công', $survey_user);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

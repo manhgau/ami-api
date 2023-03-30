@@ -78,6 +78,7 @@ class SurveyPartnerInputLine extends Model
                 'a.*',
             )
             ->where('a.partner_input_id', $partner_input_id)
+            ->where('a.deleted', self::NOT_DELETED)
             ->where('a.question_id', $question_id);
         if ($matrix_row_id != null) {
             $query->where('a.matrix_row_id', $matrix_row_id);

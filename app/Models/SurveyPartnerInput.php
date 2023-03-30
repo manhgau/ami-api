@@ -50,22 +50,27 @@ class SurveyPartnerInput extends Model
 
     public static  function updateSurveyPartnerInput($data, $id)
     {
-        return self::where('id', $id)->update($data);
+        return self::where('deleted', self::NOT_DELETED)->where('id', $id)->update($data);
     }
 
-    public static  function deleteSurveyPartnerInput($survey_id)
+    public static  function getListSurveyPartnerInputDelete($survey_id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('is_anynomous', self::ANYNOMOUS_TRUE)->where('survey_id', $survey_id)->get();
     }
 
+    public static  function deleteSurveyPartnerInput($survey_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('is_anynomous', self::ANYNOMOUS_TRUE)->where('survey_id', $survey_id)->update(['deleted' => self::DELETED]);
+    }
+
     public static  function listInput($survey_id, $is_anynomous)
     {
-        return self::where('survey_id', $survey_id)->where('is_anynomous', $is_anynomous)->where('state', self::STATUS_DONE)->get();
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('is_anynomous', $is_anynomous)->where('state', self::STATUS_DONE)->get();
     }
 
     public static  function countSurveyInput($survey_id, $is_anynomous = null)
     {
-        $query =  self::where('survey_id', $survey_id)->where('state', self::STATUS_DONE);
+        $query =  self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('state', self::STATUS_DONE);
         if ($is_anynomous != null) {
             $query = $query->where('is_anynomous', $is_anynomous);
         }
@@ -74,7 +79,7 @@ class SurveyPartnerInput extends Model
 
     public static  function countSurveyPartnerInput($survey_id, $partner_id)
     {
-        return self::where('survey_id', $survey_id)->where('partner_id', $partner_id)->where('state', self::STATUS_DONE)->count();
+        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('partner_id', $partner_id)->where('state', self::STATUS_DONE)->count();
     }
 
     public static  function countAllSurveyUserInput($user_id)
@@ -83,6 +88,7 @@ class SurveyPartnerInput extends Model
             ->join('surveys', 'surveys.id', '=', 'survey_partner_inputs.survey_id')
             ->where('surveys.user_id', $user_id)
             ->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_TRUE)->count();
     }
 
@@ -127,6 +133,7 @@ class SurveyPartnerInput extends Model
             ->join('survey_partner_input_lines', 'survey_partner_input_lines.partner_input_id', '=', 'survey_partner_inputs.id')
             ->where('survey_partner_inputs.partner_id', $partner_id)
             ->where('survey_partner_input_lines.survey_id', $survey_id)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_input_lines.question_id', $question_id);
     }
 
@@ -215,7 +222,7 @@ class SurveyPartnerInput extends Model
 
     public static  function checkPartnerInput($partner_id, $survey_id)
     {
-        return self::where('partner_id', $partner_id)->where('survey_id', $survey_id)->where('state', self::STATUS_DONE)->where('is_answer', self::PARTNER)->count();
+        return self::where('deleted', self::NOT_DELETED)->where('partner_id', $partner_id)->where('survey_id', $survey_id)->where('state', self::STATUS_DONE)->where('is_answer', self::PARTNER)->count();
     }
 
     public static  function getDiagramSurvey($survey_id, $filter)
@@ -234,6 +241,7 @@ class SurveyPartnerInput extends Model
             )
             ->where('survey_partner_inputs.survey_id', $survey_id)
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_inputs.state', self::STATUS_DONE);
         $query = self::__filterTarget($query, $filter);
         return $query->get();
@@ -246,6 +254,7 @@ class SurveyPartnerInput extends Model
             ->where('survey_partner_inputs.survey_id', $survey_id)
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE)
             ->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->whereYear('year_of_birth', '>=', $year_min)
             ->whereYear('year_of_birth', '<=', $year_max);
         $query = self::__filterTarget($query, $filter);
@@ -264,6 +273,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_inputs.state'
             )
             //->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_inputs.survey_id', $survey_id);
         $query = self::__filterTarget($query, $filter);
         return $query;
@@ -282,6 +292,7 @@ class SurveyPartnerInput extends Model
             )
             ->where('survey_partner_input_lines.question_id', $question_id)
             //->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_inputs.survey_id', $survey_id);
         $query = self::__filterTarget($query, $filter);
         return $query;
@@ -368,6 +379,7 @@ class SurveyPartnerInput extends Model
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             //->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_input_lines.question_id', $question_id);
         $query = self::__filterTarget($query, $filter);
         $result = $query->groupBy('suggested_answer_id')->get()->toArray();
@@ -397,6 +409,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.question_sequence'
             )
             //->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
@@ -427,6 +440,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.value_level_ranking'
             )
             //->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
@@ -463,6 +477,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_input_lines.created_at'
             )
             //->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
@@ -556,6 +571,7 @@ class SurveyPartnerInput extends Model
                 'survey_question_answers.value as name_answer_column'
             )
             //->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_input_lines.survey_id', $survey_id)
             ->where('survey_partner_input_lines.skipped', SurveyPartnerInputLine::NOT_SKIP)
             ->where('survey_partner_input_lines.question_id', $question_id);
