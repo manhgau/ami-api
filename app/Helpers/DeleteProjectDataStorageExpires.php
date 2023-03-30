@@ -19,12 +19,14 @@ class DeleteProjectDataStorageExpires
                 if ($user_package['data_storage'] > 0) {
                     $time = Carbon::now()->addDays(-$user_package['data_storage'])->toDate()->format('Y-m-d');
                     $start_time = date_format(date_create($value['start_time']), 'Y-m-d');
-                    if (strtotime($time) ==  strtotime($start_time)) {
-                        $partner_input = SurveyPartnerInput::deleteSurveyPartnerInput($value['id']);
-                        foreach ($partner_input as $item) {
-                            SurveyPartnerInputLine::deleteAllPartnerInputLine($value['id'], $item->id);
+                    if (strtotime($time) >=  strtotime($start_time)) {
+                        $partner_input = SurveyPartnerInput::getListSurveyPartnerInputDelete($value['id']);
+                        if (count($partner_input) > 0) {
+                            foreach ($partner_input as $item) {
+                                SurveyPartnerInputLine::deleteAllPartnerInputLine($value['id'], $item['id']);
+                            }
+                            SurveyPartnerInput::deleteSurveyPartnerInput($value['id']);
                         }
-                        $partner_input->update(['deleted' => SurveyPartnerInput::DELETED]);
                     };
                 }
             }
