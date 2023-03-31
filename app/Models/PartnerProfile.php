@@ -106,6 +106,7 @@ class PartnerProfile extends Model
                 'a.kpi_point',
                 'a.province_code',
                 'a.district_code',
+                'a.addrees',
                 'a.gender',
                 'a.job_type_id',
                 'a.academic_level_id',
