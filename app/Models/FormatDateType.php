@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;*/
 class FormatDateType
 {
 
-    const FORMAT_D_M_Y                           = 'd/m/y';
+    const FORMAT_D_M_Y                           = 'd/m/Y';
     const FORMAT_M_D_Y                          = 'm/d/Y';
 
 
