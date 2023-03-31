@@ -391,7 +391,7 @@ class SurveyPartnerInput extends Model
                 $name_answer ? $input['name_answer'] = $name_answer->value : $input['name_answer'] = '';
                 $input['number_partner_answer'] = $value->total;
                 if ($name_answer) {
-                    $data_results[$key] = $input;
+                    $data_results[] = $input;
                 }
             }
         }
