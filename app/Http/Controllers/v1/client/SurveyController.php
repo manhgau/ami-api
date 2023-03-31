@@ -131,14 +131,14 @@ class SurveyController extends Controller
     public function editSurvey(Request $request)
     {
         try {
-            // $validator = Validator::make($request->all(), [
-            //     'title' => 'string|max:255',
-            //     'survey_id' => 'string|exists:App\Models\Survey,id',
-            // ]);
-            // if ($validator->fails()) {
-            //     $errorString = implode(",", $validator->messages()->all());
-            //     return ClientResponse::responseError($errorString);
-            // }
+            $validator = Validator::make($request->all(), [
+                'title' => 'string|max:255',
+                'survey_id' => 'string|exists:App\Models\Survey,id',
+            ]);
+            if ($validator->fails()) {
+                $errorString = implode(",", $validator->messages()->all());
+                return ClientResponse::responseError($errorString);
+            }
             $survey_user = Survey::where('active', Survey::ACTIVE)->where('active', Survey::ACTIVE)->find($request->survey_id);
             if ($survey_user->state == Survey::STATUS_COMPLETED) {
                 return ClientResponse::responseError('Không được sửa khảo sát này');

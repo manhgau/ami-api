@@ -129,7 +129,6 @@ class SurveyPartnerInputLineController extends Controller
                                 [
                                     'value_date' => [
                                         $survey_question->validation_required ? 'required' : '',
-                                        'date'
                                     ],
                                 ],
                                 [
@@ -141,7 +140,7 @@ class SurveyPartnerInputLineController extends Controller
                                 return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                             }
                             if ($request->all()) {
-                                $input['value_date'] = FormatDate::formatDate($request->value_date);
+                                $input['value_date'] = $request->value_date;
                                 $data_input = $input;
                             }
                             break;
