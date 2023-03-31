@@ -49,59 +49,6 @@ class NotificationsFirebase extends Model
 
     public static function getTemplateNotification($key)
     {
-        return self::where('action_auto', $key)->where('is_auto', self::AUTO)->first();
-    }
-
-    public function sendNotifyTopicFCM()
-    {
-        $all_settings = AppSetting::getAllSetting();
-        //setting
-        $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
-        $data = [
-            'id'                => $this->id,
-            'title'             => $this->title,
-            'slug'              => $this->slug,
-            'content'           => $this->content,
-            'description'       => $this->description,
-            'thumbnail'         => $image_domain . $this->thumbnail,
-        ];
-        $tos = MappingUidFcmToken::query()
-            ->where('status_fcm', 0)
-            ->orderBy('created_at')
-            ->get();
-        foreach ($tos as $to) {
-            $push = [
-                'to' => $to->fcm_token,
-                'data' => $data,
-            ];
-            $this->sendFCM($push);
-        }
-        return true;
-    }
-
-    public function sendFCM($data)
-    {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://fcm.googleapis.com/fcm/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: key=' . Firebase::ACCESS_KEY,
-                'Content-Type: application/json'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        return $response;
+        return self::where('action_auto', $key)->where('is_auto', self::AUTO)->where('status', self::STATUS_ACTIVE)->first();
     }
 }
