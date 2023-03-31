@@ -6,8 +6,8 @@ use App\Helpers\ClientResponse;
 use App\Helpers\FormatDate;
 use App\Helpers\RemoveData;
 use App\Models\AcademicLevel;
+use App\Models\FamilyIncomeLevels;
 use App\Models\Gender;
-use App\Models\PersonalIncomeLevels;
 use App\Models\Province;
 use App\Models\QuestionType;
 use App\Models\Survey;
@@ -34,6 +34,7 @@ class SurveyStatisticController extends Controller
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_code ?? null;
             $filter['academic_level_ids'] = $request->academic_level_id ?? null;
+            $filter['family_income_level_ids'] = $request->family_income_level_id ?? null;
             $filter['job_type_ids'] = $request->job_type_id ?? null;
             $filter['marital_status_ids'] = $request->marital_status_id ?? null;
             $filter['family_peoples'] = $request->family_people ?? null;
@@ -55,7 +56,7 @@ class SurveyStatisticController extends Controller
 
                     break;
                 case 'personal_income_level_name':
-                    $list = PersonalIncomeLevels::getAllPersonalIncomeLevels();
+                    $list = FamilyIncomeLevels::getAllFamilyIncomeLevels();
                     break;
                 default:
                     return ClientResponse::responseError('Group By không hợp lệ', $group_by);
@@ -93,6 +94,7 @@ class SurveyStatisticController extends Controller
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_code ?? null;
             $filter['academic_level_ids'] = $request->academic_level_id ?? null;
+            $filter['family_income_level_ids'] = $request->family_income_level_id ?? null;
             $filter['job_type_ids'] = $request->job_type_id ?? null;
             $filter['marital_status_ids'] = $request->marital_status_id ?? null;
             $filter['family_peoples'] = $request->family_people ?? null;
@@ -131,6 +133,7 @@ class SurveyStatisticController extends Controller
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_code ?? null;
             $filter['academic_level_ids'] = $request->academic_level_id ?? null;
+            $filter['family_income_level_ids'] = $request->family_income_level_id ?? null;
             $filter['job_type_ids'] = $request->job_type_id ?? null;
             $filter['marital_status_ids'] = $request->marital_status_id ?? null;
             $filter['family_peoples'] = $request->family_people ?? null;
@@ -188,6 +191,7 @@ class SurveyStatisticController extends Controller
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_code ?? null;
             $filter['academic_level_ids'] = $request->academic_level_id ?? null;
+            $filter['family_income_level_ids'] = $request->family_income_level_id ?? null;
             $filter['job_type_ids'] = $request->job_type_id ?? null;
             $filter['marital_status_ids'] = $request->marital_status_id ?? null;
             $filter['family_peoples'] = $request->family_people ?? null;
@@ -237,6 +241,7 @@ class SurveyStatisticController extends Controller
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_code ?? null;
             $filter['academic_level_ids'] = $request->academic_level_id ?? null;
+            $filter['family_income_level_ids'] = $request->family_income_level_id ?? null;
             $filter['job_type_ids'] = $request->job_type_id ?? null;
             $filter['marital_status_ids'] = $request->marital_status_id ?? null;
             $filter['family_peoples'] = $request->family_people ?? null;
