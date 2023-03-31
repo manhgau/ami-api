@@ -192,7 +192,7 @@ class Survey extends Model
 
     public static  function listSurvey0nProgress()
     {
-        return self::select('id', 'user_id', 'limmit_of_response',  'limmit_of_response_anomyous')
+        return self::select('id',  'title', 'user_id', 'limmit_of_response',  'limmit_of_response_anomyous')
             ->where('deleted', self::NOT_DELETED)
             ->where('active', self::ACTIVE)
             ->where('real_end_time', '>', Carbon::now())
@@ -202,7 +202,7 @@ class Survey extends Model
 
     public static  function listSurveyTimeUpApp()
     {
-        return self::select('id', 'user_id', 'limmit_of_response', 'limmit_of_response_anomyous')
+        return self::select('id', 'title', 'user_id', 'limmit_of_response', 'limmit_of_response_anomyous')
             ->where('deleted', self::NOT_DELETED)
             ->where('active', self::ACTIVE)
             ->where('end_time', '<', Carbon::now())
