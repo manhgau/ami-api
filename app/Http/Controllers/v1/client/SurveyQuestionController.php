@@ -171,6 +171,7 @@ class SurveyQuestionController extends Controller
             $survey_id = $request->survey_id;
             $question_id = $request->question_id;
             $input = $request->all();
+            $request->format_date_time ?  $input['format_date_time'] = trim($request->format_date_time) : '';
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $survey = Survey::getDetailSurvey($survey_id);
             $survey_user = SurveyQuestion::getDetailSurveyQuestion($question_id);
