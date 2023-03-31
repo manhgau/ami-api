@@ -73,7 +73,7 @@ class PartnerProfile extends Model
             'fullname',
             'phone',
             'year_of_birth',
-            'gender as gender_id',
+            'gender',
             'province_code',
             'district_code',
             'addrees',
@@ -82,7 +82,7 @@ class PartnerProfile extends Model
             'marital_status_id',
             'personal_income_level_id',
             'family_income_level_id',
-            'family_people as family_people_id',
+            'family_people',
             'is_key_shopper',
             'has_children',
         )
