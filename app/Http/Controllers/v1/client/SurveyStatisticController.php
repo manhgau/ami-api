@@ -213,7 +213,7 @@ class SurveyStatisticController extends Controller
             $number_of_skip = $query->get()->groupBy('skip');
             $survey_detail['number_of_response'] =  array_key_exists(SurveyPartnerInput::STATUS_DONE, json_decode($number_of_response, true)) ? count($number_of_response[SurveyPartnerInput::STATUS_DONE]) : 0;
             $survey_detail['number_of_skip'] = array_key_exists(SurveyPartnerInput::SKIP, json_decode($number_of_skip, true)) ? count($number_of_skip[SurveyPartnerInput::SKIP]) : 0;
-            $completion_rate = ($survey_detail['number_of_response'] / ($survey_detail['number_of_response'] + $survey_detail['number_of_skip'])) * 100;
+            ($survey_detail['number_of_response'] + $survey_detail['number_of_skip']) != 0 ? $completion_rate = ($survey_detail['number_of_response'] / ($survey_detail['number_of_response'] + $survey_detail['number_of_skip'])) * 100 : $completion_rate = 0;
             $survey_detail['completion_rate'] = round($completion_rate, 2);
             $query = $query->where('survey_partner_inputs.state', SurveyPartnerInput::STATUS_DONE);
             $average_time = ($query->avg('end_datetime') - $query->avg('start_datetime'));
