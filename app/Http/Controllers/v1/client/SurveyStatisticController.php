@@ -29,7 +29,7 @@ class SurveyStatisticController extends Controller
             $limit = $request->limit;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '23:59:59') ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
@@ -88,7 +88,7 @@ class SurveyStatisticController extends Controller
             $limit = $request->limit;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '23:59:59') ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
@@ -126,7 +126,7 @@ class SurveyStatisticController extends Controller
             $survey_id = $request->survey_id;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '23:59:59') ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
@@ -183,7 +183,7 @@ class SurveyStatisticController extends Controller
             $survey_id = $request->survey_id;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '23:59:59') ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
@@ -232,7 +232,7 @@ class SurveyStatisticController extends Controller
             $question_id = $request->question_id;
             $filter['is_anynomous'] = $request->is_anynomous ?? null;
             $filter['start_time'] = FormatDate::formatDate($request->start_time) ?? null;
-            $filter['end_time'] = FormatDate::formatDate($request->end_time) ?? null;
+            $filter['end_time'] = FormatDate::formatDate($request->end_time . '23:59:59') ?? null;
             $filter['gender'] = $request->gender ?? null;
             $filter['year_of_birth'] = $request->year_of_birth ?? null;
             $filter['province_codes'] = $request->province_codes ?? null;
@@ -394,7 +394,11 @@ class SurveyStatisticController extends Controller
             case QuestionType::DATETIME_DATE:
                 $list_input_line = SurveyPartnerInputLine::listInputLine($arr_row[0], $value->id);
                 foreach ($list_input_line as  $detail) {
-                    $detail->value_date ? $data =  $detail->value_date : $data =  '';
+                    if ($value->is_date == 1) {
+                        $detail->value_date ? $data =  date_format(date_create($detail->value_date), $value->format_date_time) : $data =  '';
+                    } else {
+                        $detail->value_date ? $data =  $detail->value_date : $data =  '';
+                    }
                 }
                 break;
             case QuestionType::QUESTION_ENDED_SHORT_TEXT:
