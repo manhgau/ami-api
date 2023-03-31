@@ -394,7 +394,11 @@ class SurveyStatisticController extends Controller
             case QuestionType::DATETIME_DATE:
                 $list_input_line = SurveyPartnerInputLine::listInputLine($arr_row[0], $value->id);
                 foreach ($list_input_line as  $detail) {
-                    $detail->value_date ? $data =  $detail->value_date : $data =  '';
+                    if ($value->is_date == 1) {
+                        $detail->value_date ? $data =  date_format(date_create($detail->value_date), $value->format_date_time) : $data =  '';
+                    } else {
+                        $detail->value_date ? $data =  $detail->value_date : $data =  '';
+                    }
                 }
                 break;
             case QuestionType::QUESTION_ENDED_SHORT_TEXT:
