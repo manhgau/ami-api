@@ -616,25 +616,25 @@ class SurveyPartnerInput extends Model
         if ($filter['gender'] != null) {
             $query->whereIn('survey_profile_inputs.gender', $filter['gender']);
         }
-        if ($filter['academic_level_ids'] != null) {
-            $query->whereIn('survey_profile_inputs.academic_level_id', $filter['academic_level_ids']);
+        if ($filter['academic_level_id'] != null) {
+            $query->whereIn('survey_profile_inputs.academic_level_id', $filter['academic_level_id']);
         }
-        if ($filter['province_codes'] != null) {
-            $query->whereIn('survey_profile_inputs.province_code',  $filter['province_codes']);
+        if ($filter['province_code'] != null) {
+            $query->whereIn('survey_profile_inputs.province_code',  $filter['province_code']);
         }
-        if ($filter['job_type_ids'] != null) {
-            $query->whereIn('survey_profile_inputs.job_type_id', $filter['job_type_ids']);
+        if ($filter['job_type_id'] != null) {
+            $query->whereIn('survey_profile_inputs.job_type_id', $filter['job_type_id']);
         }
-        if ($filter['marital_status_ids'] != null) {
-            $query->whereIn('survey_profile_inputs.marital_status_id',  $filter['marital_status_ids']);
+        if ($filter['marital_status_id'] != null) {
+            $query->whereIn('survey_profile_inputs.marital_status_id',  $filter['marital_status_id']);
         }
         if ($filter['has_children'] != null) {
-            $query->whereIn('survey_profile_inputs.is_key_shopper', $filter['has_children']);
+            $query->whereIn('survey_profile_inputs.has_children', $filter['has_children']);
         }
         if ($filter['is_key_shopper'] != null) {
-            $query->whereIn('survey_profile_inputs.has_children', $filter['is_key_shopper']);
+            $query->whereIn('survey_profile_inputs.is_key_shopper', $filter['is_key_shopper']);
         }
-        if ($filter['family_peoples'] != null) {
+        if ($filter['family_people'] != null) {
             $query->whereIn('survey_profile_inputs.family_people', $filter['family_people']);
         }
         $year_of_birth = $filter['year_of_birth'];
