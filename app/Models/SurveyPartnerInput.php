@@ -232,12 +232,12 @@ class SurveyPartnerInput extends Model
             ->LeftJoin('provinces', 'provinces.code', '=', 'survey_profile_inputs.province_code')
             ->LeftJoin('genders', 'genders.id', '=', 'survey_profile_inputs.gender')
             ->LeftJoin('academic_levels', 'academic_levels.id', '=', 'survey_profile_inputs.academic_level_id')
-            ->LeftJoin('personal_income_levels', 'personal_income_levels.id', '=', 'survey_profile_inputs.personal_income_level_id')
+            ->LeftJoin('family_income_levels', 'family_income_levels.id', '=', 'survey_profile_inputs.family_income_level_id')
             ->select(
                 'provinces.name as province_name',
                 'genders.name as gender_name',
                 'academic_levels.name as academic_level_name',
-                'personal_income_levels.name as personal_income_level_name'
+                'family_income_levels.name as personal_income_level_name'
             )
             ->where('survey_partner_inputs.survey_id', $survey_id)
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE)
@@ -627,6 +627,9 @@ class SurveyPartnerInput extends Model
         }
         if ($filter['marital_status_ids'] != null) {
             $query->whereIn('survey_profile_inputs.marital_status_id',  $filter['marital_status_ids']);
+        }
+        if ($filter['family_income_level_ids'] != null) {
+            $query->whereIn('survey_profile_inputs.family_income_level_id',  $filter['family_income_level_ids']);
         }
         if ($filter['has_children'] != null) {
             $query->whereIn('survey_profile_inputs.has_children', $filter['has_children']);
