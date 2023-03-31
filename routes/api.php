@@ -291,6 +291,7 @@ Route::group(['prefix' => 'v1'], function () {
                         'middleware' => 'partner_profile',
                     ], function ($router) {
                         Route::get('/profile', [PartnerAuthController::class, 'profile']);
+                        Route::get('/profile/edit', [PartnerAuthController::class, 'profileEdit']);
                         Route::post('/update-profile', [PartnerAuthController::class, 'updateProfile']);
                         Route::post('/upload-avatar', [PartnerAuthController::class, 'updateAvatar']);
                     });

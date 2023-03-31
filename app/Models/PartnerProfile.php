@@ -63,6 +63,32 @@ class PartnerProfile extends Model
         return self::where('partner_id', $partner_id)->first();
     }
 
+
+    public static  function getDetailPartnerProfileEdit($partner_id)
+    {
+        return self::select(
+            'partner_id',
+            'point',
+            'kpi_point',
+            'fullname',
+            'phone',
+            'year_of_birth',
+            'gender as gender_id',
+            'province_code',
+            'district_code',
+            'addrees',
+            'job_type_id',
+            'academic_level_id',
+            'marital_status_id',
+            'personal_income_level_id',
+            'family_income_level_id',
+            'family_people as family_people_id',
+            'is_key_shopper',
+            'has_children',
+        )
+            ->where('partner_id', $partner_id)->first();
+    }
+
     public static  function getPartnerProfileDetail($partner_id)
     {
         return self::select(
