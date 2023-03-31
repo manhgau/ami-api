@@ -446,6 +446,23 @@ class AuthController extends Controller
         }
     }
 
+    public function profileEdit()
+    {
+        $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
+        if ($tokenInfo) {
+            $partner = $tokenInfo->partner;
+            if ($partner) {
+
+                $partner_profile =  PartnerProfile::getDetailPartnerProfileEdit($partner->id);
+                return ClientResponse::responseSuccess('Ok', $partner_profile);
+            } else {
+                return ClientResponse::responseError('Tài khoản không tồn tại');
+            }
+        } else {
+            return ClientResponse::responseError('Tài khoản không tồn tại');
+        }
+    }
+
     public function updateProfile(Request $request)
     {
         $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
