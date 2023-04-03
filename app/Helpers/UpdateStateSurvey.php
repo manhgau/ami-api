@@ -21,6 +21,8 @@ class UpdateStateSurvey
             (is_array($list_survey) && count($list_survey) > 0) ||
             (is_array($list_survey_expired_app) && count($list_survey_expired_app) > 0)
         ) {
+            $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_EXPIRED);
+            $data_insert = [];
             foreach ($list_survey_expired as $survey) {
                 $number_of_response_survey  = SurveyPartnerInput::countSurveyInput($survey['id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
                 if (($number_of_response_survey < $survey['limmit_of_response_anomyous']) && $survey['limmit_of_response_anomyous'] > 0) {
@@ -28,7 +30,15 @@ class UpdateStateSurvey
                 } else {
                     Survey::updateSurvey(["state" => Survey::STATUS_COMPLETED], $survey['id']);
                 }
+                if ($template_notification) {
+                    $input['content'] = str_replace("{{project_name}}", $survey['title'], $template_notification['content']);
+                    $input['title'] = $template_notification['title'];
+                    $input['client_id'] =  $survey['user_id'];
+                    $input['notification_id'] =  $template_notification['id'];
+                    $data_insert[] = $input;
+                }
             }
+            NotificationsFirebaseClients::insertOrIgnore($data_insert);
 
             foreach ($list_survey_expired_app as $survey) {
                 $number_of_response_survey  = SurveyPartnerInput::countSurveyInput($survey['id'], SurveyPartnerInput::ANYNOMOUS_FALSE);
