@@ -216,8 +216,8 @@ class AuthController extends Controller
             $logo  = AppSetting::getByKey(AppSetting::LOGO, $all_settings);
             $user['logo'] = $logo;
         }
-        $user['logo'] = $image_domain . $user['logo'];
-        $user['avatar'] = $image_domain . $user['avatar'];
+        $user['logo'] ? $user['logo'] = $image_domain . $user['logo'] : '';
+        $user['avatar'] ? $user['avatar'] = $image_domain . $user['avatar'] : '';
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
         $user_package['number_of_response']  = SurveyPartnerInput::countAllSurveyUserInput($user_id);
