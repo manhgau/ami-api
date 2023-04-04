@@ -272,7 +272,7 @@ class SurveyPartnerInput extends Model
                 'survey_partner_inputs.skip',
                 'survey_partner_inputs.state'
             )
-            //->where('survey_partner_inputs.state', self::STATUS_DONE)
+            // ->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->where('survey_partner_inputs.survey_id', $survey_id);
         $query = self::__filterTarget($query, $filter);
