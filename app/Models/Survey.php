@@ -162,7 +162,7 @@ class Survey extends Model
 
     public static  function getDetailSurveyStatistic($id)
     {
-        return self::select('title', 'description', 'view')->where('deleted', self::NOT_DELETED)->where('id', $id)->where('active', self::ACTIVE)->first();
+        return self::select('title', 'description')->where('deleted', self::NOT_DELETED)->where('id', $id)->where('active', self::ACTIVE)->first();
     }
 
     public static  function updateSurvey($data, $id)
