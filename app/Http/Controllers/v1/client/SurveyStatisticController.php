@@ -223,6 +223,7 @@ class SurveyStatisticController extends Controller
             $minutes = floor(($average_time  - $hours * 60 * 60) / 60);
             $seconds = floor(($average_time  - $hours * 60 * 60 - $minutes * 60));
             $survey_detail['average_time'] = $hours . ":" . $minutes . ":" . $seconds;
+            $survey_detail['view'] = $survey_detail['number_of_response'] + $survey_detail['number_of_skip'];
             return ClientResponse::responseSuccess('Ok', $survey_detail);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
