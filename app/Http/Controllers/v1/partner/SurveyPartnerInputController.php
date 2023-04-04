@@ -133,6 +133,7 @@ class SurveyPartnerInputController extends Controller
                 $input['partner_id'] =  $partner_id;
                 $input['notify_id'] = $template_notification->id;
             }
+            QueueNotifications::create($input);
         } else {
             if ($count_survey_partner_input == $survey->attempts_limit_min) {
                 $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_NOT_COMPLETE);
@@ -154,8 +155,8 @@ class SurveyPartnerInputController extends Controller
                     $input['notify_id'] = $template_notification->id;
                 }
             }
+            QueueNotifications::create($input);
         }
-        QueueNotifications::create($input);
     }
 
     public function getlistSurveyPartnerInput(Request $request)
