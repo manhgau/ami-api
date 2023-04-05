@@ -63,4 +63,10 @@ class SurveyTemplate extends Model
     {
         return $this->belongsTo('App\Models\User', 'created_by', 'id');
     }
+
+    public static  function deleteAllSurveyTemplate($survey_id)
+    {
+        $query =  self::where('survey_id', $survey_id)->where('deleted', self::NOT_DELETED);
+        return $query->delete();
+    }
 }

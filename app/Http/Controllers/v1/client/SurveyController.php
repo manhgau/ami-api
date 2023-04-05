@@ -210,6 +210,7 @@ class SurveyController extends Controller
             Survey::destroy($survey_id);
             SurveyQuestion::deleteAllSurveyQuestions($survey_id);
             SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id);
+            SurveyTemplate::deleteAllSurveyTemplate($survey_id);
             return ClientResponse::responseSuccess('Xóa thành công');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());

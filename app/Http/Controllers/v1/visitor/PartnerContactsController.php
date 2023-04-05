@@ -25,11 +25,6 @@ class PartnerContactsController extends Controller
             'name' => 'required|string|max:250',
             'email_phone' => 'required||string|max:50',
             'year_of_birth' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
-            'gender'        => 'digits:1|integer|exists:App\Models\Gender,id',
-            'province_code' => 'required|string|exists:App\Models\Province,code',
-            'district_code' => 'string|exists:App\Models\District,code',
-            'job_type_id'   => 'integer|exists:App\Models\JobType,id',
-            'academic_level_id' => 'integer|exists:App\Models\AcademicLevel,id',
 
         ]);
 
