@@ -36,11 +36,12 @@ class NotificationsFirebaseClientController extends Controller
             if (!$lists) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            $data = [
-                'count' => $count,
-                'list' => $lists,
-            ];
-            return ClientResponse::responseSuccess('OK', $data);
+            // $data = [
+            //     'count' => $count,
+            //     'list' => $lists,
+            // ];
+            $lists['count'] = $count;
+            return ClientResponse::responseSuccess('OK', $lists);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
