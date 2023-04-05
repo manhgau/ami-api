@@ -220,7 +220,7 @@ Route::group(['prefix' => 'v1'], function () {
 
                 ], function ($router) {
                     Route::get('/', [NotificationsFirebaseClientController::class, 'getListNotificationClient']);
-                    Route::get('/{notification_partner_id}', [NotificationsFirebaseClientController::class, 'getDetailNotificationClient']);
+                    Route::get('/{notification_id}', [NotificationsFirebaseClientController::class, 'getDetailNotificationClient']);
                 });
             });
             //package

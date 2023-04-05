@@ -49,15 +49,15 @@ class NotificationsFirebaseClientController extends Controller
     public function getDetailNotificationClient(Request $request)
     {
         try {
-            $notification_partner_id = $request->notification_partner_id;
+            $notification_id = $request->notification_id;
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $detail = NotificationsFirebaseClients::getDetailNotificationClient($user_id, $notification_partner_id);
+            $detail = NotificationsFirebaseClients::getDetailNotificationClient($user_id, $notification_id);
             $detail->created_at ? $detail->created_at = date_format(date_create($detail->created_at), 'd/m/Y') : null;
             $detail->updated_at ? $detail->updated_at = date_format(date_create($detail->updated_at), 'd/m/Y') : null;
             if (!$detail) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            NotificationsFirebaseClients::updateNotificationClient(['is_viewed' => NotificationsFirebaseClients::VIEW_ACTIVE], $notification_partner_id);
+            NotificationsFirebaseClients::updateNotificationClient(['is_viewed' => NotificationsFirebaseClients::VIEW_ACTIVE], $notification_id);
             $count = NotificationsFirebaseClients::countlNotificationClient($user_id);
             $data = [
                 'count' => $count,
