@@ -25,11 +25,9 @@ class ContactController extends Controller
             $validator = Validator::make($request->all(), [
                 'fullname' => 'required|string|max:255',
                 'email' => 'required|string|max:255',
-                'phone' => 'string|max:50',
-                'company_name' => 'string|max:255',
-                'message' => 'string|max:500',
-                'job_type_id'   => 'integer|exists:App\Models\JobType,id',
-                'business_id' => 'integer|exists:App\Models\BusinessScope,id',
+                'phone' => 'max:50',
+                'company_name' => 'max:255',
+                'message' => 'max:500',
             ]);
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
