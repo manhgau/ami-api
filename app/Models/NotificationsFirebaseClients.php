@@ -39,7 +39,7 @@ class NotificationsFirebaseClients extends Model
             ->orderBy('a.created_at', 'desc')
             ->paginate($perPage, "*", "page", $page)->toArray();
     }
-    public static function getDetailNotificationClient($client_id, $notification_client_id_id)
+    public static function getDetailNotificationClient($client_id, $notification_id)
     {
         return DB::table('notifications_firebase_clients as a')
             ->join('notifications_firebases as b', 'b.id', '=', 'a.notification_id')
@@ -49,7 +49,7 @@ class NotificationsFirebaseClients extends Model
                 'b.notification_type',
             )
             ->where('a.client_id', $client_id)
-            ->where('a.id', $notification_client_id_id)
+            ->where('a.id', $notification_id)
             ->first();
     }
     public static function countlNotificationClient($client_id)
