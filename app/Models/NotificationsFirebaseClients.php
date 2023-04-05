@@ -27,6 +27,7 @@ class NotificationsFirebaseClients extends Model
             ->join('notifications_firebases as b', 'b.id', '=', 'a.notification_id')
             ->select(
                 'a.id',
+                'a.title',
                 'a.client_id',
                 'a.is_viewed',
                 'a.created_at',
