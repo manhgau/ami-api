@@ -156,7 +156,7 @@ class SurveyController extends Controller
             $request->content_color ? $survey_user->content_color = $request->content_color : "";
             $request->button_color ? $survey_user->button_color = $request->button_color : "";
             $request->text_color_of_button ? $survey_user->text_color_of_button = $request->text_color_of_button : "";
-            $request->background_id ? $survey_user->background_id = $request->background_id : "";
+            isset($request->background_id) ? $survey_user->background_id = $request->background_id : "";
             $request->state ? $survey_user->state = $request->state : "";
             $request->link_url ? $survey_user->link_url = $request->link_url : "";
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
