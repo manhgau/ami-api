@@ -9,6 +9,8 @@ class Package extends Model
 {
     protected $fillable = [
         'name',
+        'description',
+        'slug',
         'limit_projects',
         'limit_questions',
         'response_limit',
@@ -32,16 +34,25 @@ class Package extends Model
     const NOT_DELETED  = 0;
     const DELETED  = 1;
     const FREE  = 1;
+    const MIEN_PHI  = 'mien-phi';
+    const CO_BAN  = 'co-ban';
 
-    public static  function getListPackage($perPage = 10,  $page = 1)
+    public static  function getAllPackage($slug)
     {
-        return self::where('deleted', self::NOT_DELETED)->orderBy('id', 'desc')->where('status', self::STATUS_ACTIVE)->paginate($perPage, "*", "page", $page)->toArray();
+        return self::select('name', 'description', 'slug', 'limit_projects', 'limit_questions', 'data_storage')->where('deleted', self::NOT_DELETED)->where('slug', $slug)->where('status', self::STATUS_ACTIVE)->first();
     }
 
     public static  function getDetailPackage($id)
     {
 
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->where('status', self::STATUS_ACTIVE)->first();
+    }
+    public static function getTypePackage()
+    {
+        return [
+            self::MIEN_PHI,
+            self::CO_BAN,
+        ];
     }
 
     public static  function getPackageFree()

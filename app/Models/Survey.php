@@ -84,6 +84,7 @@ class Survey extends Model
             'title',
             'user_id',
             'description',
+            'link_url',
             'is_ami',
             'state',
             'state_ami',
