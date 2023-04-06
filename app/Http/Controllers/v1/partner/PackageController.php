@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\Common\ConstValue;
-use App\Helpers\RemoveData;
 use App\Models\Package;
 
 class PackageController extends Controller
@@ -22,13 +21,17 @@ class PackageController extends Controller
     public function getListPackage(Request $request)
     {
         try {
-            $perPage = $request->per_page ?? 10;
-            $page = $request->current_page ?? 1;
-            $ckey  = CommonCached::cache_find_package . "_" . $perPage . "_" . $page;
+            $ckey  = CommonCached::cache_find_package;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = Package::getListPackage($perPage,  $page);
-                $datas = RemoveData::removeUnusedData($datas);
+                $type = Package::getTypePackage();
+                $datas = [];
+                foreach ($type as $key => $value) {
+                    $data = Package::getAllPackage($value);
+                    if ($data) {
+                        $datas[$key] = $data;
+                    }
+                }
                 CommonCached::storeData($ckey, $datas, true);
             }
             if (!$datas) {

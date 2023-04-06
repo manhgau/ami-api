@@ -73,6 +73,7 @@ class SurveyController extends Controller
             foreach ($datas['data'] as $key => $value) {
                 $data_url['id'] = $value['id'];
                 $data_url['title'] = $value['title'];
+                $data_url['link_url'] = $value['link_url'];
                 $data_url['question_count'] = $value['question_count'];
                 $data_url['state'] = $value['state'];
                 $data_url['status_not_completed'] = $value['status_not_completed'];
