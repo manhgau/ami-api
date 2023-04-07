@@ -214,7 +214,7 @@ class AuthController extends Controller
         $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
         if (!$user['logo']) {
             $logo  = AppSetting::getByKey(AppSetting::LOGO, $all_settings);
-            $user['logo'] = $logo;
+            $user['logo'] = $image_domain . $logo;
             $user['logo_default'] = 1;
         } else {
             $user['logo'] = $image_domain . $user['logo'];
