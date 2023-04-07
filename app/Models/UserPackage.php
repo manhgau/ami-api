@@ -30,6 +30,7 @@ class UserPackage extends Model
             ->select(
                 'packages.is_default',
                 'packages.name',
+                'packages.slug',
                 'packages.id',
                 'packages.response_limit',
                 'packages.limit_projects',
