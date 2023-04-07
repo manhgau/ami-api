@@ -28,6 +28,7 @@ class UserPackage extends Model
         $result =  DB::table('user_packages')
             ->join('packages', 'packages.id', '=', 'user_packages.package_id')
             ->select(
+                'packages.is_default',
                 'packages.name',
                 'packages.id',
                 'packages.response_limit',
