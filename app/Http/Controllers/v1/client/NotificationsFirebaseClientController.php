@@ -69,4 +69,19 @@ class NotificationsFirebaseClientController extends Controller
             return ClientResponse::responseError($ex->getMessage());
         }
     }
+
+    public function deletelNotificationClient(Request $request)
+    {
+        try {
+            $notification_id = $request->notification_id;
+            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+            $delete_notification = NotificationsFirebaseClients::deletelNotificationClient($user_id, $notification_id);
+            if (!$delete_notification) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            return ClientResponse::responseSuccess('Xóa thành công', $delete_notification);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
 }

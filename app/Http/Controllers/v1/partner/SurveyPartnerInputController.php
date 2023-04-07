@@ -122,8 +122,6 @@ class SurveyPartnerInputController extends Controller
 
     private static function __pushNotification($survey, $partner_id,  $count_survey_partner_input)
     {
-        $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id)->fcm_token ?? null;
-        $input['fcm_token'] = $fcm_token;
         if ($survey->is_answer_single == Survey::ANSWER_SINGLE) {
             $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROJECT_COMPLETE_1_1);
             if ($template_notification) {

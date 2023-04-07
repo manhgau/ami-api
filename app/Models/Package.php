@@ -61,6 +61,7 @@ class Package extends Model
         return self::where('deleted', self::NOT_DELETED)->select(
             'is_default',
             'name',
+            'slug',
             'id',
             'response_limit',
             'limit_projects',

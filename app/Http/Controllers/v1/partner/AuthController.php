@@ -510,8 +510,6 @@ class AuthController extends Controller
                         return ClientResponse::responseError('Đã có lỗi xảy ra');
                     }
                     if (PartnerProfile::checkCompletePartnerProfile($partner_id) == 1 && $check == 0) {
-                        $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id)->fcm_token ?? null;
-                        $input['fcm_token'] = $fcm_token;
                         $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROFILE_COMPLETE);
                         if ($template_notification) {
                             $template_notification->content = str_replace("{{user_name}}", $profile->fullname, $template_notification->content);

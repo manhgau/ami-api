@@ -200,8 +200,6 @@ class SurveyQuestionProfileController extends Controller
                         $result =  PartnerProfile::getDetailPartnerProfile($partner_id);
                     } else {
                         $result =  PartnerProfile::create($input);
-                        $fcm_token = MappingUidFcmToken::getMappingUidFcmTokenByPartnerId($partner_id)->fcm_token ?? null;
-                        $input['fcm_token'] = $fcm_token;
                         $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PARTNER_AUTH);
                         if ($template_notification) {
                             $template_notification->content = str_replace("{{user_name}}", $result->fullname, $template_notification->content);
