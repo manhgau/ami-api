@@ -12,7 +12,6 @@ class QueueNotifications extends Model
         'title',
         'content',
         'partner_id',
-        'fcm_token',
         'created_at',
         'updated_at',
     ];
