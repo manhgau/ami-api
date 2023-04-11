@@ -257,6 +257,7 @@ class SurveyController extends Controller
             $survey_detail = Survey::getDetailSurvey($survey_template->survey_id);
             $survey_detail = json_decode(json_encode($survey_detail), true);
             $survey_detail['id'] = CFunction::generateUuid();
+            $survey_detail['user_id'] = $user_id;
             $survey_detail['state'] = Survey::STATUS_DRAFT;
             $survey_detail['start_time'] = Carbon::now();
             $survey_detail['title'] = $survey_template->title . '_copy';
