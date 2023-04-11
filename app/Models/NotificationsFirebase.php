@@ -47,9 +47,6 @@ class NotificationsFirebase extends Model
     const  PROJECT_EXPIRED_HAS_NOT_REACHED_MIN  = 'project_expired_has_not_reached_min';
     const  PROJECT_EXPIRED_HAS_NOT_REACHED_MAX  = 'project_expired_has_not_reached_max';
 
-    protected $connection = 'mysql-utf8';
-    protected $table = 'notifications_firebases';
-    protected $primaryKey = 'id';
     public static function getTemplateNotification($key)
     {
         return self::where('action_auto', $key)->where('is_auto', self::AUTO)->where('status', self::STATUS_ACTIVE)->first();

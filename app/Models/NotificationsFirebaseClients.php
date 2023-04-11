@@ -20,9 +20,6 @@ class NotificationsFirebaseClients extends Model
 
     const VIEW_INACTIVE  = 0;
     const VIEW_ACTIVE  = 1;
-    protected $connection = 'mysql-utf8';
-    protected $table = 'notifications_firebase_clients';
-    protected $primaryKey = 'id';
 
     public static function getListNotificationClient($perPage = 100,  $page = 1, $client_id)
     {
