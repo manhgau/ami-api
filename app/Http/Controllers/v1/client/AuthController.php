@@ -126,7 +126,7 @@ class AuthController extends Controller
                 'subject'   =>  'Kích hoạt tài khoản ' . $app_name . ' của bạn',
                 'expire_time'   =>  date('H:i:s d/m/Y', $active_expire),
             ]));
-            return ClientResponse::responseSuccess('Đăng ký tài khoản thành công. Chúng tôi đã gửi cho bạn một email vào địa chỉ ' . $request->email . ', làm theo hướng dẫn trong email để kích hoạt tài khoản');
+            return ClientResponse::responseSuccess('Thông tin xác thực đã được gửi tới địa chỉ email của bạn.Hãy kiểm tra và làm theo hướng dẫn.');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

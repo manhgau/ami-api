@@ -256,13 +256,15 @@ class SurveyController extends Controller
             if (CheckPackageUser::checkSurveykPackageUser($user_id)) {
                 return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
             }
-            $input['user_id'] = $user_id;
-            $request->title ? $input['title'] = ucfirst($request->title) : $input['title'] = $survey_template->title . '_copy';
-            $input['active'] = Survey::ACTIVE;
-            $input['id'] = CFunction::generateUuid();
-            $input['start_time'] = Carbon::now();
-            $input['created_by'] = $user_id;
-            $survey = Survey::create($input);
+            $survey_detail = Survey::getDetailSurvey($survey_template->survey_id);
+            $survey_detail = json_decode(json_encode($survey_detail), true);
+            $survey_detail['id'] = CFunction::generateUuid();
+            $survey_detail['state'] = Survey::STATUS_DRAFT;
+            $survey_detail['start_time'] = Carbon::now();
+            $survey_detail['title'] = $survey_template->title . '_copy';
+            $survey_detail['created_by'] = $user_id;
+            $survey_detail = RemoveData::removeUnusedDataCopySurvey($survey_detail);
+            $survey = Survey::create($survey_detail);
             if (!$survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
