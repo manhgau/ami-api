@@ -20,6 +20,9 @@ class NotificationsFirebasePartners extends Model
 
     const VIEW_INACTIVE  = 0;
     const VIEW_ACTIVE  = 1;
+    protected $connection = 'mysql-utf8';
+    protected $table = 'notifications_firebase_partners';
+    protected $primaryKey = 'id';
 
     public static function getListNotificationPartner($perPage = 100,  $page = 1, $partner_id)
     {
