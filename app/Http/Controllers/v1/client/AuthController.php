@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Validator;
 use App\Helpers\ClientResponse;
+use App\Helpers\FormatDate;
 use App\Helpers\FtpSv;
 use App\Jobs\SendActiveAcountEmailJob;
 use App\Jobs\SendResetPasswordEmailJob;
@@ -224,8 +225,8 @@ class AuthController extends Controller
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
         $user_package['number_of_response']  = SurveyPartnerInput::countAllSurveyUserInput($user_id);
-        $user_package['start_time']  =  $user_package['start_time'] ?? '';
-        $user_package['end_time']  =  $user_package['end_time'] ?? '';
+        isset($user_package['start_time']) ? $user_package['start_time']  =  FormatDate::formatDateStatisticNoTime($user_package['start_time']) : $user_package['start_time'] = '';
+        isset($user_package['end_time']) ? $user_package['end_time']  =   FormatDate::formatDateStatisticNoTime($user_package['end_time']) : $user_package['end_time'] = '';
         $data = [
             'user_package' => $user_package,
             'user_profile' => $user,
