@@ -48,7 +48,7 @@ class SurveyPartner extends Model
             ->where('a.partner_id', $partner_id)
             ->where('b.start_time', '<', $time_now)
             ->where('b.end_time', '>', $time_end)
-            ->orderBy('a.created_at', 'desc');
+            ->orderBy('a.updated_at', 'desc');
         if ($is_save != null) {
             $query->where('a.is_save', $is_save);
         } else {
