@@ -32,6 +32,7 @@ class SurveyPartner extends Model
                 'b.point',
                 'b.state_ami',
                 'a.is_save',
+                'a.updated_at',
                 'a.number_of_response_partner',
                 'b.limmit_of_response',
                 'b.number_of_response',
