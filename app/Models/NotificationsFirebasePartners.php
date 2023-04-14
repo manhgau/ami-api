@@ -24,7 +24,7 @@ class NotificationsFirebasePartners extends Model
     public static function getListNotificationPartner($perPage = 100,  $page = 1, $partner_id)
     {
         return DB::table('notifications_firebase_partners as a')
-            ->join('notifications_firebases as b', 'b.id', '=', 'a.notification_id')
+            //->join('notifications_firebases as b', 'b.id', '=', 'a.notification_id')
             ->select(
                 'a.id',
                 'a.title',
@@ -32,8 +32,8 @@ class NotificationsFirebasePartners extends Model
                 'a.is_viewed',
                 'a.created_at',
                 'a.updated_at',
-                'b.id as notification_id',
-                'b.notification_type',
+                'a.notification_id',
+                'a.notification_type',
                 'a.content as description',
             )
             ->where('a.partner_id', $partner_id)
@@ -43,11 +43,9 @@ class NotificationsFirebasePartners extends Model
     public static function getDetailNotificationPartner($partner_id, $notification_partner_id)
     {
         return DB::table('notifications_firebase_partners as a')
-            ->join('notifications_firebases as b', 'b.id', '=', 'a.notification_id')
+            //->join('notifications_firebases as b', 'b.id', '=', 'a.notification_id')
             ->select(
-                'a.*',
-                'b.id as notification_id',
-                'b.notification_type',
+                'a.*'
             )
             ->where('a.partner_id', $partner_id)
             ->where('a.id', $notification_partner_id)
