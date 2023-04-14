@@ -155,7 +155,7 @@ class SurveyPartnerInput extends Model
                 'b.end_time',
                 'b.question_count as count_questions',
                 'b.view',
-                'b.created_at',
+                'c.updated_at as created_at',
                 'b.attempts_limit_min',
                 'b.attempts_limit_max',
                 'b.is_answer_single',
@@ -167,7 +167,7 @@ class SurveyPartnerInput extends Model
             ->where('b.start_time', '<', $time_now)
             ->where('b.end_time', '>', $time_end)
             ->where('c.partner_id', $partner_id)
-            ->orderBy('b.created_at', 'desc')
+            ->orderBy('c.created_at', 'desc')
             ->distinct();
         if ($search != null) {
             $query->where('b.title', 'like', '%' . $search . '%');
