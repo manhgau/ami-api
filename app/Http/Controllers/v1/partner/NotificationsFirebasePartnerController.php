@@ -55,6 +55,7 @@ class NotificationsFirebasePartnerController extends Controller
         }
     }
 
+
     public function getDetailNotificationPartner(Request $request)
     {
         $tokenInfo = Context::getInstance()->get(Context::PARTNER_ACCESS_TOKEN);
