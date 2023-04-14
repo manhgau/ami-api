@@ -167,7 +167,7 @@ class SurveyPartnerInput extends Model
             ->where('b.start_time', '<', $time_now)
             ->where('b.end_time', '>', $time_end)
             ->where('c.partner_id', $partner_id)
-            ->orderBy('c.updated_at', 'desc')
+            ->orderBy('b.created_at', 'desc')
             ->distinct();
         if ($search != null) {
             $query->where('b.title', 'like', '%' . $search . '%');
