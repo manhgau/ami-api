@@ -224,7 +224,6 @@ class AuthController extends Controller
         $user['avatar'] ? $user['avatar'] = $image_domain . $user['avatar'] : '';
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
-        $user_package['number_of_response']  = SurveyPartnerInput::countAllSurveyUserInput($user_id);
         isset($user_package['start_time']) ? $user_package['start_time']  =  FormatDate::formatDateStatisticNoTime($user_package['start_time']) : $user_package['start_time'] = '';
         isset($user_package['end_time']) ? $user_package['end_time']  =   FormatDate::formatDateStatisticNoTime($user_package['end_time']) : $user_package['end_time'] = '';
         $data = [
