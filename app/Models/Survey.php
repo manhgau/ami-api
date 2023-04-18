@@ -16,6 +16,8 @@ class Survey extends Model
         'user_id',
         'font_size',
         'link_url',
+        'logo',
+        'is_logo',
         'title_color',
         'content_color',
         'button_color',

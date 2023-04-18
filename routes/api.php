@@ -135,6 +135,7 @@ Route::group(['prefix' => 'v1'], function () {
                     Route::post('/create', [SurveyController::class, 'createSurvey']);
                     Route::get('/get-list', [SurveyController::class, 'getListSurvey']);
                     Route::get('/get-detail/{survey_id}', [SurveyController::class, 'getDetailSurvey']);
+                    Route::post('/upload-logo/{survey_id}', [SurveyController::class, 'uploadLogo']);
                     Route::post('/question/upload-image', [ImagesController::class, 'uploadImage']);
                     Route::get('/question/template-image', [ImagesController::class, 'getTemplateImage']);
                     Route::group([
