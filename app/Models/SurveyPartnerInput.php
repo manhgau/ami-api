@@ -70,7 +70,9 @@ class SurveyPartnerInput extends Model
 
     public static  function countSurveyInput($survey_id, $is_anynomous = null)
     {
-        $query =  self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)->where('state', self::STATUS_DONE);
+        $query =  self::where('survey_id', $survey_id)
+            //->where('deleted', self::NOT_DELETED)
+            ->where('state', self::STATUS_DONE);
         if ($is_anynomous != null) {
             $query = $query->where('is_anynomous', $is_anynomous);
         }
