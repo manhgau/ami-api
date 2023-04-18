@@ -65,10 +65,14 @@ class SurveyPartnerInputLine extends Model
             ->where('question_id', $question_id)->where('partner_input_id', $partner_input_id)->delete();
     }
 
-    public static  function deleteAllPartnerInputLine($survey_id, $partner_input_id)
+    public static  function deleteAllPartnerInputLine($survey_id)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('survey_id', $survey_id)
-            ->where('partner_input_id', $partner_input_id)->update(['deleted' => self::DELETED]);
+        return  DB::table('survey_partner_input_lines')
+            ->join('survey_partner_inputs', 'survey_partner_inputs.id', '=', 'survey_partner_input_lines.partner_input_id')
+            ->where('survey_partner_input_lines.survey_id', $survey_id)
+            ->where('survey_partner_input_lines.deleted', self::NOT_DELETED)
+            ->where('survey_partner_inputs.is_anynomous', SurveyPartnerInput::ANYNOMOUS_TRUE)
+            ->update(['survey_partner_input_lines.deleted' => self::DELETED]);
     }
 
     public static  function listInputLine($partner_input_id, $question_id,  $matrix_row_id = null)

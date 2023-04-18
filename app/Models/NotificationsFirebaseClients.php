@@ -63,8 +63,8 @@ class NotificationsFirebaseClients extends Model
         return self::where('is_viewed', self::VIEW_INACTIVE)->where('id', $id)->update($data);
     }
 
-    public static  function deletelNotificationClient($user_id, $notification_id)
+    public static  function deletelNotificationClient($client_id, $notification_id)
     {
-        return self::where('user_id', $user_id)->where('id', $notification_id)->delete();
+        return self::where('client_id', $client_id)->where('id', $notification_id)->delete();
     }
 }

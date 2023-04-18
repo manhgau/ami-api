@@ -31,9 +31,15 @@ class SurveyController extends Controller
     public function createSurvey(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
-            ]);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'title' => 'required|string|max:255',
+                ],
+                [
+                    'title.required' => 'Bạn chưa điền tiêu đề khảo sát.',
+                ]
+            );
             if ($validator->fails()) {
                 $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
