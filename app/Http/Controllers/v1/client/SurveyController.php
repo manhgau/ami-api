@@ -8,6 +8,7 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Common\CFunction;
 use App\Helpers\Context;
 use App\Helpers\FormatDate;
+use App\Helpers\FtpSv;
 use App\Helpers\RemoveData;
 use App\Models\AppSetting;
 use App\Models\FormatDateType;
@@ -22,6 +23,7 @@ use App\Models\SurveyQuestionAnswer;
 use App\Models\SurveyTargets;
 use App\Models\SurveyTemplate;
 use App\Models\TypeTarget;
+use App\Models\UserPackage;
 use Carbon\Carbon;
 use Validator;
 use Illuminate\Http\Request;
@@ -161,6 +163,7 @@ class SurveyController extends Controller
             $request->button_color ? $survey_user->button_color = $request->button_color : "";
             $request->text_color_of_button ? $survey_user->text_color_of_button = $request->text_color_of_button : "";
             isset($request->background_id) ? $survey_user->background_id = $request->background_id : "";
+            isset($request->is_logo) ? $survey_user->is_logo = $request->is_logo : "";
             $request->state ? $survey_user->state = $request->state : "";
             $request->link_url ? $survey_user->link_url = $request->link_url : "";
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
@@ -443,6 +446,51 @@ class SurveyController extends Controller
             SurveyTargets::destroy($target_survey_id);
             $target_survey = SurveyTargets::getSurveyTarget($survey_id)->get()->groupBy('target_type');
             return ClientResponse::responseSuccess('Xóa thành công', $target_survey);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    public function uploadLogo(Request $request)
+    {
+        try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'image' => 'required|mimes:jpeg,png,jpg|max:512',
+                    //'survey_id' => 'required',
+                ],
+                [
+                    //'survey_id.required' => 'Id khảo sát là bắt buộc.',
+                    'image.required' => 'File ảnh là bắt buộc.',
+                    'image.mimes' => 'Hỗ trợ các định dạng jpeg,png,jpg.',
+                    'image.max' => 'Kích thước tối đa 512KB.',
+                ]
+            );
+            if ($validator->fails()) {
+                $errorString = implode(",", $validator->messages()->all());
+                return ClientResponse::responseError($errorString);
+            }
+            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+            $survey_id = $request->survey_id;
+            if ($file = $request->file('image')) {
+                $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
+                $time_now = Carbon::now();
+                $user_package = UserPackage::getPackageUser($user_id, $time_now);
+                if ($user_package['add_logo'] == 1) {
+                    $path = env('FTP_PATH') . FtpSv::LOGO_FOLDER;
+                    $image = FtpSv::upload($file, $name, $path, FtpSv::LOGO_FOLDER);
+                    $update_image = Survey::updateSurvey(['logo' => $image], $survey_id);
+                    if (!$update_image) {
+                        return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    }
+                    $all_settings = AppSetting::getAllSetting();
+                    $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+                    return ClientResponse::responseSuccess('OK', $image_domain .  $image);
+                } else {
+                    return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
+                }
+            }
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

@@ -17,7 +17,7 @@ class StaticPages extends Model
         'deleted',
     ];
 
-    protected $hidden = ['deleted', 'created_at', 'updated_at'];
+    protected $hidden = ['deleted',  'updated_at'];
     const NOT_DELETED  = 0;
     const DELETED  = 1;
 

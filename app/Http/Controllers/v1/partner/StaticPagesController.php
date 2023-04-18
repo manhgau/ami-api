@@ -22,6 +22,8 @@ class StaticPagesController extends Controller
         try {
             $slug = $request->slug;
             $datas = StaticPages::getStaticPagesBySlug($slug);
+            $datas['created_time'] = date_format($datas['created_at'], 'd/m/Y');
+            unset($datas['created_at']);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
