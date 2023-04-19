@@ -461,10 +461,8 @@ class SurveyController extends Controller
                 $request->all(),
                 [
                     'image' => 'required|mimes:jpeg,png,jpg|max:512',
-                    //'survey_id' => 'required',
                 ],
                 [
-                    //'survey_id.required' => 'Id khảo sát là bắt buộc.',
                     'image.required' => 'File ảnh là bắt buộc.',
                     'image.mimes' => 'Hỗ trợ các định dạng jpeg,png,jpg.',
                     'image.max' => 'Kích thước tối đa 512KB.',
