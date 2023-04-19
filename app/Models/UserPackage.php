@@ -35,6 +35,7 @@ class UserPackage extends Model
                 'packages.response_limit',
                 'packages.limit_projects',
                 'packages.limit_questions',
+                'packages.remove_ami_logo',
                 'packages.add_logo',
                 'packages.data_storage',
                 'packages.logic_jumps',
