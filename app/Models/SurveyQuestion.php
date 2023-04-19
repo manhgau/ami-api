@@ -102,6 +102,37 @@ class SurveyQuestion extends Model
         return $query->orderBy('sequence', 'asc')->get();
     }
 
+    public static  function getAllSurveyQuestionLogic($survey_id, $sequence = null, $sequence_group = null)
+    {
+        $query =  self::select(
+            'id',
+            'survey_id',
+            'sequence',
+            'title',
+            'description',
+            'question_type',
+            'skip_count',
+            'view',
+            'type_ranking',
+            'is_multiple',
+            'validation_random',
+            'is_time',
+            'format_date_time',
+            'is_page',
+            'page_id'
+        )
+            ->where('deleted', self::NOT_DELETED)
+            ->where('survey_id', $survey_id)
+            ->where('page_id', self::NO_PAGE);
+        if ($sequence != null) {
+            $query = $query->where('sequence', '>', $sequence);
+        }
+        if ($sequence_group != null) {
+            $query = $query->where('sequence', '>=', $sequence_group);
+        }
+        return $query->orderBy('sequence', 'asc')->get();
+    }
+
     public static  function getListQuestionLogic($survey_id)
     {
         return self::select(

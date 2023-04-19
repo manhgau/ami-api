@@ -81,7 +81,15 @@ class SurveyQuestionController extends Controller
         try {
             $survey_id = $request->survey_id;
             $question_id = $request->question_id;
-            $datas = SurveyQuestion::getListSurveyQuestion($survey_id, $question_id);
+            $detail = SurveyQuestion::getDetailSurveyQuestion($question_id);
+            $sequence = $detail->sequence;
+            $sequence_group = null;
+            if ($detail->page_id != 0) {
+                $detail_group = SurveyQuestion::getDetailSurveyQuestion($detail->page_id);
+                $sequence_group = $detail_group->sequence;
+                $sequence = null;
+            }
+            $datas = SurveyQuestion::getAllSurveyQuestionLogic($survey_id, $sequence, $sequence_group);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
@@ -90,8 +98,14 @@ class SurveyQuestionController extends Controller
                 if ($value['is_page'] == SurveyQuestion::IS_PAGE) {
                     $group_question = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
                     foreach ($group_question as $item) {
-                        $item->sequence_group = $value->sequence;
-                        array_push($data, $item);
+                        if ($detail->page_id == $item->page_id && $item->sequence > $detail->sequence) {
+                            $item->sequence_group = $value->sequence;
+                            array_push($data, $item);
+                        }
+                        if ($detail->page_id != $item->page_id) {
+                            $item->sequence_group = $value->sequence;
+                            array_push($data, $item);
+                        }
                     }
                 } else {
                     $value->sequence_group = 0;
