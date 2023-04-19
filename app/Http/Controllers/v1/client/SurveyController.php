@@ -485,10 +485,6 @@ class SurveyController extends Controller
                     $survey_user = Survey::where('active', Survey::ACTIVE)->where('active', Survey::ACTIVE)->find($request->survey_id);
                     $survey_user->logo = $image;
                     $survey_user->save();
-                    // $update_image = Survey::updateSurvey(['logo' => $image], $survey_id);
-                    // if (!$update_image) {
-                    //     return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    // }
                     $all_settings = AppSetting::getAllSetting();
                     $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
                     $survey_user->logo ? $survey_user->logo_default = 0 : $survey_user->logo_default = 1;
