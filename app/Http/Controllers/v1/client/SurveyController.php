@@ -128,6 +128,7 @@ class SurveyController extends Controller
             $all_settings = AppSetting::getAllSetting();
             $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
             $logo  = AppSetting::getByKey(AppSetting::LOGO, $all_settings);
+            $detail->logo ? $detail->logo_default = 0 : $detail->logo_default = 1;
             $detail->logo ? $detail->logo = $image_domain . $detail->logo : $detail->logo = $image_domain . $logo;
             $detail->background ? $detail->background = $image_domain . $detail->background : null;
             $detail->real_end_time ? $detail->real_end_time = date_format(date_create($detail->real_end_time), 'm-d-Y') : null;
