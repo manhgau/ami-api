@@ -210,6 +210,7 @@ class SurveyController extends Controller
             if ($survey_user->background_id) {
                 $survey_user->background = $image_domain . Images::getDetailImage($survey_user->background_id)->image;
             }
+            $survey_user->logo ? $survey_user->logo_default = 0 : $survey_user->logo_default = 1;
             $survey_user->logo ? $survey_user->logo = $image_domain . $survey_user->logo : $survey_user->logo = $image_domain . $logo;
             return ClientResponse::responseSuccess('Update thành công', $survey_user);
         } catch (\Exception $ex) {
