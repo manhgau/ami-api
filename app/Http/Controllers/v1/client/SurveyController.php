@@ -461,10 +461,8 @@ class SurveyController extends Controller
                 $request->all(),
                 [
                     'image' => 'required|mimes:jpeg,png,jpg|max:512',
-                    //'survey_id' => 'required',
                 ],
                 [
-                    //'survey_id.required' => 'Id khảo sát là bắt buộc.',
                     'image.required' => 'File ảnh là bắt buộc.',
                     'image.mimes' => 'Hỗ trợ các định dạng jpeg,png,jpg.',
                     'image.max' => 'Kích thước tối đa 512KB.',
@@ -475,7 +473,6 @@ class SurveyController extends Controller
                 return ClientResponse::responseError($errorString);
             }
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-            $survey_id = $request->survey_id;
             if ($file = $request->file('image')) {
                 $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
                 $time_now = Carbon::now();
@@ -483,13 +480,16 @@ class SurveyController extends Controller
                 if ($user_package['add_logo'] == 1) {
                     $path = env('FTP_PATH') . FtpSv::LOGO_FOLDER;
                     $image = FtpSv::upload($file, $name, $path, FtpSv::LOGO_FOLDER);
-                    $update_image = Survey::updateSurvey(['logo' => $image], $survey_id);
-                    if (!$update_image) {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    }
+                    $survey_user = Survey::where('active', Survey::ACTIVE)->where('active', Survey::ACTIVE)->find($request->survey_id);
+                    $survey_user->logo = $image;
+                    $survey_user->save();
                     $all_settings = AppSetting::getAllSetting();
                     $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
-                    return ClientResponse::responseSuccess('OK', $image_domain .  $image);
+                    $survey_user->logo ? $survey_user->logo_default = 0 : $survey_user->logo_default = 1;
+                    $survey_user->logo = $image_domain . $survey_user->logo;
+                    $survey_user->background ? $survey_user->background = $image_domain . $survey_user->background : null;
+                    $survey_user->real_end_time ? $survey_user->real_end_time = date_format(date_create($survey_user->real_end_time), 'm-d-Y') : null;
+                    return ClientResponse::responseSuccess('OK',  $survey_user);
                 } else {
                     return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
                 }
