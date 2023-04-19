@@ -67,6 +67,7 @@ class Package extends Model
             'limit_projects',
             'limit_questions',
             'add_logo',
+            'remove_ami_logo',
             'data_storage',
             'logic_jumps',
         )->where('status', self::STATUS_ACTIVE)->where('is_default', 1)->first();

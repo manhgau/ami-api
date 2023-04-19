@@ -166,7 +166,6 @@ class SurveyController extends Controller
             $request->button_color ? $survey_user->button_color = $request->button_color : "";
             $request->text_color_of_button ? $survey_user->text_color_of_button = $request->text_color_of_button : "";
             isset($request->background_id) ? $survey_user->background_id = $request->background_id : "";
-            isset($request->is_logo) ? $survey_user->is_logo = $request->is_logo : "";
             $request->state ? $survey_user->state = $request->state : "";
             $request->link_url ? $survey_user->link_url = $request->link_url : "";
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
@@ -178,6 +177,12 @@ class SurveyController extends Controller
                     return ClientResponse::response(ClientResponse::$survey_user_number, 'Số lượng giới hạn phản hồi đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát');
                 }
                 $survey_user->limmit_of_response_anomyous = $request->limmit_of_response_anomyous;
+            }
+            if (isset($request->is_logo)) {
+                if (CheckResponseOfSurvey::checkDeleteLogo($user_id)) {
+                    return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền xóa logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
+                }
+                $survey_user->is_logo = $request->is_logo;
             }
             if ($survey_user->state == Survey::STATUS_NOT_COMPLETED &&  $request->real_end_time) {
                 $survey_user->state = Survey::STATUS_ON_PROGRESS;
@@ -199,11 +204,13 @@ class SurveyController extends Controller
             if (!$survey_user) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
+            $all_settings = AppSetting::getAllSetting();
+            $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+            $logo  = AppSetting::getByKey(AppSetting::LOGO, $all_settings);
             if ($survey_user->background_id) {
-                $all_settings = AppSetting::getAllSetting();
-                $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
                 $survey_user->background = $image_domain . Images::getDetailImage($survey_user->background_id)->image;
             }
+            $survey_user->logo ? $survey_user->logo = $image_domain . $survey_user->logo : $survey_user->logo = $image_domain . $logo;
             return ClientResponse::responseSuccess('Update thành công', $survey_user);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
