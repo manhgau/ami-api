@@ -213,14 +213,6 @@ class AuthController extends Controller
         $user = User::find($user_id);
         $all_settings = AppSetting::getAllSetting();
         $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
-        if (!$user['logo']) {
-            $logo  = AppSetting::getByKey(AppSetting::LOGO, $all_settings);
-            $user['logo'] = $image_domain . $logo;
-            $user['logo_default'] = 1;
-        } else {
-            $user['logo'] = $image_domain . $user['logo'];
-            $user['logo_default'] = 0;
-        }
         $user['avatar'] ? $user['avatar'] = $image_domain . $user['avatar'] : '';
         $time_now = Carbon::now();
         $user_package = UserPackage::getPackageUser($user_id, $time_now);
