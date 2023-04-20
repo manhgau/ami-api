@@ -87,11 +87,10 @@ class SurveyQuestionAnswer extends Model
 
     public static  function getAllAnswerStatistic($question_id, $value_type = null)
     {
-        $query = self::where('deleted', self::NOT_DELETED)
-            ->where(function ($query) use ($question_id) {
-                $query->where('question_id', $question_id)
-                    ->orWhere('matrix_question_id', $question_id);
-            });
+        $query = self::where(function ($query) use ($question_id) {
+            $query->where('question_id', $question_id)
+                ->orWhere('matrix_question_id', $question_id);
+        });
         if ($value_type != null) {
             $query = $query->where('value_type', $value_type);
         };
