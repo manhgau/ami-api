@@ -502,8 +502,6 @@ class AuthController extends Controller
                         $profile = new PartnerProfile();
                         $profile->partner_id = $partner_id;
                     }
-                    //dd($profile,  $request->all());
-                    $data_update = $request->all();
                     $request->year_of_birth ? $profile->year_of_birth = FormatDate::formatDate($request->year_of_birth) : '';
                     $request->job_type_id ?  $profile->job_type_id = $request->job_type_id : '';
                     $request->marital_status_id ?  $profile->marital_status_id = $request->marital_status_id : '';
@@ -514,11 +512,6 @@ class AuthController extends Controller
                     $request->family_people ?  $profile->family_people = $request->family_people : '';
                     ($request->province_code != -1) ?  $profile->province_code = $request->province_code : '';
                     ($request->district_code != -1) ?  $profile->district_code = $request->district_code : '';
-                    //update profile
-                    // $update_profile = PartnerProfile::updatePartnerProfile($data_update, $partner_id);
-                    // if (!$update_profile) {
-                    //     return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    // }
                     $profile->save();
                     if (PartnerProfile::checkCompletePartnerProfile($partner_id) == 1 && $check == 0) {
                         $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROFILE_COMPLETE);
