@@ -359,7 +359,7 @@ class SurveyStatisticController extends Controller
                                 $list_input_line = SurveyPartnerInputLine::listInputLine($value->id, $item->id, $v['id']);
                                 $data = '';
                                 foreach ($list_input_line as $key =>  $detail) {
-                                    $answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($detail->matrix_column_id);
+                                    $answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswerStatisti($detail->matrix_column_id);
                                     if ($key == 0) {
                                         $answer ? $data =   $data . $answer->value : $data =  '';
                                     } else {
@@ -391,7 +391,7 @@ class SurveyStatisticController extends Controller
             case QuestionType::YES_NO:
                 $list_input_line = SurveyPartnerInputLine::listInputLine($arr_row[0], $value->id);
                 foreach ($list_input_line as $key =>  $detail) {
-                    $answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($detail->suggested_answer_id);
+                    $answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswerStatisti($detail->suggested_answer_id);
                     if ($key == 0) {
                         $answer ? $data =   $data . $answer->value : $data =  '';
                     } else {
