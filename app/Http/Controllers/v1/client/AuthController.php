@@ -74,7 +74,7 @@ class AuthController extends Controller
                 return ClientResponse::responseError('Đã có lỗi xảy ra, vui lòng thử lại sau');
             }
         } else {
-            return ClientResponse::responseError('Email hoặc mật khẩu không đúng');
+            return ClientResponse::responseError('Email hoặc mật khẩu bị sai');
         }
     }
 
