@@ -476,19 +476,19 @@ class AuthController extends Controller
                         'fullname'        => 'required|string|max:50',
                         'year_of_birth' => 'required',
                         'gender'        => 'required|digits:1|integer|exists:App\Models\Gender,id',
-                        'province_code' => 'string|exists:App\Models\Province,code',
-                        'district_code' => 'string|exists:App\Models\District,code',
-                        'addrees'        => 'string|max:255',
-                        'job_type_id'   => 'integer|exists:App\Models\JobType,id',
-                        'academic_level_id' => 'integer|exists:App\Models\AcademicLevel,id',
-                        'marital_status_id' => 'integer|exists:App\Models\MaritalStatus,id',
+                        // 'province_code' => 'string|exists:App\Models\Province,code',
+                        // 'district_code' => 'string|exists:App\Models\District,code',
+                        // 'addrees'        => 'string|max:255',
+                        // 'job_type_id'   => 'integer|exists:App\Models\JobType,id',
+                        // 'academic_level_id' => 'integer|exists:App\Models\AcademicLevel,id',
+                        // 'marital_status_id' => 'integer|exists:App\Models\MaritalStatus,id',
                         //
-                        'personal_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
-                        'family_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
-                        'family_people' => 'integer|exists:App\Models\NumberOfFamilys,id',
-                        'is_key_shopper' => 'boolean',
-                        'has_children' => 'boolean',
-                        'most_cost_of_living' => 'boolean',
+                        // 'personal_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
+                        // 'family_income_level_id' => 'integer|exists:App\Models\PersonalIncomeLevels,id',
+                        // 'family_people' => 'integer|exists:App\Models\NumberOfFamilys,id',
+                        // 'is_key_shopper' => 'boolean',
+                        // 'has_children' => 'boolean',
+                        // 'most_cost_of_living' => 'boolean',
                     ]);
 
                     if ($validator->fails()) {
@@ -502,13 +502,24 @@ class AuthController extends Controller
                         $profile = new PartnerProfile();
                         $profile->partner_id = $partner_id;
                     }
+                    //dd($profile,  $request->all());
                     $data_update = $request->all();
-                    $data_update['year_of_birth'] = FormatDate::formatDate($request->year_of_birth);
+                    $request->year_of_birth ? $profile->year_of_birth = FormatDate::formatDate($request->year_of_birth) : '';
+                    $request->job_type_id ?  $profile->job_type_id = $request->job_type_id : '';
+                    $request->marital_status_id ?  $profile->marital_status_id = $request->marital_status_id : '';
+                    $request->academic_level_id ?  $profile->academic_level_id = $request->academic_level_id : '';
+                    $request->personal_income_level_id ?  $profile->personal_income_level_id = $request->personal_income_level_id : '';
+                    $request->family_income_level_id ?  $profile->family_income_level_id = $request->family_income_level_id : '';
+                    $request->gender ?  $profile->gender = $request->gender : '';
+                    $request->family_people ?  $profile->family_people = $request->family_people : '';
+                    ($request->province_code != -1) ?  $profile->province_code = $request->province_code : '';
+                    ($request->district_code != -1) ?  $profile->district_code = $request->district_code : '';
                     //update profile
-                    $update_profile = PartnerProfile::updatePartnerProfile($data_update, $partner_id);
-                    if (!$update_profile) {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    }
+                    // $update_profile = PartnerProfile::updatePartnerProfile($data_update, $partner_id);
+                    // if (!$update_profile) {
+                    //     return ClientResponse::responseError('Đã có lỗi xảy ra');
+                    // }
+                    $profile->save();
                     if (PartnerProfile::checkCompletePartnerProfile($partner_id) == 1 && $check == 0) {
                         $template_notification = NotificationsFirebase::getTemplateNotification(NotificationsFirebase::PROFILE_COMPLETE);
                         if ($template_notification) {
