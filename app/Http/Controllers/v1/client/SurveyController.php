@@ -188,6 +188,9 @@ class SurveyController extends Controller
                 $survey_user->state = Survey::STATUS_ON_PROGRESS;
                 $survey_user->status_not_completed = null;
             }
+            if ($survey_user->state == Survey::STATUS_DRAFT &&  $request->state) {
+                $survey_user->start_time = Carbon::now();
+            }
             //$update_survey = Survey::updateSurvey($data, $request->survey_id);
             $key_notifications = Survey::countSurveyLinkUrlNotNull($user_id);
             $survey_user->save();
