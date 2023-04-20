@@ -388,7 +388,7 @@ class SurveyPartnerInput extends Model
         $data_results = [];
         if (is_array($result) && count($result) > 0) {
             foreach ($result as $key => $value) {
-                $name_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($value->suggested_answer_id);
+                $name_answer = SurveyQuestionAnswer::getDetailSurveyQuestionAnswerStatisti($value->suggested_answer_id);
                 $input['suggested_answer_id'] = $value->suggested_answer_id;
                 $name_answer ? $input['name_answer'] = $name_answer->value : $input['name_answer'] = '';
                 $input['number_partner_answer'] = $value->total;

@@ -90,6 +90,11 @@ class SurveyQuestionAnswer extends Model
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->first();
     }
 
+    public static  function getDetailSurveyQuestionAnswerStatisti($id)
+    {
+        return self::where('id', $id)->first();
+    }
+
     public static  function updateSurveyQuestionAnswer($data, $id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->update($data);
@@ -104,7 +109,7 @@ class SurveyQuestionAnswer extends Model
     {
         $query = self::select('id', 'question_id', 'matrix_question_id', 'sequence', 'logic_come', 'value', 'value_type')
             ->where('value_type', self::ROW)
-            ->where('deleted', self::NOT_DELETED)
+            // ->where('deleted', self::NOT_DELETED)
             ->where(function ($query) use ($id) {
                 $query->where('question_id', $id)
                     ->orWhere('matrix_question_id', $id);
