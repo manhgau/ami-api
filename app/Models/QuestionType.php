@@ -55,35 +55,35 @@ class QuestionType
                 'key' => 'select_group',
                 'name' => 'Nhóm lựa chọn',
                 'data' => [
-                    ['question_type' => self::MULTI_CHOICE, 'name' => 'Choice'],
-                    ['question_type' => self::MULTI_CHOICE_DROPDOWN, 'name' => 'Dropdown'],
-                    ['question_type' => self::YES_NO, 'name' => 'Yes/No'],
-                    ['question_type' => self::MULTI_FACTOR_MATRIX, 'name' => 'Matrix'],
+                    ['question_type' => self::YES_NO, 'name' => 'Có/ Không (Yes/ No)'],
+                    ['question_type' => self::MULTI_CHOICE, 'name' => 'Lựa chọn (Choices)'],
+                    ['question_type' => self::MULTI_FACTOR_MATRIX, 'name' => 'Lưới tùy chọn (Matrix)'],
+                    ['question_type' => self::MULTI_CHOICE_DROPDOWN, 'name' => 'Bảng tùy chọn (Dropdown)'],
                 ]
             ],
             [
                 'key' => 'text_group',
                 'name' => 'Nhóm text',
                 'data' => [
-                    ['question_type' => self::QUESTION_ENDED_SHORT_TEXT, 'name' => 'Short text'],
-                    ['question_type' => self::QUESTION_ENDED_LONG_TEXT, 'name' => 'Long text'],
+                    ['question_type' => self::QUESTION_ENDED_SHORT_TEXT, 'name' => 'Văn bản ngắn (Short text)'],
+                    ['question_type' => self::QUESTION_ENDED_LONG_TEXT, 'name' => 'Văn bản dài (Long text)'],
                 ]
             ],
             [
                 'name' => 'Nhóm khác',
                 'key' => 'other_group',
                 'data' => [
-                    ['question_type' => self::NUMBER, 'name' => 'Number'],
-                    ['question_type' => self::DATETIME_DATE, 'name' => 'Date'],
-                    ['question_type' => self::RATING_STAR, 'name' => 'Rating (đánh giá)'],
-                    ['question_type' => self::RANKING, 'name' => 'Mức độ'],
+                    ['question_type' => self::NUMBER, 'name' => 'Số (Number)'],
+                    ['question_type' => self::RATING_STAR, 'name' => 'Thang đánh giá (Rating)'],
+                    ['question_type' => self::DATETIME_DATE, 'name' => 'Ngày/ giờ (Date/ time)'],
+                    ['question_type' => self::RANKING, 'name' => 'Mức độ (Score)'],
                 ]
             ],
             [
-                'name' => 'Nhóm cấu trúc bảng hỏi',
+                'name' => 'Cấu trúc',
                 'key' => 'structural_group',
                 'data' => [
-                    ['question_type' => self::GROUP, 'name' => 'Tạo nhóm câu hỏi (question group)'],
+                    ['question_type' => self::GROUP, 'name' => 'Phân nhóm (Group)'],
                 ]
             ]
 
