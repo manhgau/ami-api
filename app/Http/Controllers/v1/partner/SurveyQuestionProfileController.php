@@ -176,8 +176,6 @@ class SurveyQuestionProfileController extends Controller
                                 break;
                             case QuestionTypeProfile::IS_KEY_SHOPPER:
                             case QuestionTypeProfile::HAS_CHILDREN:
-                            case QuestionTypeProfile::PROVINCE:
-                            case QuestionTypeProfile::DISTRICT:
                             case QuestionTypeProfile::GENDER:
                             case QuestionTypeProfile::MARITAL_STATUS:
                             case QuestionTypeProfile::JOB_TYPE:
@@ -187,6 +185,11 @@ class SurveyQuestionProfileController extends Controller
                             case QuestionTypeProfile::FAMILY_PEOPLE:
                                 $input[$value['profile_type']] = $value['value_answer'];
                                 break;
+                            case QuestionTypeProfile::PROVINCE:
+                            case QuestionTypeProfile::DISTRICT:
+                                if ($value['value_answer'] && $value['value_answer'] != -1) {
+                                    $input[$value['profile_type']] = $value['value_answer'];
+                                }
                             default:
                                 return ClientResponse::responseError('profile type không hợp lệ', $value['profile_type']);
                                 break;

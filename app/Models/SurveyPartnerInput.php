@@ -535,11 +535,11 @@ class SurveyPartnerInput extends Model
 
     public static  function getDetailDataRowMatrix($question_id)
     {
-        $lis_row = SurveyQuestionAnswer::getAllAnswer($question_id, SurveyQuestionAnswer::ROW);
+        $lis_row = SurveyQuestionAnswer::getAllAnswerStatistic($question_id, SurveyQuestionAnswer::ROW);
         $arr = array();
         foreach ($lis_row as $k => $v) {
             $array = array();
-            $lis_column = SurveyQuestionAnswer::getAllAnswer($question_id, SurveyQuestionAnswer::COLUMN);
+            $lis_column = SurveyQuestionAnswer::getAllAnswerStatistic($question_id, SurveyQuestionAnswer::COLUMN);
             foreach ($lis_column as $key => $value) {
                 $array[$value['value']] = ['name_answer_column' => $value['value'], 'number_partner_answer' => 0];
             }
@@ -550,7 +550,7 @@ class SurveyPartnerInput extends Model
 
     public static  function getDetailDataColumnMatrix($question_id)
     {
-        $lis_column = SurveyQuestionAnswer::getAllAnswer($question_id, SurveyQuestionAnswer::COLUMN);
+        $lis_column = SurveyQuestionAnswer::getAllAnswerStatistic($question_id, SurveyQuestionAnswer::COLUMN);
         $arr = array();
         foreach ($lis_column as $key => $value) {
             $arr[$value['value']] = ['name_answer_column' => $value['value'], 'number_partner_answer' => 0];
