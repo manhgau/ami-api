@@ -190,6 +190,7 @@ class SurveyQuestionProfileController extends Controller
                                 if ($value['value_answer'] && $value['value_answer'] != -1) {
                                     $input[$value['profile_type']] = $value['value_answer'];
                                 }
+                                break;
                             default:
                                 return ClientResponse::responseError('profile type không hợp lệ', $value['profile_type']);
                                 break;
