@@ -504,6 +504,7 @@ class AuthController extends Controller
                     }
                     $request->year_of_birth ? $profile->year_of_birth = FormatDate::formatDate($request->year_of_birth) : '';
                     $request->job_type_id ?  $profile->job_type_id = $request->job_type_id : '';
+                    $request->fullname ?  $profile->fullname = $request->fullname : '';
                     $request->marital_status_id ?  $profile->marital_status_id = $request->marital_status_id : '';
                     $request->academic_level_id ?  $profile->academic_level_id = $request->academic_level_id : '';
                     $request->personal_income_level_id ?  $profile->personal_income_level_id = $request->personal_income_level_id : '';
@@ -511,6 +512,9 @@ class AuthController extends Controller
                     $request->gender ?  $profile->gender = $request->gender : '';
                     $request->addrees ?  $profile->addrees = $request->addrees : '';
                     $request->family_people ?  $profile->family_people = $request->family_people : '';
+                    $request->has_children ?  $profile->has_children = $request->has_children : '';
+                    $request->is_key_shopper ?  $profile->is_key_shopper = $request->is_key_shopper : '';
+                    $request->most_cost_of_living ?  $profile->most_cost_of_living = $request->most_cost_of_living : '';
                     ($request->province_code != -1) ?  $profile->province_code = $request->province_code : '';
                     ($request->district_code != -1) ?  $profile->district_code = $request->district_code : '';
                     $profile->save();
