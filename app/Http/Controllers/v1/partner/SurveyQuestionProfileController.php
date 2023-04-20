@@ -187,9 +187,7 @@ class SurveyQuestionProfileController extends Controller
                                 break;
                             case QuestionTypeProfile::PROVINCE:
                             case QuestionTypeProfile::DISTRICT:
-                                if ($value['value_answer'] && $value['value_answer'] != -1) {
-                                    $input[$value['profile_type']] = $value['value_answer'];
-                                }
+                                ($value['value_answer'] != -1) ? $input[$value['profile_type']] = $value['value_answer'] : $input[$value['profile_type']] = null;
                                 break;
                             default:
                                 return ClientResponse::responseError('profile type không hợp lệ', $value['profile_type']);

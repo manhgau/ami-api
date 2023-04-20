@@ -509,6 +509,7 @@ class AuthController extends Controller
                     $request->personal_income_level_id ?  $profile->personal_income_level_id = $request->personal_income_level_id : '';
                     $request->family_income_level_id ?  $profile->family_income_level_id = $request->family_income_level_id : '';
                     $request->gender ?  $profile->gender = $request->gender : '';
+                    $request->addrees ?  $profile->addrees = $request->addrees : '';
                     $request->family_people ?  $profile->family_people = $request->family_people : '';
                     ($request->province_code != -1) ?  $profile->province_code = $request->province_code : '';
                     ($request->district_code != -1) ?  $profile->district_code = $request->district_code : '';
