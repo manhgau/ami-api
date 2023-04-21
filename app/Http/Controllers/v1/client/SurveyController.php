@@ -171,6 +171,7 @@ class SurveyController extends Controller
             isset($request->background_id) ? $survey_user->background_id = $request->background_id : "";
             $request->state ? $survey_user->state = $request->state : "";
             $request->link_url ? $survey_user->link_url = $request->link_url : "";
+            ($request->reset_logo == 1) ? $survey_user->logo = null : "";
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $survey_user->user_id = $user_id;
             $survey_user->updated_by = $user_id;
