@@ -184,7 +184,7 @@ class SurveyController extends Controller
             }
             if (isset($request->is_logo)) {
                 if (CheckResponseOfSurvey::checkDeleteLogo($user_id)) {
-                    return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền xóa logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
+                    return ClientResponse::response(ClientResponse::$add_logo, 'Vui lòng đăng ký gói cước để sử dụng chức năng này');
                 }
                 $survey_user->is_logo = $request->is_logo;
             }
@@ -502,7 +502,7 @@ class SurveyController extends Controller
                     $survey_user->real_end_time ? $survey_user->real_end_time = date_format(date_create($survey_user->real_end_time), 'm-d-Y') : null;
                     return ClientResponse::responseSuccess('OK',  $survey_user);
                 } else {
-                    return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
+                    return ClientResponse::response(ClientResponse::$add_logo, 'Vui lòng đăng ký gói cước để sử dụng chức năng này');
                 }
             }
         } catch (\Exception $ex) {

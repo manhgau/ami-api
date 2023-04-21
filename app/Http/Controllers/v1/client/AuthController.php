@@ -406,33 +406,14 @@ class AuthController extends Controller
                 $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
-            $type_image = $request->type_image;
-            if (User::checkImageValid($type_image) === false) {
-                return ClientResponse::responseError('Lỗi ! Không có loại ảnh này.');
-            }
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             if ($file = $request->file('image')) {
                 $name =   md5($file->getClientOriginalName() . rand(1, 9999)) . '.' . $file->extension();
-                if ($type_image == User::LOGO) {
-                    $time_now = Carbon::now();
-                    $user_package = UserPackage::getPackageUser($user_id, $time_now);
-                    if ($user_package['add_logo'] == 1) {
-                        $path = env('FTP_PATH') . FtpSv::LOGO_FOLDER;
-                        $image = FtpSv::upload($file, $name, $path, FtpSv::LOGO_FOLDER);
-                        $update_image = User::updateProfile([User::LOGO => $image], $user_id);
-                        if (!$update_image) {
-                            return ClientResponse::responseError('Đã có lỗi xảy ra');
-                        }
-                    } else {
-                        return ClientResponse::response(ClientResponse::$add_logo, 'Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này');
-                    }
-                } else {
-                    $path = env('FTP_PATH') . FtpSv::AVATAR_FOLDER;
-                    $image = FtpSv::upload($file, $name, $path, FtpSv::AVATAR_FOLDER);
-                    $update_image = User::updateProfile([User::AVATAR => $image], $user_id);
-                    if (!$update_image) {
-                        return ClientResponse::responseError('Đã có lỗi xảy ra');
-                    }
+                $path = env('FTP_PATH') . FtpSv::AVATAR_FOLDER;
+                $image = FtpSv::upload($file, $name, $path, FtpSv::AVATAR_FOLDER);
+                $update_image = User::updateProfile([User::AVATAR => $image], $user_id);
+                if (!$update_image) {
+                    return ClientResponse::responseError('Đã có lỗi xảy ra');
                 }
                 $all_settings = AppSetting::getAllSetting();
                 $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
