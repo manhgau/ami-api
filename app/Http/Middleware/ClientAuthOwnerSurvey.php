@@ -21,7 +21,7 @@ class ClientAuthOwnerSurvey
         }
         $survey_user = Survey::getDetailSurveyByUser($id, $user_id);
         if (!$survey_user) {
-            return ClientResponse::response(ClientResponse::$client_auth_owner_survey, 'Khảo sát không phải của bạn');
+            return ClientResponse::response(ClientResponse::$client_auth_owner_survey, 'Dự án không phải của bạn');
         }
         return $next($request);
     }

@@ -40,7 +40,7 @@ class SurveyPartnerInputLineController extends Controller
                     $input['partner_input_id']   = $request->partner_input_id;
                     $survey_question = SurveyQuestion::checkQuestionOfSurvey($survey_id, $question_id);
                     if (!$survey_question) {
-                        return ClientResponse::responseError('Khảo sát không có câu hỏi này');
+                        return ClientResponse::responseError('Dự án không có câu hỏi này');
                     }
                     $input['question_sequence']     = $survey_question->sequence;
                     $input['answer_type']   = $survey_question->question_type;

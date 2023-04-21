@@ -39,7 +39,7 @@ class SurveyPartnerInputAnynomousController extends Controller
             $input['is_anynomous'] = SurveyPartnerInput::ANYNOMOUS_TRUE;
             $survey = Survey::getDetailSurvey($request->survey_id);
             if (!$survey || $survey->state != Survey::STATUS_ON_PROGRESS) {
-                return ClientResponse::responseError('Khảo sát không tồn tại hoặc đã đóng');
+                return ClientResponse::responseError('Dự án không tồn tại hoặc đã đóng');
             }
             $result = SurveyPartnerInput::create($input);
             if (!$result) {

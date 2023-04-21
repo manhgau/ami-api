@@ -37,7 +37,7 @@ class SurveyPartnerInputController extends Controller
                     }
                     $survey = Survey::getDetailSurvey($request->survey_id);
                     if (!$survey || $survey->state_ami != Survey::STATUS_ON_PROGRESS) {
-                        return ClientResponse::responseError('Khảo sát không tồn tại hoặc đã đóng');
+                        return ClientResponse::responseError('Dự án không tồn tại hoặc đã đóng');
                     }
                     $partner_id = $partner->id ?? 0;
                     $partner_profile = Partner::getPartnerById($partner_id);
@@ -287,7 +287,7 @@ class SurveyPartnerInputController extends Controller
                     Survey::updateSurvey(['view' => $survey_detail->view + 1], $survey_id);
                     $number_of_response = SurveyPartnerInput::countSurveyInput($survey_id, SurveyPartnerInput::ANYNOMOUS_FALSE);
                     if (($number_of_response >= $survey_detail->limmit_of_response) && $survey_detail->limmit_of_response != 0) {
-                        return ClientResponse::response(ClientResponse::$limmit_of_response, 'Khảo sát đã đạt lượt phản hồ giới hạn');
+                        return ClientResponse::response(ClientResponse::$limmit_of_response, 'Dự án đã đạt lượt phản hồ giới hạn');
                     }
                     if ($survey_detail->is_answer_single == Survey::ANSWER_SINGLE) {
                         $data =  [
