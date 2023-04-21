@@ -243,8 +243,8 @@ class SurveyPartnerInput extends Model
             )
             ->where('survey_partner_inputs.survey_id', $survey_id)
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE)
-            ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
-            ->where('survey_partner_inputs.state', self::STATUS_DONE);
+            //->where('survey_partner_inputs.state', self::STATUS_DONE)
+            ->where('survey_partner_inputs.deleted', self::NOT_DELETED);
         $query = self::__filterTarget($query, $filter);
         return $query->get();
     }
@@ -255,7 +255,7 @@ class SurveyPartnerInput extends Model
             ->LeftJoin('survey_profile_inputs', 'survey_profile_inputs.partner_input_id', '=', 'survey_partner_inputs.id')
             ->where('survey_partner_inputs.survey_id', $survey_id)
             ->where('survey_partner_inputs.is_anynomous', self::ANYNOMOUS_FALSE)
-            ->where('survey_partner_inputs.state', self::STATUS_DONE)
+            //->where('survey_partner_inputs.state', self::STATUS_DONE)
             ->where('survey_partner_inputs.deleted', self::NOT_DELETED)
             ->whereYear('year_of_birth', '>=', $year_min)
             ->whereYear('year_of_birth', '<=', $year_max);
