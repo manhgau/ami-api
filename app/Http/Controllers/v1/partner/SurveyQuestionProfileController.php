@@ -136,7 +136,7 @@ class SurveyQuestionProfileController extends Controller
                     $partner_id = $partner->id ?? 0;
                     $survey_detail = Survey::getDetailSurvey($survey_id);
                     if (!$survey_detail) {
-                        return ClientResponse::responseError('Không có Khảo sát phù hợp');
+                        return ClientResponse::responseError('Không có Dự án phù hợp');
                     }
                     $survey_profile_id = $survey_detail->survey_profile_id;
                     if (!$survey_profile_id) {
@@ -235,7 +235,7 @@ class SurveyQuestionProfileController extends Controller
                     $survey_id = $request->survey_id;
                     $survey_detail = Survey::getDetailSurvey($survey_id);
                     if (!$survey_detail) {
-                        return ClientResponse::responseError('Không có Khảo sát phù hợp');
+                        return ClientResponse::responseError('Không có Dự án phù hợp');
                     }
                     $survey_profile_id = $survey_detail->survey_profile_id;
                     $partner_input_id = $request->partner_input_id ?? 0;

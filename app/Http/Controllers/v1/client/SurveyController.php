@@ -156,6 +156,9 @@ class SurveyController extends Controller
             if (!$survey_user) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
+            if ($survey_user->state == Survey::STATUS_DRAFT &&  $request->state) {
+                $survey_user->start_time = Carbon::now()->format('Y-m-d H:i:s');
+            }
             $request->real_end_time ? $survey_user->real_end_time = FormatDate::formatDate($request->real_end_time) : null;
             $request->description ? $survey_user->description = ucfirst($request->description) : "";
             $request->title ? $survey_user->title = ucfirst($request->title) : "";
@@ -168,6 +171,7 @@ class SurveyController extends Controller
             isset($request->background_id) ? $survey_user->background_id = $request->background_id : "";
             $request->state ? $survey_user->state = $request->state : "";
             $request->link_url ? $survey_user->link_url = $request->link_url : "";
+            ($request->reset_logo == 1) ? $survey_user->logo = null : "";
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $survey_user->user_id = $user_id;
             $survey_user->updated_by = $user_id;
@@ -188,10 +192,6 @@ class SurveyController extends Controller
                 $survey_user->state = Survey::STATUS_ON_PROGRESS;
                 $survey_user->status_not_completed = null;
             }
-            if ($survey_user->state == Survey::STATUS_DRAFT &&  $request->state) {
-                $survey_user->start_time = Carbon::now();
-            }
-            //$update_survey = Survey::updateSurvey($data, $request->survey_id);
             $key_notifications = Survey::countSurveyLinkUrlNotNull($user_id);
             $survey_user->save();
             if (isset($request->link_url) && Survey::countSurveyLinkUrlNotNull($user_id) == 3 && $key_notifications < 3) {

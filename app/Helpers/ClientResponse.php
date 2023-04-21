@@ -15,12 +15,12 @@ class ClientResponse
     public static $user_not_active = 402;     //TK chưa kích hoạt
     public static $required_refresh_token = 403;     //user phải gọi refresh token
     public static $validator_value = 405;     //user phải gọi refresh token
-    public static $client_auth_owner_survey = 407;     //Khảo sát không phải của bạn
+    public static $client_auth_owner_survey = 407;     //Dự án không phải của bạn
     public static $survey_user_number = 406;     //Số lượng khảo sát của bạn đã hết, Vui lòng đăng ký gói cước để có thêm lượt tạo khảo sát
     public static $add_logo = 408;     //Bạn không có quyền thêm logo, Vui lòng đăng ký gói cước để sử dụng chứ năng này
     public static $app_is_maintain = 409;     //Hệ thống đang bảo trì
 
-    public static $survey_enough_responses = 301;     //Khảo sát đã thu thập đủ số phản hồi,hoặc đã đóng
+    public static $survey_enough_responses = 301;     //Dự án đã thu thập đủ số phản hồi,hoặc đã đóng
     // public static $package_limit_expires = 302;     //Hạn mức phản hồi của gói đã hết
 
     //
@@ -31,7 +31,7 @@ class ClientResponse
     public static $check_partner_mapping_fcmtoken = 420;
     public static $partner_input = 600;     //Partner đã trả lời khảo sát
     public static $un_partner_input = 601;     //Partner chưa trả lời khảo sát
-    public static $limmit_of_response = 602;     //Khảo sát đã đạt lượt phản hồ giới hạn
+    public static $limmit_of_response = 602;     //Dự án đã đạt lượt phản hồ giới hạn
 
     public static function response($code, $message, $data = [], $headers = [], $options = [])
     {
