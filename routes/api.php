@@ -118,7 +118,7 @@ Route::group(['prefix' => 'v1'], function () {
                 ], function ($router) {
                     Route::get('/profile', [AuthController::class, 'profile']);
                     Route::post('/change-pass', [AuthController::class, 'changePassWord']);
-                    Route::post('/upload-image/{type_image}', [AuthController::class, 'updateImage']);
+                    Route::post('/upload-image', [AuthController::class, 'updateImage']);
                 });
             });
 
