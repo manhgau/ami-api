@@ -500,6 +500,9 @@ class SurveyController extends Controller
                     $survey_user->logo = $image_domain . $survey_user->logo;
                     $survey_user->background ? $survey_user->background = $image_domain . $survey_user->background : null;
                     $survey_user->real_end_time ? $survey_user->real_end_time = date_format(date_create($survey_user->real_end_time), 'm-d-Y') : null;
+                    if ($survey_user->background_id) {
+                        $survey_user->background = $image_domain . Images::getDetailImage($survey_user->background_id)->image;
+                    }
                     return ClientResponse::responseSuccess('OK',  $survey_user);
                 } else {
                     return ClientResponse::response(ClientResponse::$add_logo, 'Vui lòng đăng ký gói cước để sử dụng chức năng này');
