@@ -18,6 +18,7 @@ use App\Models\NotificationsFirebaseClients;
 use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyPartnerInput;
+use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
 use App\Models\SurveyTargets;
@@ -233,6 +234,8 @@ class SurveyController extends Controller
             SurveyQuestion::deleteAllSurveyQuestions($survey_id);
             SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id);
             SurveyTemplate::deleteAllSurveyTemplate($survey_id);
+            SurveyPartnerInput::deleteAllSurveyPartnerInput($survey_id);
+            SurveyPartnerInputLine::deletePartnerInputLine($survey_id);
             return ClientResponse::responseSuccess('Xóa thành công');
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());

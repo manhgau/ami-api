@@ -9,6 +9,7 @@ use App\Helpers\Context;
 use App\Models\AppSetting;
 use App\Models\QuestionType;
 use App\Models\Survey;
+use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionAnswer;
 use Validator;
@@ -377,9 +378,11 @@ class SurveyQuestionController extends Controller
                 foreach ($list_questions as $value) {
                     SurveyQuestion::destroy($value->id);
                     SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $value->id);
+                    SurveyPartnerInputLine::deletePartnerInputLine($survey_id,  $value->id);
                 }
             }
             SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $question_id);
+            SurveyPartnerInputLine::deletePartnerInputLine($survey_id, $question_id);
             $count_questions = SurveyQuestion::countQuestionOfSurvey($survey_id);
             Survey::updateSurvey(["question_count" => $count_questions], $request->survey_id);
             $list = SurveyQuestion::getAllQuestion($request->survey_id, $survey_question->page_id);
