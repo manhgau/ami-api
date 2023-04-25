@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\client;
 
 use App\Helpers\ClientResponse;
+use App\Models\AppSetting;
 use App\Models\QuestionType;
 use App\Models\Survey;
 use App\Models\SurveyQuestion;
@@ -15,8 +16,7 @@ class SurveyQuestionAnswersController extends Controller
     {
         try {
             $question_id = $request->question_id;
-            $data = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id)
-                ->orWhere('matrix_question_id', $question_id)->get();
+            $data = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id)->get();
             if (!$data) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
@@ -160,7 +160,48 @@ class SurveyQuestionAnswersController extends Controller
             if (!$data) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            return ClientResponse::responseSuccess('OK', $data);
+            $detail = self::__getDetailSurveyQuestion($question_id);
+            return ClientResponse::responseSuccess('OK', $detail);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
+    private function __getDetailSurveyQuestion($question_id)
+    {
+        try {
+            $detail = SurveyQuestion::getDetailSurveyQuestion($question_id);
+            if (!$detail) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            $all_settings = AppSetting::getAllSetting();
+            $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+            $detail->background ? $detail->background = $image_domain . $detail->background : null;
+            $random =  $detail->validation_random;
+            switch ($detail->question_type) { // question_id 
+                case QuestionType::MULTI_FACTOR_MATRIX:
+                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->get();
+                    break;
+                case QuestionType::MULTI_CHOICE:
+                case QuestionType::MULTI_CHOICE_DROPDOWN:
+                case QuestionType::YES_NO:
+                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->get();
+                    break;
+                case QuestionType::DATETIME_DATE:
+                case QuestionType::DATETIME_DATE_RANGE:
+                case QuestionType::QUESTION_ENDED_SHORT_TEXT:
+                case QuestionType::QUESTION_ENDED_LONG_TEXT:
+                case QuestionType::NUMBER:
+                case QuestionType::RATING_STAR:
+                case QuestionType::RANKING:
+                case QuestionType::GROUP:
+                    $detail->answers = [];
+                    break;
+                default:
+                    return ClientResponse::responseError('question type không hợp lệ', $detail->question_type);
+                    break;
+            }
+            return $detail;
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }

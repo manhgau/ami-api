@@ -343,12 +343,32 @@ class SurveyQuestionController extends Controller
         }
     }
 
+    public static function arrangeSurveyQuestion(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), []);
+            if ($validator->fails()) {
+                $errorString = implode(",", $validator->messages()->all());
+                return ClientResponse::responseError($errorString);
+            }
+            $input = $request->all();
+            $result = self::__arrangeQuestion($input);
+            if (!$result) {
+                return ClientResponse::responseError('Đã có lỗi xảy ra');
+            }
+            return ClientResponse::responseSuccess('Update thành công');
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+    }
+
     private function __arrangeQuestion($input)
     {
         try {
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $data['updated_by'] = $user_id;
             foreach ($input as $key => $value) {
+                isset($value['page_id']) ? $data['page_id'] = $value['page_id'] : '';
                 $data['sequence'] = $value['sequence'];
                 $result = SurveyQuestion::updateSurveyQuestion($data,  $value['question_id']);
                 if (!$result) {
