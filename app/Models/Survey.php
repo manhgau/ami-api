@@ -154,6 +154,7 @@ class Survey extends Model
                 'a.background_id',
                 'a.is_answer_single',
                 'a.is_random',
+                'a.is_logo',
                 'a.view',
                 'b.image as background',
             )
