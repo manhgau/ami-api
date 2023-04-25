@@ -53,7 +53,7 @@ class QuestionType
         return [
             [
                 'key' => 'select_group',
-                'name' => 'Nhóm lựa chọn',
+                'name' => 'Câu hỏi lựa chọn',
                 'data' => [
                     ['question_type' => self::YES_NO, 'name' => 'Có/ Không (Yes/ No)'],
                     ['question_type' => self::MULTI_CHOICE, 'name' => 'Lựa chọn (Choices)'],
@@ -63,14 +63,14 @@ class QuestionType
             ],
             [
                 'key' => 'text_group',
-                'name' => 'Nhóm text',
+                'name' => 'Câu hỏi văn bản',
                 'data' => [
                     ['question_type' => self::QUESTION_ENDED_SHORT_TEXT, 'name' => 'Văn bản ngắn (Short text)'],
                     ['question_type' => self::QUESTION_ENDED_LONG_TEXT, 'name' => 'Văn bản dài (Long text)'],
                 ]
             ],
             [
-                'name' => 'Nhóm khác',
+                'name' => 'Câu hỏi khác',
                 'key' => 'other_group',
                 'data' => [
                     ['question_type' => self::NUMBER, 'name' => 'Số (Number)'],

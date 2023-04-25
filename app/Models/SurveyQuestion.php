@@ -28,6 +28,7 @@ class SurveyQuestion extends Model
         'is_page',
         'page_id',
         'is_multiple',
+        // 'sort_alphabetically',
         'validation_required',
         'validation_random',
         'validation_length_min',
