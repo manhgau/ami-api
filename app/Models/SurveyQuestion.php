@@ -198,7 +198,6 @@ class SurveyQuestion extends Model
                 'a.type_ranking',
                 'a.is_multiple',
                 'a.validation_random',
-                'a.sort_alphabetically',
                 'a.validation_required',
                 'a.is_time',
                 'a.is_date',
