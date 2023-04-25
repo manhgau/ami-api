@@ -96,6 +96,10 @@ class SurveyQuestionController extends Controller
             }
             $data = [];
             foreach ($datas as $value) {
+                if ($value->id != $detail->page_id) {
+                    $value->sequence_group = 0;
+                    array_push($data, $value);
+                }
                 if ($value['is_page'] == SurveyQuestion::IS_PAGE) {
                     $group_question = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
                     foreach ($group_question as $item) {
@@ -109,8 +113,6 @@ class SurveyQuestionController extends Controller
                         }
                     }
                 }
-                $value->sequence_group = 0;
-                array_push($data, $value);
             }
             return ClientResponse::responseSuccess('OK', $data);
         } catch (\Exception $ex) {
