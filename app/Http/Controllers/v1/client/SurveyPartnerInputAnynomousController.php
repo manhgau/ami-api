@@ -129,18 +129,19 @@ class SurveyPartnerInputAnynomousController extends Controller
     {
         $question_id = $value->id;
         $random = $value->validation_random;
+        $sort_alphabetically = $value->sort_alphabetically;
         $data_response = $value;
         switch ($value->question_type) { // question_id 
             case QuestionType::MULTI_FACTOR_MATRIX:
                 $data_response = $value;
-                $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
+                $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random, $sort_alphabetically)->get();
                 $datas[$key] = $data_response;
                 break;
             case QuestionType::MULTI_CHOICE:
             case QuestionType::MULTI_CHOICE_DROPDOWN:
             case QuestionType::YES_NO:
                 $data_response = $value;
-                $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
+                $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random, $sort_alphabetically)->get();
                 $datas[$key] = $data_response;
                 break;
             case QuestionType::RATING_STAR:

@@ -144,14 +144,15 @@ class SurveyQuestionController extends Controller
             $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
             $detail->background ? $detail->background = $image_domain . $detail->background : null;
             $random =  $detail->validation_random;
+            $sort_alphabetically =  $detail->sort_alphabetically;
             switch ($detail->question_type) { // question_id 
                 case QuestionType::MULTI_FACTOR_MATRIX:
-                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->get();
+                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random,  $sort_alphabetically)->get();
                     break;
                 case QuestionType::MULTI_CHOICE:
                 case QuestionType::MULTI_CHOICE_DROPDOWN:
                 case QuestionType::YES_NO:
-                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random)->get();
+                    $detail->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($detail->id,  $random,  $sort_alphabetically)->get();
                     break;
                 case QuestionType::DATETIME_DATE:
                 case QuestionType::DATETIME_DATE_RANGE:
