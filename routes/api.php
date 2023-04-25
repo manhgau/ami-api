@@ -165,6 +165,7 @@ Route::group(['prefix' => 'v1'], function () {
                             Route::get('/', [SurveyQuestionController::class, 'getListSurveyQuestion']);
                             Route::get('/{question_id}/detail', [SurveyQuestionController::class, 'getDetailSurveyQuestion']);
                             Route::post('/update-many', [SurveyQuestionController::class, 'updateManySurveyQuestion']);
+                            Route::post('/arrange', [SurveyQuestionController::class, 'arrangeSurveyQuestion']);
                             Route::post('/{question_id}/update', [SurveyQuestionController::class, 'updateSurveyQuestion']);
                             Route::post('/{question_id}/delete', [SurveyQuestionController::class, 'delSurveyQuestion']);
                             Route::post('/{question_id}/copy', [SurveyQuestionController::class, 'copySurveyQuestion']);
