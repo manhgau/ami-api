@@ -116,7 +116,7 @@ class SurveyPartnerInputAnynomousController extends Controller
             $lists['data'] = $datas;
             $survey_setup->background ? $survey_setup->background = $image_domain . $survey_setup->background : null;
             $user = User::find($survey_setup->user_id);
-            $user->logo ? $survey_setup->logo = $image_domain .  $user->logo : $survey_setup->logo = $image_domain . AppSetting::getByKey(AppSetting::LOGO, $all_settings);;
+            $user->logo ? $survey_setup->logo = $image_domain .  $user->logo : $survey_setup->logo = $image_domain . AppSetting::getByKey(AppSetting::LOGO, $all_settings);
             $lists['survey_setup'] = $survey_setup;
             Survey::updateSurvey(['view' => $survey_setup->view + 1], $survey_id);
             return ClientResponse::responseSuccess('OK', $lists);
