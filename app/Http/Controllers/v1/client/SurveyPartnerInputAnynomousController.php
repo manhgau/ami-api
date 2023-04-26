@@ -98,13 +98,13 @@ class SurveyPartnerInputAnynomousController extends Controller
             $all_settings = AppSetting::getAllSetting();
             $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
             foreach ($lists['data'] as $key => $value) {
-                $value->background ? $value->background = $image_domain . $value->background : null;
+                //$value->background ? $value->background = $image_domain . $value->background : null;
                 if ($value->question_type == QuestionType::GROUP) {
 
                     $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id, null);
                     $list_question = [];
                     foreach ($question_group as $cat => $item) {
-                        $item->background ? $item->background = $image_domain . $item->background : null;
+                        //$item->background ? $item->background = $image_domain . $item->background : null;
                         $list_question  = self::__getAnswer($cat, $item, $list_question);
                     }
                     $value->group_question = $list_question;
