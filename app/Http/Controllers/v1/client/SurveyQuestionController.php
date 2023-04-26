@@ -353,12 +353,20 @@ class SurveyQuestionController extends Controller
                 $errorString = implode(",", $validator->messages()->all());
                 return ClientResponse::responseError($errorString);
             }
+            $survey_id = $request->survey_id;
+            $question_id = $request->question_id ?? null;
             $input = $request->all();
             $result = self::__arrangeQuestion($input);
             if (!$result) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
             }
-            return ClientResponse::responseSuccess('Update thành công');
+            $datas = SurveyQuestion::getListSurveyQuestion($survey_id, $question_id);
+            foreach ($datas as $key => $value) {
+                $group_question = SurveyQuestion::listGroupQuestions($survey_id, $value->id);
+                $value['group_question'] = $group_question;
+                $datas[$key]  = $value;
+            }
+            return ClientResponse::responseSuccess('Update thành công', $datas);
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
