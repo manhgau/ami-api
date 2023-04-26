@@ -156,7 +156,6 @@ class Survey extends Model
                 'a.is_random',
                 'a.is_logo',
                 'a.logo',
-                'a.view',
                 'b.image as background',
             )
             ->where('a.deleted', self::NOT_DELETED)
