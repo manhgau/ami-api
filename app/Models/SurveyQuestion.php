@@ -260,7 +260,7 @@ class SurveyQuestion extends Model
     public static  function getListQuestion($survey_id, $perPage, $page, $random, $logic_comes = null)
     {
         $query = DB::table('survey_questions  as a')
-            ->leftJoin('images as b', 'b.id', '=', 'a.background_id')
+            //->leftJoin('images as b', 'b.id', '=', 'a.background_id')
             ->select(
                 'a.id',
                 'a.survey_id',
@@ -284,7 +284,7 @@ class SurveyQuestion extends Model
                 'a.name_level_3',
                 'a.background_id',
                 'a.logic',
-                'b.image as background',
+                //'b.image as background',
             )
             ->where('a.deleted', self::NOT_DELETED)
             ->where('a.survey_id', $survey_id)

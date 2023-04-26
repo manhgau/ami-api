@@ -131,16 +131,14 @@ class SurveyPartnerController extends Controller
                 try {
                     $survey_id = $request->survey_id;
                     $survey_setup = Survey::getSetupSurvey($survey_id);
-                    $all_settings = AppSetting::getAllSetting();
-                    $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
-                    $logo  = AppSetting::getByKey(AppSetting::LOGO, $all_settings);
-                    $survey_setup->logo ? $survey_setup->logo = $image_domain . $survey_setup->logo : $survey_setup->logo = $image_domain . $logo;
                     if (!$survey_setup) {
                         return ClientResponse::responseError('Không có bản ghi phù hợp');
                     }
                     $all_settings = AppSetting::getAllSetting();
                     $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
                     $survey_setup->background ? $survey_setup->background = $image_domain . $survey_setup->background : null;
+                    $logo  = AppSetting::getByKey(AppSetting::LOGO, $all_settings);
+                    $survey_setup->logo ? $survey_setup->logo = $image_domain . $survey_setup->logo : $survey_setup->logo = $image_domain . $logo;
                     return ClientResponse::responseSuccess('OK', $survey_setup);
                 } catch (\Exception $ex) {
                     return ClientResponse::responseError($ex->getMessage());

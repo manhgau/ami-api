@@ -41,13 +41,17 @@ class SurveyQuestionPartnerController extends Controller
                     $all_settings = AppSetting::getAllSetting();
                     $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
                     foreach ($lists['data'] as $key => $value) {
-                        $value->background ? $value->background = $image_domain . $value->background : null;
+                        $survey_setup->background ? $value->background = $image_domain . $value->background : null;
+                        $value->is_logo = $survey_setup->is_logo;
+                        $value->logo ? $survey_setup->logo = $image_domain . $survey_setup->logo : $value->logo = $image_domain . AppSetting::getByKey(AppSetting::LOGO, $all_settings);
                         if ($value->question_type == QuestionType::GROUP) {
 
                             $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id, null);
                             $list_question = [];
                             foreach ($question_group as $cat => $item) {
-                                $item->background ? $item->background = $image_domain . $item->background : null;
+                                $survey_setup->background ? $item->background = $image_domain . $item->background : null;
+                                $item->is_logo = $survey_setup->is_logo;
+                                $survey_setup->logo ? $item->logo = $image_domain . $survey_setup->logo : $item->logo = $image_domain . AppSetting::getByKey(AppSetting::LOGO, $all_settings);
                                 $list_question  = self::__getAnswer($cat, $item, $list_question);
                             }
                             $value->group_question = $list_question;
