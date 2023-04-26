@@ -43,7 +43,7 @@ class SurveyQuestionPartnerController extends Controller
                     foreach ($lists['data'] as $key => $value) {
                         $survey_setup->background ? $value->background = $image_domain . $survey_setup->background : null;
                         $value->is_logo = $survey_setup->is_logo;
-                        $value->logo ? $survey_setup->logo = $image_domain . $survey_setup->logo : $value->logo = $image_domain . AppSetting::getByKey(AppSetting::LOGO, $all_settings);
+                        $survey_setup->logo ? $value->logo = $image_domain . $survey_setup->logo : $value->logo = $image_domain . AppSetting::getByKey(AppSetting::LOGO, $all_settings);
                         if ($value->question_type == QuestionType::GROUP) {
 
                             $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id, null);
