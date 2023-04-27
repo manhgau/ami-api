@@ -11,6 +11,7 @@ class SurveyQuestionAnswer extends Model
         'question_id',
         'matrix_question_id',
         'sequence',
+        'logic_come',
         'value',
         'value_type',
         'is_correct',
@@ -115,6 +116,11 @@ class SurveyQuestionAnswer extends Model
     public static  function updateSurveyQuestionAnswer($data, $id)
     {
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->update($data);
+    }
+
+    public static  function updateLogicCome($question_id)
+    {
+        return self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)->update('logic_come', self::NOT_LOGIC);
     }
 
     public static  function deleteSurveyQuestionAnswer($id)

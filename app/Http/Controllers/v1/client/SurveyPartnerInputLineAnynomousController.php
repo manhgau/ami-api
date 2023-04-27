@@ -69,6 +69,9 @@ class SurveyPartnerInputLineAnynomousController extends Controller
                             if ($logic_come) {
                                 $question_logic = SurveyQuestion::getQuestionByLogic($survey_id,  $logic_come);
                                 $question_logic->answers = SurveyQuestionAnswer::getAllAnswer($logic_come);
+                            } else {
+                                $question_logic = SurveyQuestion::getQuestionByLogicNoLogicCome($survey_id,  $survey_question->page_id,  $survey_question->sequence);
+                                $question_logic->answers = SurveyQuestionAnswer::getAllAnswer($question_logic->id);
                             }
                         }
                         foreach ($target_ids  as $key =>  $value) {
