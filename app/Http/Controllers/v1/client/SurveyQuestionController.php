@@ -202,10 +202,10 @@ class SurveyQuestionController extends Controller
                 if ($request->logic == 0) {
                     SurveyQuestionAnswer::updateLogicCome($question_id, SurveyQuestionAnswer::NOT_LOGIC);
                 }
-                if ($request->logic == 1) {
-                    $question_logic = SurveyQuestion::getQuestionByLogicNoLogicCome($survey_id,  $survey_user->page_id,  $survey_user->sequence);
-                    SurveyQuestionAnswer::updateLogicCome($question_id, $question_logic->id);
-                }
+                // if ($request->logic == 1) {
+                //     $question_logic = SurveyQuestion::getQuestionByLogicNoLogicCome($survey_id,  $survey_user->page_id,  $survey_user->sequence);
+                //     SurveyQuestionAnswer::updateLogicCome($question_id, $question_logic->id);
+                // }
             }
             if ($request->question_type && $survey->state == Survey::STATUS_DRAFT) {
                 if (($request->question_type  == QuestionType::MULTI_CHOICE && $survey_user->question_type ==  QuestionType::MULTI_CHOICE_DROPDOWN)

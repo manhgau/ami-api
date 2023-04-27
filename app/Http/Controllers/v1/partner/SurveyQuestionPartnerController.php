@@ -91,6 +91,14 @@ class SurveyQuestionPartnerController extends Controller
             case QuestionType::YES_NO:
                 $data_response = $value;
                 $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
+                if ($value->logic == 1) {
+                    $question_logic = SurveyQuestion::getQuestionByLogicNoLogicCome($value->survey_id,  $value->page_id,  $value->sequence);
+                    foreach ($data_response->answers as $cat => $item) {
+                        $answers = $item;
+                        $item->logic_come ? $answers->logic_come = $item->logic_come : $answers->logic_come = $question_logic->id;
+                        $data_response->answers[$cat] = $answers;
+                    }
+                }
                 $datas[$key] = $data_response;
                 break;
             case QuestionType::RATING_STAR:
