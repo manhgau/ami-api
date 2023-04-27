@@ -195,6 +195,14 @@ class SurveyQuestionController extends Controller
             if (!$survey_user) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
+            if (isset($request->logic)) {
+                if (CheckResponseOfSurvey::checkLogicJump($user_id)) {
+                    return ClientResponse::response(ClientResponse::$add_logo, 'Gói cước bạn đang sử dụng không có quyền phần nhánh câu hỏi!');
+                }
+                if ($request->logic == 0) {
+                    SurveyQuestionAnswer::updateLogicCome($question_id);
+                }
+            }
             if ($request->question_type && $survey->state == Survey::STATUS_DRAFT) {
                 if (($request->question_type  == QuestionType::MULTI_CHOICE && $survey_user->question_type ==  QuestionType::MULTI_CHOICE_DROPDOWN)
                     || ($request->question_type  == QuestionType::MULTI_CHOICE_DROPDOWN && $survey_user->question_type ==  QuestionType::MULTI_CHOICE)
@@ -313,9 +321,6 @@ class SurveyQuestionController extends Controller
             $request->description ? $input['description'] = ucfirst($request->description) : "";
             $request->title ? $input['title'] = ucfirst($request->title) : "";
             $input['updated_by'] = $user_id;
-            if (isset($request->logic) && CheckResponseOfSurvey::checkLogicJump($user_id)) {
-                return ClientResponse::response(ClientResponse::$add_logo, 'Gói cước bạn đang sử dụng không có quyền phần nhánh câu hỏi!');
-            }
             $update_survey = SurveyQuestion::updateSurveyQuestion($input, $question_id);
             if (!$update_survey) {
                 return ClientResponse::responseError('Đã có lỗi xảy ra');
