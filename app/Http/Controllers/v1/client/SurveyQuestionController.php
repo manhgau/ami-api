@@ -200,7 +200,11 @@ class SurveyQuestionController extends Controller
                     return ClientResponse::response(ClientResponse::$add_logo, 'Gói cước bạn đang sử dụng không có quyền phần nhánh câu hỏi!');
                 }
                 if ($request->logic == 0) {
-                    SurveyQuestionAnswer::updateLogicCome($question_id);
+                    SurveyQuestionAnswer::updateLogicCome($question_id, SurveyQuestionAnswer::NOT_LOGIC);
+                }
+                if ($request->logic == 1) {
+                    $question_logic = SurveyQuestion::getQuestionByLogicNoLogicCome($survey_id,  $survey_user->page_id,  $survey_user->sequence);
+                    SurveyQuestionAnswer::updateLogicCome($question_id, $question_logic->id);
                 }
             }
             if ($request->question_type && $survey->state == Survey::STATUS_DRAFT) {

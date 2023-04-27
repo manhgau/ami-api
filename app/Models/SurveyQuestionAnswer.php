@@ -118,9 +118,9 @@ class SurveyQuestionAnswer extends Model
         return self::where('deleted', self::NOT_DELETED)->where('id', $id)->update($data);
     }
 
-    public static  function updateLogicCome($question_id)
+    public static  function updateLogicCome($question_id, $logic_come)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)->update(['logic_come' => self::NOT_LOGIC]);
+        return self::where('deleted', self::NOT_DELETED)->where('question_id', $question_id)->update(['logic_come' => $logic_come]);
     }
 
     public static  function deleteSurveyQuestionAnswer($id)

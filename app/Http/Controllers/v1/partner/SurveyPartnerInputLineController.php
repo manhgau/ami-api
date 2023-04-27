@@ -67,24 +67,24 @@ class SurveyPartnerInputLineController extends Controller
                                 $errorString = implode(",", $validator->messages()->all());
                                 return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                             }
-                            $target_ids = $request->suggested_answer_id;
+                            // $target_ids = $request->suggested_answer_id;
 
-                            if (is_array($target_ids)) {
-                                if ($survey_question->logic == SurveyQuestion::LOGIC && $survey_question->is_multiple == SurveyQuestion::NOT_MULTIPLE) {
-                                    $logic_come = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($target_ids[0])->logic_come;
-                                    if ($logic_come) {
-                                        $question_logic = SurveyQuestion::getQuestionByLogic($survey_id,  $logic_come);
-                                        $question_logic->answers = SurveyQuestionAnswer::getAllAnswer($logic_come);
-                                    } else {
-                                        $question_logic = SurveyQuestion::getQuestionByLogicNoLogicCome($survey_id,  $survey_question->page_id,  $survey_question->sequence);
-                                        $question_logic->answers = SurveyQuestionAnswer::getAllAnswer($question_logic->id);
-                                    }
-                                }
-                                foreach ($target_ids  as $key => $value) {
-                                    $input['suggested_answer_id'] = $value;
-                                    $data_input[$key] = $input;
-                                }
-                            }
+                            // if (is_array($target_ids)) {
+                            //     if ($survey_question->logic == SurveyQuestion::LOGIC && $survey_question->is_multiple == SurveyQuestion::NOT_MULTIPLE) {
+                            //         $logic_come = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($target_ids[0])->logic_come;
+                            //         if ($logic_come) {
+                            //             $question_logic = SurveyQuestion::getQuestionByLogic($survey_id,  $logic_come);
+                            //             $question_logic->answers = SurveyQuestionAnswer::getAllAnswer($logic_come);
+                            //         } else {
+                            //             $question_logic = SurveyQuestion::getQuestionByLogicNoLogicCome($survey_id,  $survey_question->page_id,  $survey_question->sequence);
+                            //             $question_logic->answers = SurveyQuestionAnswer::getAllAnswer($question_logic->id);
+                            //         }
+                            //     }
+                            //     foreach ($target_ids  as $key => $value) {
+                            //         $input['suggested_answer_id'] = $value;
+                            //         $data_input[$key] = $input;
+                            //     }
+                            // }
                             break;
                         case QuestionType::RATING_STAR:
                             $validator = Validator::make(
