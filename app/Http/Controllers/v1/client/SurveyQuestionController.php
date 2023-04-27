@@ -195,17 +195,8 @@ class SurveyQuestionController extends Controller
             if (!$survey_user) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            if (isset($request->logic)) {
-                if (CheckResponseOfSurvey::checkLogicJump($user_id)) {
-                    return ClientResponse::response(ClientResponse::$add_logo, 'Gói cước bạn đang sử dụng không có quyền phần nhánh câu hỏi!');
-                }
-                if ($request->logic == 0) {
-                    SurveyQuestionAnswer::updateLogicCome($question_id, SurveyQuestionAnswer::NOT_LOGIC);
-                }
-                // if ($request->logic == 1) {
-                //     $question_logic = SurveyQuestion::getQuestionByLogicNoLogicCome($survey_id,  $survey_user->page_id,  $survey_user->sequence);
-                //     SurveyQuestionAnswer::updateLogicCome($question_id, $question_logic->id);
-                // }
+            if (isset($request->logic) && CheckResponseOfSurvey::checkLogicJump($user_id)) {
+                return ClientResponse::response(ClientResponse::$add_logo, 'Gói cước bạn đang sử dụng không có quyền phần nhánh câu hỏi!');
             }
             if ($request->question_type && $survey->state == Survey::STATUS_DRAFT) {
                 if (($request->question_type  == QuestionType::MULTI_CHOICE && $survey_user->question_type ==  QuestionType::MULTI_CHOICE_DROPDOWN)
@@ -421,6 +412,7 @@ class SurveyQuestionController extends Controller
                 }
             }
             SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id, $question_id);
+            SurveyQuestionAnswer::updateLogicCome($survey_id, $question_id);
             SurveyPartnerInputLine::deletePartnerInputLine($survey_id, $question_id);
             $count_questions = SurveyQuestion::countQuestionOfSurvey($survey_id);
             Survey::updateSurvey(["question_count" => $count_questions], $request->survey_id);
