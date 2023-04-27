@@ -47,15 +47,19 @@ class SurveyQuestionPartnerController extends Controller
                         if ($value->question_type == QuestionType::GROUP) {
 
                             $question_group = SurveyQuestion::listGroupQuestions($survey_id, $value->id, null);
-                            $list_question = [];
-                            foreach ($question_group as $cat => $item) {
-                                $survey_setup->background ? $item->background = $image_domain . $survey_setup->background : null;
-                                $item->is_logo = $survey_setup->is_logo;
-                                $survey_setup->logo ? $item->logo = $image_domain . $survey_setup->logo : $item->logo = $image_domain . AppSetting::getByKey(AppSetting::LOGO, $all_settings);
-                                $list_question  = self::__getAnswer($cat, $item, $list_question);
+                            if (count($question_group) > 0) {
+                                $list_question = [];
+                                foreach ($question_group as $cat => $item) {
+                                    $survey_setup->background ? $item->background = $image_domain . $survey_setup->background : null;
+                                    $item->is_logo = $survey_setup->is_logo;
+                                    $survey_setup->logo ? $item->logo = $image_domain . $survey_setup->logo : $item->logo = $image_domain . AppSetting::getByKey(AppSetting::LOGO, $all_settings);
+                                    $list_question  = self::__getAnswer($cat, $item, $list_question);
+                                }
+                                $value->group_question = $list_question;
+                                $datas[$key] = $value;
+                            } else {
+                                unset($lists['data'][$key]);
                             }
-                            $value->group_question = $list_question;
-                            $datas[$key] = $value;
                         } else {
                             $datas  = self::__getAnswer($key, $value, $datas);
                         }
