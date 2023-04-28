@@ -6,11 +6,9 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Context;
-use App\Helpers\FormatDate;
 use App\Models\QuestionType;
 use App\Models\SurveyPartnerInputLine;
 use App\Models\SurveyQuestion;
-use App\Models\SurveyQuestionAnswer;
 
 class SurveyPartnerInputLineController extends Controller
 {
@@ -72,7 +70,6 @@ class SurveyPartnerInputLineController extends Controller
                                 $input['suggested_answer_id'] = $value;
                                 $data_input[$key] = $input;
                             }
-
                             // if (is_array($target_ids)) {
                             //     if ($survey_question->logic == SurveyQuestion::LOGIC && $survey_question->is_multiple == SurveyQuestion::NOT_MULTIPLE) {
                             //         $logic_come = SurveyQuestionAnswer::getDetailSurveyQuestionAnswer($target_ids[0])->logic_come;

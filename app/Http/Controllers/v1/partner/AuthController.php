@@ -18,7 +18,6 @@ use App\Helpers\FormatDate;
 use App\Helpers\FtpSv;
 use App\Helpers\JWT;
 use App\Models\AppSetting;
-use App\Models\MappingUidFcmToken;
 use App\Models\NotificationsFirebase;
 use App\Models\OtpLog;
 use App\Models\PartnerPointLog;

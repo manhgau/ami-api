@@ -25,6 +25,7 @@ class PartnerContacts extends Model
         'is_key_shopper',
         'most_cost_of_living',
         'childrend_age_ranges',
+        'message'
     ];
 
     const STATUS_ACTIVE = 1;

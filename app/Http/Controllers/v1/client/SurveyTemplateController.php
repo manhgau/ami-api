@@ -6,7 +6,6 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
 use App\Models\SurveyCategory;
-use App\Models\SurveyTemplate;
 use App\Models\TemplateWithSurveyCategory;
 use Illuminate\Http\Request;
 

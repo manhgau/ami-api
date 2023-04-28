@@ -15,7 +15,6 @@ use App\Helpers\ClientResponse;
 use App\Helpers\Common\CommonCached;
 use App\Helpers\RemoveData;
 use App\Models\JobStatus;
-use App\Models\Page;
 
 class JobStatusController extends Controller
 {
