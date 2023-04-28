@@ -67,7 +67,11 @@ class SurveyPartnerInputLineController extends Controller
                                 $errorString = implode(",", $validator->messages()->all());
                                 return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                             }
-                            // $target_ids = $request->suggested_answer_id;
+                            $target_ids = $request->suggested_answer_id;
+                            foreach ($target_ids  as $key => $value) {
+                                $input['suggested_answer_id'] = $value;
+                                $data_input[$key] = $input;
+                            }
 
                             // if (is_array($target_ids)) {
                             //     if ($survey_question->logic == SurveyQuestion::LOGIC && $survey_question->is_multiple == SurveyQuestion::NOT_MULTIPLE) {
