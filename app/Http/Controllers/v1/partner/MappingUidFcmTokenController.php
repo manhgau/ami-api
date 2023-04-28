@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\v1\partner;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\Context;

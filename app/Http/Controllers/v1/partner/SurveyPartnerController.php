@@ -5,7 +5,6 @@ namespace App\Http\Controllers\v1\partner;
 use Illuminate\Http\Request;
 use Validator;
 use App\Helpers\ClientResponse;
-use App\Helpers\Common\CommonCached;
 use App\Helpers\Context;
 use App\Helpers\RemoveData;
 use App\Models\AppSetting;
