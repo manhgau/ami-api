@@ -107,10 +107,10 @@ class SurveyPartnerInputAnynomousController extends Controller
                             //$item->background ? $item->background = $image_domain . $item->background : null;
                             $list_question  = self::__getAnswer($cat, $item, $list_question);
                         }
+
                         $value->group_question = $list_question;
-                        $datas[$key] = $value;
-                    } else {
-                        unset($lists['data'][$key]);
+                        $datas[] = $value;
+                        //array_push($datas, $value);
                     }
                 } else {
                     $datas  = self::__getAnswer($key, $value, $datas);
@@ -136,14 +136,14 @@ class SurveyPartnerInputAnynomousController extends Controller
             case QuestionType::MULTI_FACTOR_MATRIX:
                 $data_response = $value;
                 $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
-                $datas[$key] = $data_response;
+                $datas[] = $data_response;
                 break;
             case QuestionType::MULTI_CHOICE:
             case QuestionType::MULTI_CHOICE_DROPDOWN:
             case QuestionType::YES_NO:
                 $data_response = $value;
                 $data_response->answers = SurveyQuestionAnswer::getAllSurveyQuestionAnswer($question_id, $random)->get();
-                $datas[$key] = $data_response;
+                $datas[] = $data_response;
                 break;
             case QuestionType::RATING_STAR:
             case QuestionType::RANKING:
@@ -153,7 +153,7 @@ class SurveyPartnerInputAnynomousController extends Controller
             case QuestionType::QUESTION_ENDED_LONG_TEXT:
             case QuestionType::NUMBER:
             case QuestionType::GROUP:
-                $datas[$key] = $data_response;
+                $datas[] = $data_response;
                 break;
             default:
                 return ClientResponse::responseError('question type không hợp lệ', $value->question_type);
