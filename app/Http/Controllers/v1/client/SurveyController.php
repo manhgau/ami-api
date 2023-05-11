@@ -151,6 +151,12 @@ class SurveyController extends Controller
                 return ClientResponse::responseError($errorString);
             }
             $survey_user = Survey::where('active', Survey::ACTIVE)->where('active', Survey::ACTIVE)->find($request->survey_id);
+            if ($survey_user->state == Survey::STATUS_COMPLETED) {
+                return ClientResponse::responseError('Không được sửa khảo sát này');
+            }
+            if (!$survey_user) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
             if ($survey_user->state == Survey::STATUS_DRAFT &&  $request->state) {
                 $survey_user->start_time = Carbon::now()->format('Y-m-d H:i:s');
             }
@@ -220,6 +226,10 @@ class SurveyController extends Controller
     {
         try {
             $survey_id = $request->survey_id;
+            $survey_user = Survey::getDetailSurvey($request->survey_id);
+            if (!$survey_user) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
             Survey::destroy($survey_id);
             SurveyQuestion::deleteAllSurveyQuestions($survey_id);
             SurveyQuestionAnswer::deleteAllSurveyQuestionsAnswer($survey_id);
