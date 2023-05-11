@@ -147,9 +147,9 @@ Route::group(['prefix' => 'v1'], function () {
 
                     ], function ($router) {
                         Route::post('/edit/{survey_id}', [SurveyController::class, 'editSurvey']);
-                        Route::post('/copy/{survey_id}', [SurveyController::class, 'copySurvey']);
                         Route::post('/upload-logo/{survey_id}', [SurveyController::class, 'uploadLogo']);
                     });
+                    Route::post('/copy/{survey_id}', [SurveyController::class, 'copySurvey']);
                     Route::post('/delete/{survey_id}', [SurveyController::class, 'deleteSurvey']);
                     Route::group([
                         'prefix' => '/{survey_id}/target'
