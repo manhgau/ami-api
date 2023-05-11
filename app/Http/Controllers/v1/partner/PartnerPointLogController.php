@@ -30,7 +30,7 @@ class PartnerPointLogController extends Controller
             foreach ($datas['data'] as $key => $value) {
                 $value->created_at = FormatDate::formatDateStatisticNoTime($value->created_at);
                 $value->updated_at = FormatDate::formatDateStatisticNoTime($value->updated_at);
-                $datas[$key] = $value;
+                $datas['data'][$key] = $value;
             }
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
