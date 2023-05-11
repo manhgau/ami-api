@@ -22,7 +22,7 @@ class SurveyQuestionController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
+                'title' => 'required|string|max:500',
                 'question_type' => 'required|string',
                 'sequence' => 'required|integer',
             ]);
