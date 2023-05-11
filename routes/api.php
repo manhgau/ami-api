@@ -150,32 +150,42 @@ Route::group(['prefix' => 'v1'], function () {
                         Route::post('/delete/{survey_id}', [SurveyController::class, 'deleteSurvey']);
                         Route::post('/copy/{survey_id}', [SurveyController::class, 'copySurvey']);
                         Route::post('/upload-logo/{survey_id}', [SurveyController::class, 'uploadLogo']);
+                    });
+                    Route::group([
+                        'prefix' => '/{survey_id}/target'
+                    ], function ($router) {
+                        Route::get('/', [SurveyController::class, 'getTargetSurvey']);
+                        Route::post('/', [SurveyController::class, 'createTargetSurvey']);
+                        Route::post('/{target_survey_id}/delete', [SurveyController::class, 'deleteTargetSurvey']);
+                    });
+                    Route::group([
+                        'prefix' => '/{survey_id}/question'
+
+                    ], function ($router) {
+                        Route::post('/', [SurveyQuestionController::class, 'createSurveyQuestion']);
+                        Route::get('/', [SurveyQuestionController::class, 'getListSurveyQuestion']);
+                        Route::get('/{question_id}/detail', [SurveyQuestionController::class, 'getDetailSurveyQuestion']);
                         Route::group([
-                            'prefix' => '/{survey_id}/target'
-                        ], function ($router) {
-                            Route::get('/', [SurveyController::class, 'getTargetSurvey']);
-                            Route::post('/', [SurveyController::class, 'createTargetSurvey']);
-                            Route::post('/{target_survey_id}/delete', [SurveyController::class, 'deleteTargetSurvey']);
-                        });
-                        Route::group([
-                            'prefix' => '/{survey_id}/question'
+                            'middleware' => 'client_owner_survey',
 
                         ], function ($router) {
-                            Route::post('/', [SurveyQuestionController::class, 'createSurveyQuestion']);
-                            Route::get('/', [SurveyQuestionController::class, 'getListSurveyQuestion']);
-                            Route::get('/{question_id}/detail', [SurveyQuestionController::class, 'getDetailSurveyQuestion']);
                             Route::post('/update-many', [SurveyQuestionController::class, 'updateManySurveyQuestion']);
                             Route::post('/arrange', [SurveyQuestionController::class, 'arrangeSurveyQuestion']);
                             Route::post('/{question_id}/update', [SurveyQuestionController::class, 'updateSurveyQuestion']);
                             Route::post('/{question_id}/delete', [SurveyQuestionController::class, 'delSurveyQuestion']);
                             Route::post('/{question_id}/copy', [SurveyQuestionController::class, 'copySurveyQuestion']);
                             Route::get('/{question_id}/logic', [SurveyQuestionController::class, 'getListQuestionLogic']);
+                        });
+                        Route::group([
+                            'prefix' => '/{question_id}/answers'
+
+                        ], function ($router) {
+                            Route::get('/', [SurveyQuestionAnswersController::class, 'getListAnswers']);
                             Route::group([
-                                'prefix' => '/{question_id}/answers'
+                                'middleware' => 'client_owner_survey',
 
                             ], function ($router) {
                                 Route::post('/', [SurveyQuestionAnswersController::class, 'creatQuestionAnswers']);
-                                Route::get('/', [SurveyQuestionAnswersController::class, 'getListAnswers']);
                                 Route::post('/dropdown', [SurveyQuestionAnswersController::class, 'creatQuestionAnswersDropdown']);
                                 Route::post('/{answer_id}/update', [SurveyQuestionAnswersController::class, 'updateQuestionAnswers']);
                                 Route::post('/{answer_id}/update/logic', [SurveyQuestionAnswersController::class, 'updateLogicQuestionAnswers']);

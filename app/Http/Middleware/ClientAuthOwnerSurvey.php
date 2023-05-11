@@ -16,6 +16,9 @@ class ClientAuthOwnerSurvey
         $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
         $id = $request->id ?? ($request->survey_id ?? '');
         $survey = Survey::getDetailSurvey($request->survey_id);
+        if ($survey->state == Survey::STATUS_COMPLETED) {
+            return ClientResponse::responseError('Bản ghi đã hoàn thành, không được sửa bản ghi này');
+        }
         if (!$survey) {
             return ClientResponse::responseError('Không có bản ghi phù hợp');
         }
