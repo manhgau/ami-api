@@ -162,13 +162,13 @@ Route::group(['prefix' => 'v1'], function () {
                         'prefix' => '/{survey_id}/question'
 
                     ], function ($router) {
-                        Route::post('/', [SurveyQuestionController::class, 'createSurveyQuestion']);
                         Route::get('/', [SurveyQuestionController::class, 'getListSurveyQuestion']);
                         Route::get('/{question_id}/detail', [SurveyQuestionController::class, 'getDetailSurveyQuestion']);
                         Route::group([
                             'middleware' => 'client_owner_survey',
 
                         ], function ($router) {
+                            Route::post('/', [SurveyQuestionController::class, 'createSurveyQuestion']);
                             Route::post('/update-many', [SurveyQuestionController::class, 'updateManySurveyQuestion']);
                             Route::post('/arrange', [SurveyQuestionController::class, 'arrangeSurveyQuestion']);
                             Route::post('/{question_id}/update', [SurveyQuestionController::class, 'updateSurveyQuestion']);
