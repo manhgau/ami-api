@@ -81,7 +81,17 @@ class Survey extends Model
 
     public static  function getListSurvey($perPage = 10,  $page = 1, $user_id, $states = null)
     {
-        $query =  self::select(
+        // $query =  DB::table('surveys');
+        // if ($states != null) {
+        //     //$query->whereIn('state', $states);
+        //     // $query->orwhereIn('state_ami', $states);
+        //     //$states != self::STATUS_DRAFT ?  $query->orWhereIn('state_ami', $states) : '';
+        //     $query = self::where(function ($query) use ($states) {
+        //         $query->whereIn('state', $states)
+        //             ->orWhereIn('state_ami', $states);
+        //     });
+        // }
+        $query = self::select(
             'id',
             'title',
             'user_id',
@@ -100,17 +110,20 @@ class Survey extends Model
             'limmit_of_response',
             'created_at',
             'updated_at',
-        )
-            ->where('deleted', self::NOT_DELETED)
-            ->where('active', self::ACTIVE)
-            ->where('user_id', $user_id)
-            ->orderBy('created_at', 'DESC');
+        );
         if ($states != null) {
-            $query->whereIn('state', $states);
-            $query = self::orWhere(function ($query) use ($states) {
-                $query->whereIn('state_ami', $states);
+            //$query->whereIn('state', $states);
+            // $query->orwhereIn('state_ami', $states);
+            //$states != self::STATUS_DRAFT ?  $query->orWhereIn('state_ami', $states) : '';
+            $query = self::where(function ($query) use ($states) {
+                $query->whereIn('state', $states)
+                    ->orWhereIn('state_ami', $states);
             });
         }
+        $query->where('user_id', $user_id)
+            ->where('deleted', self::NOT_DELETED)
+            ->where('active', self::ACTIVE)
+            ->orderBy('created_at', 'DESC');
         $query = $query->paginate($perPage, "*", "page", $page)->toArray();
         return $query;
     }
