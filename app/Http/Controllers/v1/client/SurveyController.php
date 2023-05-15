@@ -91,7 +91,12 @@ class SurveyController extends Controller
                 $data_url['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
                 $data_url['limmit_of_response'] = $value['limmit_of_response_anomyous'];
                 $data_url['data_from'] = Survey::URL;
-                array_push($array, $data_url);
+                if (!empty($states) && in_array($data_url['state'], $states)) {
+                    array_push($array, $data_url);
+                }
+                if (empty($states)) {
+                    array_push($array, $data_url);
+                }
                 if ($value['is_ami'] == Survey::DATA_URL_AND_AMI) {
                     $data_ami = $data_url;
                     $value['end_time'] ? $data_ami['real_end_time'] = date_format(date_create($value['end_time']), 'd/m/Y') : null;
