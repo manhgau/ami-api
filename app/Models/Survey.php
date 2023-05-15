@@ -107,6 +107,9 @@ class Survey extends Model
             ->orderBy('created_at', 'DESC');
         if ($states != null) {
             $query->whereIn('state', $states);
+            $query = self::orWhere(function ($query) use ($states) {
+                $query->whereIn('state_ami', $states);
+            });
         }
         $query = $query->paginate($perPage, "*", "page", $page)->toArray();
         return $query;
