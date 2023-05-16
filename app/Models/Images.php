@@ -11,6 +11,7 @@ class Images extends Model
         'user_id',
         'type',
         'image',
+        'background_type',
         'size',
         'upload_ip',
         'created_at',
@@ -25,9 +26,13 @@ class Images extends Model
     const TEMPLATE = 1;
     const NO_TEMPLATE = 0;
 
-    public static  function getTemplateImage($perPage = 100,  $page = 1)
+    public static  function getTemplateImage($perPage = 100,  $page = 1, $type = null)
     {
-        return self::where('deleted', self::NOT_DELETED)->where('template_image', self::TEMPLATE)->paginate($perPage, "*", "page", $page)->toArray();
+        $query =  self::where('deleted', self::NOT_DELETED)->where('template_image', self::TEMPLATE);
+        if ($type != null) {
+            $query->where('background_type', $type);
+        }
+        return $query->paginate($perPage, "*", "page", $page)->toArray();
     }
 
     public static  function getDetailImage($id)
