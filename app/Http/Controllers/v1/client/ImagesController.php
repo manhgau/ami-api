@@ -60,10 +60,11 @@ class ImagesController extends Controller
         try {
             $perPage = $request->per_page ?? 100;
             $page = $request->current_page ?? 1;
-            $ckey  = CommonCached::api_template_image . "_" . $perPage . "_" . $page;
+            $type = $request->type ?? null;
+            $ckey  = CommonCached::api_template_image . "_" . $perPage . "_" . $page . "_" . $type;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = Images::getTemplateImage($perPage,  $page);
+                $datas = Images::getTemplateImage($perPage,  $page,  $type);
                 $datas = RemoveData::removeUnusedData($datas);
                 foreach ($datas['data'] as $key => $value) {
                     $all_settings = AppSetting::getAllSetting();
