@@ -79,7 +79,7 @@ class Survey extends Model
     const  DATA_URL = 0;
     const  DATA_URL_AND_AMI = 1;
 
-    public static  function getListSurvey($perPage = 10,  $page = 1, $user_id, $states = null)
+    public static  function getListSurvey($user_id, $states = null)
     {
         // $query =  DB::table('surveys');
         // if ($states != null) {
@@ -124,7 +124,7 @@ class Survey extends Model
             ->where('deleted', self::NOT_DELETED)
             ->where('active', self::ACTIVE)
             ->orderBy('created_at', 'DESC');
-        $query = $query->paginate($perPage, "*", "page", $page)->toArray();
+        $query = $query->get()->toArray();
         return $query;
     }
 
