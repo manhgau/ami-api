@@ -75,7 +75,7 @@ class SurveyController extends Controller
             $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
             $datas = Survey::getListSurvey($user_id, $states);
             $array = [];
-            foreach ($datas['data'] as $key => $value) {
+            foreach ($datas as $key => $value) {
                 $data_url['id'] = $value['id'];
                 //$data_url['user_id'] = $value['user_id'];
                 $data_url['title'] = $value['title'];
@@ -114,8 +114,8 @@ class SurveyController extends Controller
                     }
                 }
             }
-            $datas['data'] = $array;
-            $datas = RemoveData::removeUnusedData($datas);
+            $datas = $array;
+            //$datas = RemoveData::removeUnusedData($datas);
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
