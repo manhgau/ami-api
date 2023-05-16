@@ -92,7 +92,7 @@ class SurveyController extends Controller
                 $data_url['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['id'], SurveyPartnerInput::ANYNOMOUS_TRUE);
                 $data_url['limmit_of_response'] = $value['limmit_of_response_anomyous'];
                 $data_url['data_from'] = Survey::URL;
-                $value['is_ami'] == Survey::DATA_URL_AND_AMI ? $data_url['sequence'] = ($key + 1) . 'a' : $data_url['sequence'] = (string)($key + 1);
+                $value['is_ami'] == Survey::DATA_URL_AND_AMI ? $data_url['sequence'] = ($key + 1) . '.a' : $data_url['sequence'] = (string)($key + 1);
                 if (!empty($states) && in_array($data_url['state'], $states)) {
                     array_push($array, $data_url);
                 }
@@ -105,7 +105,7 @@ class SurveyController extends Controller
                     $data_ami['limmit_of_response'] = $value['limmit_of_response'];
                     $data_ami['state'] = $value['state_ami'];
                     $data_ami['data_from'] = Survey::AMI;
-                    $data_ami['sequence'] = ($key + 1) . 'b';
+                    $data_ami['sequence'] = ($key + 1) . '.b';
                     $value['state_ami'] == Survey::STATUS_NOT_COMPLETED ? $data_ami['status_not_completed'] = Survey::TIME_UP : null;
                     $data_ami['number_of_response'] = SurveyPartnerInput::countSurveyInput($value['id'], SurveyPartnerInput::ANYNOMOUS_FALSE);
                     if (!empty($states) && in_array($data_ami['state'], $states)) {
