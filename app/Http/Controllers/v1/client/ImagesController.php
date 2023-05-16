@@ -60,7 +60,7 @@ class ImagesController extends Controller
         try {
             $perPage = $request->per_page ?? 100;
             $page = $request->current_page ?? 1;
-            $type = $request->type ?? null;
+            $type = $request->type ?? 'image';
             $ckey  = CommonCached::api_template_image . "_" . $perPage . "_" . $page . "_" . $type;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
