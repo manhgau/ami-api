@@ -51,7 +51,7 @@ class SurveyPartner extends Model
         if ($is_save != null) {
             $query->where('a.is_save', $is_save)->orderBy('a.updated_at', 'desc');
         } else {
-            $query->where('a.is_save', self::NO_SAVE)->orderBy('a.created_at', 'desc');
+            $query->orderBy('a.created_at', 'desc');
         }
         if ($search != null) {
             $query->where('b.title', 'like', '%' . $search . '%');
