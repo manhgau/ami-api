@@ -66,6 +66,7 @@ class SurveyPartnerInputLineController extends Controller
                                 return ClientResponse::response(ClientResponse::$validator_value, $errorString);
                             }
                             $target_ids = $request->suggested_answer_id;
+                            if (is_array($target_ids)) {
                             foreach ($target_ids  as $key => $value) {
                                 $input['suggested_answer_id'] = $value;
                                 $data_input[$key] = $input;
