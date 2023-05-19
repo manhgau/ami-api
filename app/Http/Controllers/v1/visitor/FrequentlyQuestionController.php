@@ -24,10 +24,11 @@ class FrequentlyQuestionController extends Controller
         try {
             $perPage = $request->per_page ?? 10;
             $page = $request->current_page ?? 1;
-            $ckey  = CommonCached::cache_find_frequently_question . "_" . $perPage . "_" . $page;
+            $type = $request->type ?? FrequentlyQuestions::CLIENT_WEB;
+            $ckey  = CommonCached::cache_find_frequently_question . "_" . $perPage . "_" . $page . "_" . $type;
             $datas = CommonCached::getData($ckey);
             if (empty($datas)) {
-                $datas = FrequentlyQuestions::getFrequentlyQuestion($perPage,  $page);
+                $datas = FrequentlyQuestions::getFrequentlyQuestion($perPage,  $page,  $type);
                 $datas = RemoveData::removeUnusedData($datas);
                 CommonCached::storeData($ckey, $datas);
             }
