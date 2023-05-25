@@ -10,6 +10,7 @@ class Backgrounds extends Model
         'thumbnail',
         'youtube_url',
         'status',
+        'is_use',
         'created_by',
         'updated_by',
         'created_at',
@@ -21,6 +22,8 @@ class Backgrounds extends Model
     const STATUS_INACTIVE = 0;
     const NOT_DELETED  = 0;
     const DELETED  = 1;
+    const NOT_USE  = 0;
+    const USE  = 1;
 
     public function scopeGetBackground()
     {
@@ -29,6 +32,6 @@ class Backgrounds extends Model
 
     public static  function getBackground()
     {
-        return self::where('deleted', false)->where('status', self::STATUS_ACTIVE)->select('thumbnail', 'youtube_url')->orderBy('created_at', 'desc')->first();
+        return self::where('deleted', false)->where('is_use', self::USE)->where('status', self::STATUS_ACTIVE)->select('thumbnail', 'youtube_url')->orderBy('created_at', 'desc')->first();
     }
 }
