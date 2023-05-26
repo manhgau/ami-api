@@ -12,12 +12,14 @@ use Validator;
 use App\Helpers\ClientResponse;
 use App\Helpers\FormatDate;
 use App\Helpers\FtpSv;
+use App\Helpers\RemoveData;
 use App\Jobs\SendActiveAcountEmailJob;
 use App\Jobs\SendResetPasswordEmailJob;
 use App\Models\AppSetting;
 use App\Models\NotificationsFirebase;
 use App\Models\NotificationsFirebaseClients;
 use App\Models\UserPackage;
+use App\Models\UserPackageLog;
 use Illuminate\Support\Str;
 use App\Models\UserRefreshToken;
 use Carbon\Carbon;
@@ -224,12 +226,45 @@ class AuthController extends Controller
         return ClientResponse::responseSuccess('Thông tin tài khoản', $data);
     }
 
+    public function updateProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string',
+            'company_name' => 'string',
+        ]);
+        if ($validator->fails()) {
+            $errorString = implode(",", $validator->messages()->all());
+            return ClientResponse::responseError($errorString);
+        }
+        $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+        $user = User::find($user_id);
+        $user->name = $request->name;
+        $user->company_name = $request->company_name;
+        $user->save();
+        $all_settings = AppSetting::getAllSetting();
+        $image_domain  = AppSetting::getByKey(AppSetting::IMAGE_DOMAIN, $all_settings);
+        $user['avatar'] ? $user['avatar'] = $image_domain . $user['avatar'] : '';
+        $time_now = Carbon::now();
+        $user_package = UserPackage::getPackageUser($user_id, $time_now);
+        isset($user_package['start_time']) ? $user_package['start_time']  =  FormatDate::formatDateStatisticNoTime($user_package['start_time']) : $user_package['start_time'] = '';
+        isset($user_package['end_time']) ? $user_package['end_time']  =   FormatDate::formatDateStatisticNoTime($user_package['end_time']) : $user_package['end_time'] = '';
+        $data = [
+            'user_package' => $user_package,
+            'user_profile' => $user,
+        ];
+        return ClientResponse::responseSuccess('Cập nhập thành công', $data);
+    }
+
 
     public function changePassWord(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
+            'password' => 'required',
             'new_password' => 'required|string|confirmed|min:6',
+        ], [
+            'password.required' => 'Đây là trường bắt buộc.',
+            'new_password.required' => 'Đây là trường bắt buộc.',
         ]);
         if ($validator->fails()) {
             $errorString = implode(",", $validator->messages()->all());
@@ -237,7 +272,8 @@ class AuthController extends Controller
         }
 
         $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
-        $user = User::find($user_id);
+        $password = $request->password;
+        $user = User::checkPasswordUser($user_id, $password);
         if ($user) {
             $userId = $user->id;
             User::where('id', $userId)->update(
@@ -245,7 +281,7 @@ class AuthController extends Controller
             );
             return ClientResponse::responseSuccess('Thay đổi mật khẩu thành công');
         } else {
-            return ClientResponse::responseError('Tài khoản không tồn tại');
+            return ClientResponse::responseError('Mật khẩu cũ không chính xác');
         }
     }
 
@@ -421,5 +457,30 @@ class AuthController extends Controller
         } catch (\Exception $ex) {
             return ClientResponse::responseError($ex->getMessage());
         }
+    }
+
+    public function getUserPackageLog(Request $request)
+    {
+        try {
+            $perPage = $request->per_page ?? 10;
+            $page = $request->current_page ?? 1;
+            $user_id = Context::getInstance()->get(Context::CLIENT_USER_ID);
+            $datas = UserPackageLog::getJobType($perPage,  $page,  $user_id);
+            $datas = RemoveData::removeUnusedData($datas);
+            if (!$datas) {
+                return ClientResponse::responseError('Không có bản ghi phù hợp');
+            }
+            //dd($datas);
+            foreach ($datas['data'] as $key => $value) {
+                $value->start_time = FormatDate::formatDateStatisticNoTime($value->start_time);
+                $value->end_time = FormatDate::formatDateStatisticNoTime($value->end_time);
+                $datas['data'][$key] = $value;
+            }
+            return ClientResponse::responseSuccess('OK', $datas);
+        } catch (\Exception $ex) {
+            return ClientResponse::responseError($ex->getMessage());
+        }
+
+        return ClientResponse::responseSuccess('Thông tin tài khoản');
     }
 }

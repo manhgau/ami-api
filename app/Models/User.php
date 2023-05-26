@@ -115,6 +115,11 @@ class User extends Model
         return User::where('email', $email)->first();
     }
 
+    public static function findUserById($user_id)
+    {
+        return User::where('id', $user_id)->first();
+    }
+
     public static function findUserActiveEmail($user_id, $active_code)
     {
         return User::where('id', $user_id)->whereRaw("BINARY `active_code`= ?", [$active_code])->first();
@@ -139,6 +144,18 @@ class User extends Model
     {
         $rs = false;
         $user = self::findUserByEmail($email);
+        if ($user) {
+            if (self::checkPasswordHash($password, $user->password ?? '')) {
+                $rs = $user;
+            }
+        }
+        return $rs;
+    }
+
+    public static function checkPasswordUser($user_id, $password)
+    {
+        $rs = false;
+        $user = self::findUserById($user_id);
         if ($user) {
             if (self::checkPasswordHash($password, $user->password ?? '')) {
                 $rs = $user;
