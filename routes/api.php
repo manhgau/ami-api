@@ -116,7 +116,9 @@ Route::group(['prefix' => 'v1'], function () {
                     'middleware' => 'client_auth',
 
                 ], function ($router) {
+                    Route::get('/user-package-log', [AuthController::class, 'getUserPackageLog']);
                     Route::get('/profile', [AuthController::class, 'profile']);
+                    Route::post('/update-profile', [AuthController::class, 'updateProfile']);
                     Route::post('/change-pass', [AuthController::class, 'changePassWord']);
                     Route::post('/upload-image', [AuthController::class, 'updateImage']);
                 });
