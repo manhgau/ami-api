@@ -18,6 +18,7 @@ class Survey extends Model
         'link_url',
         'logo',
         'is_logo',
+        'letter_font',
         'title_color',
         'content_color',
         'button_color',

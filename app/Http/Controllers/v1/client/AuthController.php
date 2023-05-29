@@ -470,7 +470,6 @@ class AuthController extends Controller
             if (!$datas) {
                 return ClientResponse::responseError('Không có bản ghi phù hợp');
             }
-            //dd($datas);
             foreach ($datas['data'] as $key => $value) {
                 $value->start_time = FormatDate::formatDateStatisticNoTime($value->start_time);
                 $value->end_time = FormatDate::formatDateStatisticNoTime($value->end_time);
